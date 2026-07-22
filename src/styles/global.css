@@ -290,7 +290,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .schema-source-badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border: 1px solid var(--retro-blue); border-radius: 999px; background: var(--blue-soft); color: var(--blue); font: 800 9px/1 ui-monospace, monospace; white-space: nowrap; }
 .schema-markdown-wrap { color: #4d4a52; }
 .schema-markdown { max-width: 940px; margin: 0 auto; padding: 28px 32px 42px; border: 1px solid rgba(255,179,186,.55); border-radius: 16px; background: rgba(255,255,255,.96); box-shadow: 0 5px 18px rgba(255,107,129,.06); font-size: 16.5px; line-height: 1.8; }
-.schema-markdown h1 { margin: 0 0 10px; color: #3f3c44; font: 800 37.5px/1.2 Georgia, "Yu Mincho", serif; }
+.schema-markdown h1 { margin: 0 0 10px; color: #3f3c44; font: 800 clamp(21px, 2vw + 14px, 27px)/1.25 Georgia, "Yu Mincho", serif; }
 .schema-markdown h2 { margin: 30px 0 12px; padding-bottom: 7px; border-bottom: 1px solid var(--line); color: #47434c; font-size: 24px; }
 .schema-markdown h3 { margin: 22px 0 9px; color: #55515a; font-size: 19.5px; }
 .schema-markdown p { margin: 9px 0; color: #66626c; }
@@ -439,12 +439,12 @@ input:disabled { background: #faf6f7; color: #9b9398; }
   .brand-mark { width: 32px; height: 32px; }
   .brand-copy { min-width: 0; flex: 1; }
   .brand-copy h1 { max-width: 100%; font-size: 13px; }
-  .version-badge, .validation-pill span, .header-actions .import-button { display: none; }
+  .version-badge, .validation-pill span { display: none; }
   .validation-pill { width: 34px; height: 34px; justify-content: center; padding: 0; }
   .primary-button { padding: 7px 9px; }
   .app-header .primary-button { font-size: 0; gap: 0; }
-  .app-header .copy-button, .app-header .new-button { width: 34px; height: 34px; justify-content: center; padding: 0; font-size: 0; gap: 0; }
-  .app-header .primary-button svg, .app-header .copy-button svg, .app-header .new-button svg { width: 18px; height: 18px; }
+  .app-header .copy-button, .app-header .new-button, .app-header .import-button { width: 34px; height: 34px; justify-content: center; padding: 0; font-size: 0; gap: 0; }
+  .app-header .primary-button svg, .app-header .copy-button svg, .app-header .new-button svg, .app-header .import-button svg { width: 18px; height: 18px; }
   .workspace-tabs { padding: 0; overflow-x: auto; }
   .workspace-tabs button { flex: 0 0 auto; padding: 0 11px; font-size: 9px; }
   .workspace-main.has-mobile-storyboard-tabs { display: grid; grid-template-rows: 44px minmax(0, 1fr); }
@@ -464,6 +464,9 @@ input:disabled { background: #faf6f7; color: #9b9398; }
   .workspace-shell.mobile-pane-panel .inspector-pane { height: 100%; display: block; overflow: auto; }
   .workspace-shell.mobile-pane-pages .canvas-stage, .workspace-shell.mobile-pane-pages .inspector-pane { display: none; }
   .layout-template-control select { width: clamp(135px, 34vw, 230px); }
+  .guide-toggle { display: none; }
+  .bubble-svg-surface, .bubble-svg-source-surface { stroke-width: 1.1; stroke: #8b8f99; }
+  .bubble-svg-detail { stroke-width: 0.6; stroke: #8b8f99; }
   .canvas-scroll { padding: 20px 16px; }
   .manga-paper { width: min(100%, 560px); height: auto; }
   .canvas-legend { flex-wrap: wrap; gap: 4px 12px; padding: 3px 8px; }
@@ -498,7 +501,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
   .app-footer { grid-template-columns: 1fr auto; }
   .canvas-toolbar { padding: 0 7px; }
   .canvas-toolbar-actions { gap: 4px; }
-  .layout-template-control label, .guide-toggle { font-size: 0; }
+  .layout-template-control label { font-size: 0; }
   .layout-template-control label::after { content: "割"; font-size: 9px; }
   .layout-template-control select { width: 132px; }
   .layout-template-control button { padding: 0 7px; }

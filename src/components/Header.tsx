@@ -44,7 +44,7 @@ export default function Header({ title, version, issues, savedAt, canUndo, canRe
         <button class="icon-button history-button" onClick={onRedo} disabled={!canRedo} title="やり直す (Ctrl+Shift+Z)" aria-label="やり直す"><Redo2 size={18} /></button>
         <button class="icon-button" onClick={onReset} title="サンプルに戻す" aria-label="サンプルに戻す"><RotateCcw size={18} /></button>
         <button class="secondary-button new-button" onClick={onNew} title="新しい漫画を作成"><FilePlus2 size={17} />新規</button>
-        <button class="secondary-button import-button" onClick={onImport}><FileUp size={17} />読み込む</button>
+        <button class="secondary-button import-button" title="OMNYファイルを読み込む" aria-label="OMNYファイルを読み込む" onClick={onImport}><FileUp size={17} />読み込む</button>
         <button class="secondary-button copy-button" onClick={onCopy} title="OMNY形式の全文をクリップボードにコピー"><ClipboardCopy size={17} />OMNYコピー</button>
         <button class="primary-button" onClick={onDownload}><Download size={17} />OMNY保存</button>
       </div>
