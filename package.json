@@ -1,0 +1,48 @@
+{
+  "name": "nyamuru-manga-name-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Nyamuru Data Model（NDM）をOpen Manga Name YAML（OMNY）形式で閲覧・編集するPWA",
+  "license": "MIT",
+  "author": {
+    "name": "sa-san10",
+    "url": "https://github.com/sa-san10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sa-san10/nyamuru-manga-name-studio.git"
+  },
+  "homepage": "https://github.com/sa-san10/nyamuru-manga-name-studio#readme",
+  "bugs": {
+    "url": "https://github.com/sa-san10/nyamuru-manga-name-studio/issues"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && npm run build:standalone && mkdir -p dist/standalone && cp dist-standalone/index.html dist/standalone/nyamuru-manga-name-studio.html && cp dist-standalone/THIRD_PARTY_NOTICES.txt dist/standalone/",
+    "build:standalone": "vite build --config vite.standalone.config.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node --no-warnings --experimental-strip-types --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@astrojs/check": "0.9.9",
+    "@astrojs/preact": "6.0.1",
+    "@astrojs/sitemap": "3.7.3",
+    "@tailwindcss/vite": "4.3.3",
+    "astro": "7.1.1",
+    "lucide-preact": "1.25.0",
+    "marked": "18.0.7",
+    "preact": "10.29.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "yaml": "2.9.0"
+  },
+  "devDependencies": {
+    "vite": "^8.1.5",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}

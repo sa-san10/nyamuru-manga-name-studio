@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="ページが見つかりません | Nyamuru🐱Manga Name Studio" description="お探しのページは見つかりませんでした">
+  <main class="notfound-page">
+    <p class="notfound-code">404</p>
+    <h1>ページが見つからないにゃ…</h1>
+    <p class="notfound-note">お探しのページは、移動したか削除された可能性があります。</p>
+    <a class="notfound-back" href="/">アプリへ戻る</a>
+  </main>
+</Layout>
+
+<style>
+  :global(body) { overflow: auto; }
+  .notfound-page { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 24px; text-align: center; }
+  .notfound-code { margin: 0; color: #ffb3ba; font: 900 clamp(64px, 18vw, 120px)/1 Georgia, serif; letter-spacing: .04em; }
+  h1 { margin: 0; font-size: clamp(18px, 4vw, 26px); color: #47434c; }
+  .notfound-note { margin: 4px 0 18px; color: #7b8190; font-size: 13px; line-height: 1.8; }
+  .notfound-back { padding: 10px 22px; border: 1px solid #ffb3ba; border-radius: 999px; background: #fff0f3; color: #e64f68; font-weight: 800; text-decoration: none; }
+  .notfound-back:hover { background: #ffe4e9; }
+</style>

@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import App from '../components/App';
+---
+
+<Layout
+  title="Nyamuru🐱Manga Name Studio"
+  description="Nyamuru🐱のNyamuru Data Model（NDM）を、Open Manga Name YAML（OMNY）形式で編集できるオフライン対応PWA"
+>
+  <App client:only="preact" />
+</Layout>

@@ -1,0 +1,32 @@
+name: バグ報告
+description: 動作がおかしいときはこちら
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 何が起きたか
+      description: 実際の動作と、期待していた動作を書いてください
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      placeholder: |
+        1. 「ネーム」タブを開く
+        2. コマ2のフキダシをドラッグする
+        3. …
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 環境
+      placeholder: 例）Windows 11 / Chrome 145 / サイト版 or スタンドアロン版
+  - type: textarea
+    id: omny
+    attributes:
+      label: 関係するOMNY（任意）
+      description: 差し支えなければ、再現に使えるOMNYの抜粋を貼ってください
+      render: yaml

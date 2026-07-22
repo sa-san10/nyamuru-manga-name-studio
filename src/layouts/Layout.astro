@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+
+interface Props { title: string; description: string }
+const { title, description } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : null;
+const serviceWorkerMode = import.meta.env.PROD ? 'register' : 'cleanup';
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFB3BA" />
+    <meta name="description" content={description} />
+    <meta name="author" content="sa-san10" />
+    <meta name="copyright" content="Copyright © 2026 sa-san10" />
+    <meta name="application-name" content="Nyamuru🐱Manga Name Studio" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Nyamuru🐱" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="license" href="/licenses/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {Astro.site && <meta property="og:image" content={new URL('/ogp.png', Astro.site)} />}
+    {Astro.site && <meta property="og:image:width" content="1200" />}
+    {Astro.site && <meta property="og:image:height" content="630" />}
+    {Astro.site && <meta name="twitter:card" content="summary_large_image" />}
+    {Astro.site && <meta name="twitter:image" content={new URL('/ogp.png', Astro.site)} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+    <script is:inline define:vars={{ serviceWorkerMode }}>
+      if ('serviceWorker' in navigator) {
+        if (serviceWorkerMode === 'register') {
+          window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(console.error));
+        } else {
+          void (async () => {
+            const hadController = navigator.serviceWorker.controller !== null;
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map((registration) => registration.unregister()));
+            if ('caches' in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.filter((key) => key.startsWith('manga-name-studio-')).map((key) => caches.delete(key)));
+            }
+            if (hadController) window.location.reload();
+          })().catch(console.error);
+        }
+      }
+    </script>
+  </body>
+</html>
