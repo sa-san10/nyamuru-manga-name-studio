@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { BookOpen, BookOpenCheck, Boxes, Braces, Cat, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, FilePlus2, Files, Images, LayoutPanelTop, Settings2, SlidersHorizontal, Sparkles, UsersRound, Workflow, X } from 'lucide-preact';
+import { BookOpen, BookOpenCheck, Boxes, Braces, Cat, ChevronLeft, ChevronRight, CircleHelp, Copy, Eye, EyeOff, FilePlus2, Files, Images, LayoutPanelTop, Settings2, SlidersHorizontal, Sparkles, UsersRound, Workflow, X } from 'lucide-preact';
 import sampleYaml from '../content/sample.omny.yaml?raw';
 import { version as appVersion } from '../../package.json';
 import { sampleMangaPages } from '../lib/sampleMangaImages';
@@ -43,6 +43,11 @@ const HOWTO_INTRO_KEY = 'manga-name-studio.howto-intro.v1';
 
 const REPO_URL = 'https://github.com/sa-san10/nyamuru-manga-name-studio';
 
+const ASK_AI_TEXT = `このリポジトリについて教えて！\n${REPO_URL}`;
+
+// 見開きは右綴じ（1ページ目が右）。ビューアはこの配列順にめくる
+const SAMPLE_MANGA_PAGES = [sampleMangaPages.page1, sampleMangaPages.page2];
+
 function TemplateThumb({ shapes }: { shapes: PanelTemplate['shapes'] }) {
   return <svg viewBox="0 0 210 297" aria-hidden="true">
     {shapes.map((shape, index) => shape.type === 'rect'
@@ -79,6 +84,7 @@ export default function App() {
   const [showValidation, setShowValidation] = useState(false);
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [showHowtoIntro, setShowHowtoIntro] = useState(false);
+  const [mangaViewerPage, setMangaViewerPage] = useState<number | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState('B');
   const [rawSource, setRawSource] = useState(() => toMangaYaml(document));
   const [rawError, setRawError] = useState<string | null>(null);
@@ -172,6 +178,7 @@ export default function App() {
         try { localStorage.setItem(STORAGE_KEY, toMangaYaml(document)); setSavedAt(new Date()); setToast('ブラウザに保存しました'); } catch { setToast('保存に失敗しました'); }
         return;
       }
+      if (key === 'escape' && mangaViewerPage !== null) { setMangaViewerPage(null); return; }
       if (key === 'escape' && showNewDialog) { setShowNewDialog(false); return; }
       if (key === 'escape' && showHowtoIntro) { setShowHowtoIntro(false); return; }
       const target = event.target as HTMLElement | null;
@@ -181,7 +188,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [document, past, future, showNewDialog, showHowtoIntro]);
+  }, [document, past, future, showNewDialog, showHowtoIntro, mangaViewerPage]);
 
   const changeTab = (next: WorkspaceTab) => { setTab(next); if (next !== 'storyboard' && window.innerWidth < 800) setSidebarCollapsed(true); };
   const mutate = (recipe: (draft: MangaDocument) => void) => { const next = cloneDocument(document); recipe(next); setDocument(next); };
@@ -394,13 +401,45 @@ export default function App() {
         <div class="howto-intro-icon" aria-hidden="true"><CircleHelp size={26} /></div>
         <h2>使い方を見てみる？</h2>
         <p>LLMと画像生成AIをつないで漫画を作る、3ステップのワークフローを紹介します。</p>
-        <div class="howto-intro-spread" aria-hidden="true"><img src={sampleMangaPages.page2} alt="" /><img src={sampleMangaPages.page1} alt="" /></div>
+        <div class="howto-intro-spread">
+          <button type="button" onClick={() => setMangaViewerPage(1)} aria-label="サンプル漫画の2ページ目を全画面で読む"><img src={sampleMangaPages.page2} alt="" /></button>
+          <button type="button" onClick={() => setMangaViewerPage(0)} aria-label="サンプル漫画の1ページ目を全画面で読む"><img src={sampleMangaPages.page1} alt="" /></button>
+        </div>
+        <small class="howto-intro-zoom-hint">漫画をタップすると全画面で読めます</small>
         <div class="howto-intro-actions">
           <button type="button" class="secondary-button" onClick={() => setShowHowtoIntro(false)}>あとで</button>
           <button type="button" class="primary-button" onClick={() => { setShowHowtoIntro(false); changeTab('howto'); }}>はい</button>
         </div>
+        <div class="howto-intro-ask-ai">
+          <span>または、あなたの創作パートナーのAIに聞いてみる</span>
+          <div class="ask-ai-block">
+            <pre>{ASK_AI_TEXT}</pre>
+            <button type="button" onClick={async () => {
+              try { await navigator.clipboard.writeText(ASK_AI_TEXT); setToast('AIへの質問文をコピーしました'); }
+              catch { setToast('コピーできませんでした'); }
+            }}><Copy size={12} />コピー</button>
+          </div>
+        </div>
       </section>
     </>}
+    {mangaViewerPage !== null && <div
+      class="manga-viewer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="サンプル漫画の全画面表示"
+      onClick={(event) => { if (event.target === event.currentTarget) setMangaViewerPage(null); }}
+    >
+      <button
+        type="button"
+        class="manga-viewer-page"
+        onClick={() => setMangaViewerPage(mangaViewerPage + 1 < SAMPLE_MANGA_PAGES.length ? mangaViewerPage + 1 : null)}
+        title={mangaViewerPage + 1 < SAMPLE_MANGA_PAGES.length ? 'タップで次のページ' : 'タップで閉じる'}
+      >
+        <img src={SAMPLE_MANGA_PAGES[mangaViewerPage]} alt={`サンプル漫画 ${mangaViewerPage + 1}ページ目`} />
+      </button>
+      <span class="manga-viewer-count">{mangaViewerPage + 1} / {SAMPLE_MANGA_PAGES.length}<em>タップで{mangaViewerPage + 1 < SAMPLE_MANGA_PAGES.length ? '次のページ' : '閉じる'}</em></span>
+      <button type="button" class="manga-viewer-close" onClick={() => setMangaViewerPage(null)} aria-label="全画面表示を閉じる"><X size={17} /></button>
+    </div>}
     {toast && <div class="toast"><span>{toast}</span><button onClick={() => setToast(null)}><X size={15} /></button></div>}
   </div>;
 }
