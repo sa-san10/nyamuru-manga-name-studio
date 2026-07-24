@@ -3,6 +3,16 @@ import Layout from '../layouts/Layout.astro';
 
 const releases = [
   {
+    version: '1.0.2',
+    code: 3,
+    date: '2026-07-24',
+    title: 'ホーム画面インストール修正',
+    changes: [
+      'GitHub Pages版を正規のPWA化：manifestとservice workerを配信し、ホーム画面にインストールしたアイコンから起動できない問題を修正',
+      'GitHub Pages版のオフライン起動に対応（アプリ本体をキャッシュし、更新はオンライン時に自動取得）',
+    ],
+  },
+  {
     version: '1.0.1',
     code: 2,
     date: '2026-07-24',
