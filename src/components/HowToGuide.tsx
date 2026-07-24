@@ -82,12 +82,15 @@ export default function HowToGuide({ onNavigate }: Props) {
           <p>下の質問文をコピーして、いつも使っているAI（Claude・ChatGPTなど）に貼り付ければ、このアプリのことを案内してもらえます。</p>
           <AskAiBlock />
         </section>
-        <div class="howto-overview" aria-label="ワークフロー全体像">
-          {OVERVIEW.map((label, index) => <>
-            {index > 0 && <ArrowRight class="howto-overview-arrow" size={14} aria-hidden="true" />}
-            <span class={`howto-overview-chip ${index === OVERVIEW.length - 1 ? 'is-goal' : ''}`} key={label}>{label}</span>
-          </>)}
-        </div>
+        <section class="howto-overview">
+          <h3>作業の流れ</h3>
+          <div class="howto-overview-chips">
+            {OVERVIEW.map((label, index) => <>
+              {index > 0 && <ArrowRight class="howto-overview-arrow" size={14} aria-hidden="true" />}
+              <span class={`howto-overview-chip ${index === OVERVIEW.length - 1 ? 'is-goal' : ''}`} key={label}>{label}</span>
+            </>)}
+          </div>
+        </section>
 
         {STEPS.map((step, index) => <>
           {index > 0 && <div class="howto-arrow" aria-hidden="true"><ArrowDown size={17} /><span>{STEPS[index - 1].output}</span></div>}
