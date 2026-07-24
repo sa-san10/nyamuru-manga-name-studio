@@ -184,8 +184,8 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .canvas-element.is-element-selected { z-index: 15; overflow: visible; outline: max(1px, .35cqh) solid var(--accent); outline-offset: max(1px, .2cqh); box-shadow: 0 0 0 .7cqh rgba(255,107,129,.2); }
 .move-indicator { position: absolute; z-index: 3; left: 2px; top: 2px; padding: 1px; border-radius: 2px; background: rgba(29,28,34,.72); color: white; opacity: 0; pointer-events: none; }
 .canvas-element:hover .move-indicator, .canvas-element.is-element-selected .move-indicator { opacity: 1; }
-.figure-guide { flex-direction: column; gap: 1px; color: var(--blue); border: 1px dashed rgba(91,155,213,.6); border-radius: 6px; background: rgba(186,225,255,.22); }
-.figure-guide small { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: clamp(4.5px, 1.2cqh, 10.5px); }
+.figure-guide { flex-direction: column; gap: 1px; color: var(--blue); border: max(1.5px, .5cqh) solid rgba(91,155,213,.8); border-radius: 6px; background: rgba(186,225,255,.22); }
+.figure-guide small { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 700; font-size: clamp(9px, 2.4cqh, 21px); }
 .bubble-guide { border: 0; border-radius: 0; background: transparent; color: #2a272d; padding: 7% 9%; }
 .bubble-guide.bubble-handwritten { padding: 4%; font-weight: 900; }
 .bubble-shape-svg { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -194,21 +194,21 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bubble-shape-whisper .bubble-svg-source-surface { stroke-dasharray: .4 5.5; stroke-linecap: round; }
 .bubble-svg-detail { fill: none; stroke: #2b292e; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 .vertical-text { position: relative; z-index: 2; max-width: 100%; max-height: 100%; overflow: hidden; writing-mode: vertical-rl; font: 600 clamp(3px, .85cqh, 8px)/1.1 "Yu Mincho", serif; text-orientation: upright; }
-.bubble-guide .bubble-text { --bubble-text-top: 10%; --bubble-text-bottom: 15%; --bubble-text-horizontal: 28%; position: absolute; z-index: 4; inset: auto; top: var(--bubble-text-top); left: 50%; display: block; width: max-content; height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); min-width: 0; min-height: 0; max-width: calc(100% - var(--bubble-text-horizontal)); max-height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); transform: translateX(-50%); overflow: hidden; color: #17161a; font-size: clamp(6px, 1.275cqh, 12px); line-height: 1.05; text-align: start; text-shadow: 0 0 1px rgba(255,255,255,.8); }
+.bubble-guide .bubble-text { --bubble-text-top: 10%; --bubble-text-bottom: 15%; --bubble-text-horizontal: 28%; position: absolute; z-index: 4; inset: auto; top: var(--bubble-text-top); left: 50%; display: block; width: max-content; height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); min-width: 0; min-height: 0; max-width: calc(100% - var(--bubble-text-horizontal)); max-height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); transform: translateX(-50%); overflow: hidden; color: #17161a; font-size: clamp(12px, 2.55cqh, 24px); line-height: 1.05; text-align: start; text-shadow: 0 0 1px rgba(255,255,255,.8); }
 .bubble-guide.bubble-thought .bubble-text { --bubble-text-top: 12%; --bubble-text-bottom: 19%; --bubble-text-horizontal: 34%; }
 .bubble-guide.bubble-square .bubble-text, .bubble-guide.bubble-caption .bubble-text { --bubble-text-top: 9%; --bubble-text-bottom: 9%; --bubble-text-horizontal: 22%; }
 .bubble-guide.bubble-flash .bubble-text, .bubble-guide.bubble-uniflash .bubble-text { --bubble-text-top: 22%; --bubble-text-bottom: 22%; --bubble-text-horizontal: 44%; }
 .bubble-guide.bubble-wobbly .bubble-text { --bubble-text-top: 12%; --bubble-text-bottom: 12%; --bubble-text-horizontal: 30%; }
 .bubble-guide.bubble-whisper .bubble-text { --bubble-text-top: 11%; --bubble-text-bottom: 16%; --bubble-text-horizontal: 32%; }
-.bubble-guide.bubble-handwritten .bubble-text { --bubble-text-top: 4%; --bubble-text-bottom: 12%; --bubble-text-horizontal: 14%; font-weight: 800; text-shadow: 0 0 2px rgba(255,255,255,.95); }
-.bubble-guide .bubble-text.is-long { font-size: clamp(5.25px, 1.08cqh, 10.5px); line-height: 1; }
-.bubble-guide .bubble-text.is-very-long { font-size: clamp(4.5px, .9cqh, 9px); line-height: .95; }
+.bubble-guide.bubble-handwritten .bubble-text { --bubble-text-top: 20%; --bubble-text-bottom: 20%; --bubble-text-horizontal: 40%; font-weight: 800; text-shadow: 0 0 2px rgba(255,255,255,.95); }
+.bubble-guide .bubble-text.is-long { font-size: clamp(10.5px, 2.16cqh, 21px); line-height: 1; }
+.bubble-guide .bubble-text.is-very-long { font-size: clamp(9px, 1.8cqh, 18px); line-height: .95; }
 .resize-handle { position: absolute; z-index: 30; width: 22px; height: 22px; display: grid; place-items: center; background: transparent; touch-action: none; }
 .resize-handle::before { content: ""; width: max(9px, 1.7cqh); height: max(9px, 1.7cqh); border: max(1px, .28cqh) solid white; border-radius: 3px; background: var(--accent); box-shadow: 0 1px 3px rgba(75,36,39,.5); }
 .handle-nw { left: 0; top: 0; transform: translate(-50%, -50%); cursor: nwse-resize; }
 .handle-ne { right: 0; top: 0; transform: translate(50%, -50%); cursor: nesw-resize; }
 .handle-sw { left: 0; bottom: 0; transform: translate(-50%, 50%); cursor: nesw-resize; }
-.handle-se { right: 1px; bottom: 1px; cursor: nwse-resize; }
+.handle-se { right: 0; bottom: 0; transform: translate(50%, 50%); cursor: nwse-resize; }
 .element-size-label { position: absolute; z-index: 25; left: 50%; bottom: 2px; max-width: calc(100% - 16px); transform: translateX(-50%); padding: 2px 4px; overflow: hidden; border-radius: 2px; background: rgba(29,28,34,.82); color: white; font: 700 clamp(4.5px, .975cqh, 9px)/1.2 ui-monospace, monospace; white-space: nowrap; pointer-events: none; }
 .is-canvas-dragging, .is-canvas-dragging * { cursor: grabbing !important; user-select: none !important; }
 .is-panel-dragging, .is-panel-dragging * { cursor: move !important; user-select: none !important; }
