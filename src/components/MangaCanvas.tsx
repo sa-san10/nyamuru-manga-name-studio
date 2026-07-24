@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Move, UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
+import { UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
 import type { BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
 import { clamp, clampedPanelDelta, fallbackBox, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
@@ -361,8 +361,9 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               title={`${figure.name}（ドラッグで移動）`}
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
-              <Move class="move-indicator" size={11} />
-              <UserRound size={12} /><small>{figure.name}</small>
+              <UserRound size={12} />
+              {/* 名前がボックス幅に収まらないときは縮小（cqw=紙面幅基準、全角想定で1文字≈1em） */}
+              <small style={{ fontSize: `min(clamp(9px, 2.4cqh, 21px), ${((box.w / 2.1 / Math.max(1, figure.name.length)) * 0.92).toFixed(2)}cqw)` }}>{figure.name}</small>
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
           })}
@@ -382,7 +383,6 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
               <BubbleShapeSvg shape={bubble.shape} />
-              <Move class="move-indicator" size={10} />
               <span class={`vertical-text bubble-text ${textLengthClass}`}>{bubble.text}</span>
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
