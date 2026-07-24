@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { BookOpen, BookOpenCheck, Boxes, Braces, Cat, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, FilePlus2, Files, Images, LayoutPanelTop, Settings2, SlidersHorizontal, Sparkles, UsersRound, Workflow, X } from 'lucide-preact';
 import sampleYaml from '../content/sample.omny.yaml?raw';
-import { version as appVersion } from '../../package.json';
+import { version as appVersion, versionCode as appVersionCode } from '../../package.json';
 import { sampleMangaPages } from '../lib/sampleMangaImages';
 import AskAiBlock, { REPO_URL } from './AskAiBlock';
 import Header from './Header';
@@ -382,7 +382,7 @@ export default function App() {
       </section>
     </main>
 
-    <footer class="app-footer"><span><Boxes size={13} />オフライン対応 · 変更はこの端末に自動保存</span><span class="footer-links"><a class="license-link" href={import.meta.env.PUBLIC_STANDALONE ? `${REPO_URL}/blob/main/LICENSE` : '/licenses/'} target={import.meta.env.PUBLIC_STANDALONE ? '_blank' : undefined}>© 2026 sa-san10 · MIT License</a><a class="license-link" href={import.meta.env.PUBLIC_STANDALONE ? REPO_URL : '/changelog/'} target={import.meta.env.PUBLIC_STANDALONE ? '_blank' : undefined} title="バージョン履歴">v{appVersion}</a></span><button onClick={() => setShowValidation(true)}>{issues.length ? `${issues.length} 件のNDM確認` : 'NDM検査OK'}</button></footer>
+    <footer class="app-footer"><span><Boxes size={13} />オフライン対応 · 変更はこの端末に自動保存</span><span class="footer-links"><a class="license-link" href={import.meta.env.PUBLIC_STANDALONE ? `${REPO_URL}/blob/main/LICENSE` : '/licenses/'} target={import.meta.env.PUBLIC_STANDALONE ? '_blank' : undefined}>© 2026 sa-san10 · MIT License</a><a class="license-link" href={import.meta.env.PUBLIC_STANDALONE ? REPO_URL : '/changelog/'} target={import.meta.env.PUBLIC_STANDALONE ? '_blank' : undefined} title={`バージョン履歴 · バージョンコード ${appVersionCode}`}>v{appVersion}</a></span><button onClick={() => setShowValidation(true)}>{issues.length ? `${issues.length} 件のNDM確認` : 'NDM検査OK'}</button></footer>
     {showValidation && <><button class="drawer-backdrop" onClick={() => setShowValidation(false)} aria-label="検査結果を閉じる" /><ValidationPanel issues={issues} onClose={() => setShowValidation(false)} /></>}
     {showNewDialog && <>
       <button class="drawer-backdrop" onClick={() => setShowNewDialog(false)} aria-label="新規作成を閉じる" />

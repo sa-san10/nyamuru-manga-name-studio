@@ -3,7 +3,27 @@ import Layout from '../layouts/Layout.astro';
 
 const releases = [
   {
+    version: '1.0.1',
+    code: 2,
+    date: '2026-07-24',
+    title: '紙面編集オーバーホール',
+    changes: [
+      '紙面ズーム：スマホの二本指ピンチで拡大縮小・視点移動、PCはCtrl+ホイール、右下にズームボタン。拡大すると文字も一緒に拡大',
+      'コマ操作：多角形コマの頂点をドラッグで個別編集、PANELラベルをドラッグでコマ移動、ハンドルの大型化と当たり判定拡大',
+      'コマ選択の表示を塗りつぶしから辺のハイライトに変更、PANELラベルは常にコマ左上の外側に',
+      '多角形コマで枠線が切れる問題を修正（枠線をSVG描画に一新）',
+      'フキダシ：文字サイズを2倍にし、はみ出す場合は自動縮小。文字背景に半透明の白マットを追加',
+      'フキダシの形状をボックスいっぱいに描画（余白除去）、whisperを点線に、手描き文字に余白を追加',
+      '人物/オブジェクトボックス：枠を太めの実線に、名前を2倍サイズ+収まらない場合は自動縮小',
+      'コマ割りパターンEの中段に生じていた隙間を修正（生成プロンプトの座標も同期）',
+      '案内ポップアップ：サンプル漫画をタップで全画面表示（タップでページ送り）、「創作パートナーのAIに聞いてみる」コピペ欄を新設',
+      '使い方ページ：先頭に「AIに聞いてみる」欄、フロー図に「作業の流れ」タイトルを追加',
+      'GitHub Pages版：読み込みページにOGP・favicon・サイト説明メタデータを追加',
+    ],
+  },
+  {
     version: '1.0.0',
+    code: 1,
     date: '2026-07-22',
     title: '初回リリース',
     changes: [
@@ -37,6 +57,7 @@ const releases = [
         <div class="release-head">
           <h2>v{release.version}</h2>
           <span class="release-title">{release.title}</span>
+          <span class="release-code">バージョンコード {release.code}</span>
           <time datetime={release.date}>{release.date}</time>
         </div>
         <ul>
@@ -61,6 +82,7 @@ const releases = [
   .release-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
   h2 { margin: 0; font-size: 22px; color: #d94661; }
   .release-title { color: #47434c; font-size: 14px; font-weight: 800; }
+  .release-code { padding: 3px 8px; border: 1px solid #f0d9df; border-radius: 999px; color: #a08a92; font: 700 10px/1 ui-monospace, monospace; }
   time { margin-left: auto; color: #7b8190; font: 700 11px/1 ui-monospace, monospace; }
   ul { margin: 0; padding-left: 22px; }
   li { margin: 6px 0; color: #5e5a64; line-height: 1.75; }
