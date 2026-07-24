@@ -3,6 +3,16 @@ import Layout from '../layouts/Layout.astro';
 
 const releases = [
   {
+    version: '1.0.3',
+    code: 4,
+    date: '2026-07-24',
+    title: 'インストール追修正と起動高速化',
+    changes: [
+      'ホーム画面インストールの追修正：アプリ表示に切り替わった後もPWAとして認識されるようにし、インストールしたアイコンから確実に起動できるように（GitHub Pages版）',
+      'アプリ起動を高速化：本体をキャッシュから即時起動し、更新は裏で取得して次回起動時に反映（GitHub Pages版）',
+    ],
+  },
+  {
     version: '1.0.2',
     code: 3,
     date: '2026-07-24',
