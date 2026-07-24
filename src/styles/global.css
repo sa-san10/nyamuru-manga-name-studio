@@ -184,6 +184,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bubble-shape-svg { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .bubble-svg-surface { fill: rgba(255,254,249,.97); stroke: #2b292e; stroke-width: 2.2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .bubble-svg-source-surface { fill: rgba(255,254,249,.97); stroke: #2b292e; stroke-width: 2.2; vector-effect: non-scaling-stroke; }
+.bubble-shape-whisper .bubble-svg-source-surface { stroke-dasharray: .4 5.5; stroke-linecap: round; }
 .bubble-svg-detail { fill: none; stroke: #2b292e; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 .vertical-text { position: relative; z-index: 2; max-width: 100%; max-height: 100%; overflow: hidden; writing-mode: vertical-rl; font: 600 clamp(3px, .85cqh, 8px)/1.1 "Yu Mincho", serif; text-orientation: upright; }
 .bubble-guide .bubble-text { --bubble-text-top: 10%; --bubble-text-bottom: 15%; --bubble-text-horizontal: 28%; position: absolute; z-index: 4; inset: auto; top: var(--bubble-text-top); left: 50%; display: block; width: max-content; height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); min-width: 0; min-height: 0; max-width: calc(100% - var(--bubble-text-horizontal)); max-height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); transform: translateX(-50%); overflow: hidden; color: #17161a; font-size: clamp(6px, 1.275cqh, 12px); line-height: 1.05; text-align: start; text-shadow: 0 0 1px rgba(255,255,255,.8); }
