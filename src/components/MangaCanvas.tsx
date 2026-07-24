@@ -255,6 +255,11 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
           })}
         </div>
       ))}
+      <svg class="panel-frame-overlay" viewBox="0 0 210 297" aria-hidden="true">
+        {page.panels.map((panel, panelIndex) => panel.shape.type === 'rect'
+          ? <rect x={panel.shape.x} y={panel.shape.y} width={panel.shape.w} height={panel.shape.h} key={`frame-${panel.id}-${panelIndex}`} />
+          : <polygon points={panel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} key={`frame-${panel.id}-${panelIndex}`} />)}
+      </svg>
       {selectedPanel && selectedBounds && <svg class="panel-selection-overlay" viewBox="0 0 210 297" aria-hidden="true">
         {selectedPanel.shape.type === 'rect' ? <>
           <rect class="panel-selection-shape" x={selectedPanel.shape.x} y={selectedPanel.shape.y} width={selectedPanel.shape.w} height={selectedPanel.shape.h} />
@@ -263,7 +268,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
           <polygon class="panel-selection-shape" points={selectedPanel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} />
           <polygon class="panel-selection-hit-area" points={selectedPanel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} onPointerDown={startPanelMove} />
         </>}
-        <g class="panel-selection-label" transform={`translate(${selectedBounds.x + 1} ${Math.max(7, selectedBounds.y - 2)})`}>
+        <g class="panel-selection-label" transform={`translate(${selectedBounds.x + 1} ${selectedBounds.y < 12 ? selectedBounds.y + 10 : selectedBounds.y - 2})`}>
           <rect x="0" y="-7.5" width="35" height="9" rx="2" />
           <text x="3" y="-1.5">PANEL {String(selectedPanel.id).padStart(2, '0')}</text>
         </g>

@@ -141,17 +141,21 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .guide-toggle { display: flex; align-items: center; gap: 5px; padding: 6px 9px; color: #77747d; font-size: 9px; font-weight: 700; }
 .guide-toggle.is-active { color: var(--accent-dark); border-color: var(--retro-pink); background: var(--accent-soft); }
 .canvas-scroll { min-height: 0; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 26px 30px; }
-.manga-paper { position: relative; flex: none; height: min(100%, 760px); aspect-ratio: 210 / 297; background: var(--paper); box-shadow: 0 10px 35px rgba(24,22,28,.18), 0 0 0 1px rgba(50,45,55,.15); overflow: hidden; color: #26242a; }
+.manga-paper { position: relative; flex: none; height: min(100%, 760px); aspect-ratio: 210 / 297; background: var(--paper); box-shadow: 0 18px 44px rgba(24,22,28,.14), 0 3px 10px rgba(24,22,28,.08), 0 0 0 1px rgba(50,45,55,.1); overflow: hidden; color: #26242a; }
 .manga-paper::after { content: ""; pointer-events: none; position: absolute; inset: 0; opacity: .16; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E"); }
-.paper-header { position: absolute; z-index: 5; left: 4.75%; right: 4.75%; top: 1%; display: flex; justify-content: space-between; font: 600 1.65cqh/1.2 "Yu Mincho", serif; }
-.paper-footer { position: absolute; z-index: 5; pointer-events: none; left: 4.75%; right: 4.75%; bottom: .8%; display: flex; justify-content: center; font: 600 1.35cqh/1.2 "Yu Mincho", serif; }
+.paper-header { position: absolute; z-index: 5; left: 4.75%; right: 4.75%; top: 1%; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: #514d58; font: 600 1.65cqh/1.2 "Yu Mincho", serif; letter-spacing: .05em; }
+.paper-header span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.paper-header span:last-child { flex: none; font-feature-settings: "tnum"; letter-spacing: .12em; }
+.paper-footer { position: absolute; z-index: 5; pointer-events: none; left: 4.75%; right: 4.75%; bottom: .8%; display: flex; justify-content: center; color: #8a8590; font: 600 1.35cqh/1.2 "Yu Mincho", serif; letter-spacing: .14em; }
 .safe-area { display: none; position: absolute; z-index: 10; pointer-events: none; left: 4.75%; right: 4.75%; top: 3.36%; bottom: 3.36%; border: 1px dashed rgba(255,107,129,.55); }
 .show-guides .safe-area { display: block; }
-.manga-panel { position: absolute; z-index: 2; padding: 0; overflow: hidden; border: .7cqh solid #2e2b31; background: #f3f1f4; text-align: left; cursor: pointer; transition: box-shadow .12s, filter .12s; }
+.manga-panel { position: absolute; z-index: 2; padding: 0; overflow: hidden; border: 0; background: #faf9fb; text-align: left; cursor: pointer; transition: filter .12s; }
 .manga-panel:hover { filter: brightness(.98); }
-.manga-panel.is-selected { z-index: 3; box-shadow: 0 0 0 .5cqh var(--accent), 0 0 0 1cqh rgba(255,107,129,.2); }
+.manga-panel.is-selected { z-index: 3; }
+.panel-frame-overlay { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.panel-frame-overlay rect, .panel-frame-overlay polygon { fill: none; stroke: #26232b; stroke-width: 1.6; stroke-linejoin: miter; }
 .panel-selection-overlay { position: absolute; z-index: 40; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.panel-selection-shape { fill: rgba(255,107,129,.04); stroke: var(--accent); stroke-width: 1.4; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 1px rgba(255,255,255,.95)); }
+.panel-selection-shape { fill: rgba(255,107,129,.05); stroke: var(--accent); stroke-width: 1.6; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 1px rgba(255,255,255,.95)); }
 .panel-selection-hit-area { fill: none; stroke: transparent; stroke-width: 5; vector-effect: non-scaling-stroke; pointer-events: stroke; cursor: move; touch-action: none; }
 .panel-resize-handle { fill: white; stroke: var(--accent); stroke-width: 1.2; vector-effect: non-scaling-stroke; pointer-events: all; touch-action: none; filter: drop-shadow(0 1px 1px rgba(31,29,35,.3)); }
 .panel-handle-nw, .panel-handle-se { cursor: nwse-resize; }
@@ -162,7 +166,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .manga-panel.panel-bg-1 { background-color: var(--panel-bg-1-color); background-image: var(--panel-bg-1-image); }
 .manga-panel.panel-bg-2 { background-color: var(--panel-bg-2-color); background-image: var(--panel-bg-2-image); }
 .manga-panel.panel-bg-0, .manga-panel.panel-bg-1, .manga-panel.panel-bg-2 { background-size: cover; background-position: center; }
-.panel-number { display: none; position: absolute; z-index: 20; left: 3px; top: 3px; width: 22px; height: 22px; place-items: center; border-radius: 50%; background: var(--accent); color: white; font: 800 10.5px/1 monospace; }
+.panel-number { display: none; position: absolute; z-index: 20; left: 5px; top: 5px; width: 20px; height: 20px; place-items: center; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.92); background: var(--accent); color: white; font: 800 9.5px/1 monospace; box-shadow: 0 1px 3px rgba(31,29,35,.28); }
 .show-guides .panel-number { display: grid; }
 .figure-guide, .bubble-guide { display: none; position: absolute; z-index: 5; align-items: center; justify-content: center; overflow: hidden; }
 .show-guides .figure-guide, .show-guides .bubble-guide, .manga-panel.is-selected .canvas-element { display: flex; }
@@ -173,7 +177,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .canvas-element.is-element-selected { z-index: 15; overflow: visible; outline: max(1px, .35cqh) solid var(--accent); outline-offset: max(1px, .2cqh); box-shadow: 0 0 0 .7cqh rgba(255,107,129,.2); }
 .move-indicator { position: absolute; z-index: 3; left: 2px; top: 2px; padding: 1px; border-radius: 2px; background: rgba(29,28,34,.72); color: white; opacity: 0; pointer-events: none; }
 .canvas-element:hover .move-indicator, .canvas-element.is-element-selected .move-indicator { opacity: 1; }
-.figure-guide { flex-direction: column; color: var(--blue); border: 1px dashed rgba(91,155,213,.85); background: rgba(186,225,255,.3); }
+.figure-guide { flex-direction: column; gap: 1px; color: var(--blue); border: 1px dashed rgba(91,155,213,.6); border-radius: 6px; background: rgba(186,225,255,.22); }
 .figure-guide small { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: clamp(4.5px, 1.2cqh, 10.5px); }
 .bubble-guide { border: 0; border-radius: 0; background: transparent; color: #2a272d; padding: 7% 9%; }
 .bubble-guide.bubble-handwritten { padding: 4%; font-weight: 900; }
@@ -185,7 +189,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bubble-guide .bubble-text { --bubble-text-top: 10%; --bubble-text-bottom: 15%; --bubble-text-horizontal: 28%; position: absolute; z-index: 4; inset: auto; top: var(--bubble-text-top); left: 50%; display: block; width: max-content; height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); min-width: 0; min-height: 0; max-width: calc(100% - var(--bubble-text-horizontal)); max-height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); transform: translateX(-50%); overflow: hidden; color: #17161a; font-size: clamp(6px, 1.275cqh, 12px); line-height: 1.05; text-align: start; text-shadow: 0 0 1px rgba(255,255,255,.8); }
 .bubble-guide.bubble-thought .bubble-text { --bubble-text-top: 12%; --bubble-text-bottom: 19%; --bubble-text-horizontal: 34%; }
 .bubble-guide.bubble-square .bubble-text, .bubble-guide.bubble-caption .bubble-text { --bubble-text-top: 9%; --bubble-text-bottom: 9%; --bubble-text-horizontal: 22%; }
-.bubble-guide.bubble-flash .bubble-text, .bubble-guide.bubble-uniflash .bubble-text { --bubble-text-top: 18%; --bubble-text-bottom: 18%; --bubble-text-horizontal: 40%; }
+.bubble-guide.bubble-flash .bubble-text, .bubble-guide.bubble-uniflash .bubble-text { --bubble-text-top: 22%; --bubble-text-bottom: 22%; --bubble-text-horizontal: 44%; }
 .bubble-guide.bubble-wobbly .bubble-text { --bubble-text-top: 12%; --bubble-text-bottom: 12%; --bubble-text-horizontal: 30%; }
 .bubble-guide.bubble-whisper .bubble-text { --bubble-text-top: 11%; --bubble-text-bottom: 16%; --bubble-text-horizontal: 32%; }
 .bubble-guide.bubble-handwritten .bubble-text { --bubble-text-top: 4%; --bubble-text-bottom: 12%; --bubble-text-horizontal: 14%; font-weight: 800; text-shadow: 0 0 2px rgba(255,255,255,.95); }
