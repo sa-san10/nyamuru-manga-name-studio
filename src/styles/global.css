@@ -183,7 +183,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .canvas-element:hover { box-shadow: inset 0 0 0 1px rgba(255,107,129,.78); }
 .canvas-element.is-element-selected { z-index: 15; overflow: visible; outline: max(1px, .35cqh) solid var(--accent); outline-offset: max(1px, .2cqh); box-shadow: 0 0 0 .7cqh rgba(255,107,129,.2); }
 .figure-guide { flex-direction: column; gap: 1px; color: var(--blue); border: max(1.5px, .5cqh) solid rgba(91,155,213,.8); border-radius: 6px; background: rgba(186,225,255,.22); }
-.figure-guide small { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 700; font-size: clamp(9px, 2.4cqh, 21px); }
+.figure-guide small { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 700; font-size: calc(clamp(9px, 2.4cqh, 21px) * var(--name-fit, 1)); }
 .bubble-guide { border: 0; border-radius: 0; background: transparent; color: #2a272d; padding: 7% 9%; }
 .bubble-guide.bubble-handwritten { padding: 4%; font-weight: 900; }
 .bubble-shape-svg { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }

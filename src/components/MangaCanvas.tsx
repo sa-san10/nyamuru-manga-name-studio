@@ -42,6 +42,23 @@ function panelStyle(panel: Panel): Record<string, string | number> {
   };
 }
 
+// 人物/オブジェクト名。ボックス幅に収まらない場合は --name-fit（縮小率）で自動縮小する
+function FigureName({ name, boxW, boxH }: { name: string; boxW: number; boxH: number }) {
+  const ref = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty('--name-fit', '1');
+    for (let i = 0; i < 2; i++) {
+      const overflow = el.scrollWidth / Math.max(1, el.clientWidth);
+      if (overflow <= 1.02) break;
+      const current = parseFloat(el.style.getPropertyValue('--name-fit')) || 1;
+      el.style.setProperty('--name-fit', String(Math.max(0.35, current / overflow)));
+    }
+  }, [name, boxW, boxH]);
+  return <small ref={ref}>{name}</small>;
+}
+
 // フキダシ内テキスト。はみ出す場合は --bubble-fit（縮小率）で自動縮小する。
 // 率で持つことでズーム（cqh変化）してもフィットが保たれる
 function BubbleText({ text, lengthClass, boxW, boxH }: { text: string; lengthClass: string; boxW: number; boxH: number }) {
@@ -380,8 +397,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
               <UserRound size={12} />
-              {/* 名前がボックス幅に収まらないときは縮小（cqw=紙面幅基準、全角想定で1文字≈1em） */}
-              <small style={{ fontSize: `min(clamp(9px, 2.4cqh, 21px), ${((box.w / 2.1 / Math.max(1, figure.name.length)) * 0.92).toFixed(2)}cqw)` }}>{figure.name}</small>
+              <FigureName name={figure.name} boxW={box.w} boxH={box.h} />
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
           })}
