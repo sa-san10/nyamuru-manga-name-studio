@@ -39,6 +39,10 @@ jobs:
           base="https://${GITHUB_REPOSITORY%%/*}.github.io/${GITHUB_REPOSITORY#*/}"
           sed "s|__PAGES_BASE__|${base}|g" standalone/pages-loader.html > pages/index.html
           cp dist-standalone/index.html pages/app.html
+          # ローダーがdocument.write()でapp.htmlに差し替えた後もmanifest宣言が残るよう、
+          # Pages版のapp.htmlにだけmanifestリンクを注入する（配布用スタンドアロン版には入れない）
+          sed -i 's|<meta name="theme-color" content="#FFB3BA" />|<meta name="theme-color" content="#FFB3BA" />\n    <link rel="manifest" href="./manifest.webmanifest" />|' pages/app.html
+          grep -q 'rel="manifest"' pages/app.html || { echo "manifest注入に失敗"; exit 1; }
           cp dist-standalone/THIRD_PARTY_NOTICES.txt pages/THIRD_PARTY_NOTICES.txt
           cp public/ogp.png pages/ogp.png
           cp public/icons/icon-192.png pages/icon-192.png
