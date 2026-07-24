@@ -9,6 +9,7 @@
     <meta name="application-name" content="Nyamuru🐱Manga Name Studio" />
     <link rel="icon" href="./icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
     <!-- __PAGES_BASE__ はデプロイ時にワークフローがPagesの公開URLへ置換する（OGPは絶対URL必須のため） -->
     <link rel="canonical" href="__PAGES_BASE__/" />
     <meta property="og:type" content="website" />
@@ -45,6 +46,10 @@
       <p id="fallback" hidden>自動で切り替わらない場合は <a href="./app.html">こちら</a> からどうぞ</p>
     </div>
     <script>
+      // document.write()で画面ごと差し替わる前に登録する（登録自体はページ遷移後も残る）
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
       (async () => {
         const status = document.getElementById('status');
         const bar = document.getElementById('bar');

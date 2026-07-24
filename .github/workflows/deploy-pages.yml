@@ -42,6 +42,10 @@ jobs:
           cp dist-standalone/THIRD_PARTY_NOTICES.txt pages/THIRD_PARTY_NOTICES.txt
           cp public/ogp.png pages/ogp.png
           cp public/icons/icon-192.png pages/icon-192.png
+          cp public/icons/icon-512.png pages/icon-512.png
+          # PWA用（サブパス配信前提の相対パス版manifest・SW）
+          cp standalone/pages-manifest.webmanifest pages/manifest.webmanifest
+          cp standalone/pages-sw.js pages/sw.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: pages
