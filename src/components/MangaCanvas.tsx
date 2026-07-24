@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Move, UserRound } from 'lucide-preact';
+import { Move, UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
 import type { BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
 import { clamp, clampedPanelDelta, fallbackBox, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
@@ -54,10 +54,142 @@ function bboxStyle(box: BBox, panel: Panel): Record<string, string> {
 
 export default function MangaCanvas({ title, author, page, pageCount, activePanel, selectedElement, showGuides, onSelectPanel, onSelectElement, onChangeElementBBox, onMovePanel, onResizePanel }: Props) {
   const paperRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const [interactionMode, setInteractionMode] = useState<ResizeHandle | 'panel' | 'panel-resize' | null>(null);
+  // ズームは直接DOMの幅を書き換える（ジェスチャ中の再レンダー回避）。stateは%表示のみ
+  const [zoomPercent, setZoomPercent] = useState(100);
+  const basePaperWidth = useRef(0);
+  const isZoomed = useRef(false);
 
   useEffect(() => () => cleanupRef.current?.(), []);
+
+  // 非ズーム時は紙面をスクロール領域へ収める（従来のCSSフィットの代替。ズーム基準幅もここで決まる）
+  const fitPaper = () => {
+    const scroll = scrollRef.current, paper = paperRef.current;
+    if (!scroll || !paper || isZoomed.current) return;
+    const styles = getComputedStyle(scroll);
+    const availW = scroll.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+    const availH = scroll.clientHeight - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
+    if (availW <= 0 || availH <= 0) return;
+    const width = Math.min(availW, (availH * 210) / 297, (760 * 210) / 297);
+    paper.style.width = `${width}px`;
+    paper.style.height = 'auto';
+    basePaperWidth.current = width;
+  };
+
+  useEffect(() => {
+    fitPaper();
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+    const observer = new ResizeObserver(() => fitPaper());
+    observer.observe(scroll);
+    return () => observer.disconnect();
+  }, []);
+
+  const zoomAt = (factor: number, centerX?: number, centerY?: number) => {
+    const scroll = scrollRef.current, paper = paperRef.current;
+    if (!scroll || !paper) return;
+    const rect = paper.getBoundingClientRect();
+    if (!isZoomed.current) basePaperWidth.current = rect.width;
+    const base = basePaperWidth.current || rect.width;
+    const target = clamp(rect.width * factor, base * 0.4, base * 4);
+    const f = target / rect.width;
+    const scrollRect = scroll.getBoundingClientRect();
+    const midX = centerX ?? scrollRect.left + scrollRect.width / 2;
+    const midY = centerY ?? scrollRect.top + scrollRect.height / 2;
+    const pointX = scroll.scrollLeft + midX - scrollRect.left - paper.offsetLeft;
+    const pointY = scroll.scrollTop + midY - scrollRect.top - paper.offsetTop;
+    paper.style.width = `${target}px`;
+    paper.style.height = 'auto';
+    isZoomed.current = true;
+    scroll.scrollLeft = paper.offsetLeft + pointX * f - (midX - scrollRect.left);
+    scroll.scrollTop = paper.offsetTop + pointY * f - (midY - scrollRect.top);
+    setZoomPercent(Math.round((target / base) * 100));
+  };
+
+  const resetZoom = () => {
+    isZoomed.current = false;
+    setZoomPercent(100);
+    fitPaper();
+  };
+
+  useEffect(() => {
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+    const pointers = new Map<number, { x: number; y: number }>();
+    let pinch: { dist: number; width: number; scrollLeft: number; scrollTop: number; midX: number; midY: number; paperLeft: number; paperTop: number } | null = null;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch') return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      if (pointers.size !== 2) return;
+      cleanupRef.current?.();
+      const paper = paperRef.current;
+      if (!paper) return;
+      const rect = paper.getBoundingClientRect();
+      if (!isZoomed.current) basePaperWidth.current = rect.width;
+      const [a, b] = [...pointers.values()];
+      pinch = {
+        dist: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+        width: rect.width,
+        scrollLeft: scroll.scrollLeft,
+        scrollTop: scroll.scrollTop,
+        midX: (a.x + b.x) / 2,
+        midY: (a.y + b.y) / 2,
+        paperLeft: paper.offsetLeft,
+        paperTop: paper.offsetTop,
+      };
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      if (!pointers.has(event.pointerId)) return;
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      const paper = paperRef.current;
+      if (!pinch || pointers.size < 2 || !paper) return;
+      const [a, b] = [...pointers.values()];
+      const base = basePaperWidth.current || pinch.width;
+      const target = clamp(pinch.width * (Math.hypot(a.x - b.x, a.y - b.y) / pinch.dist), base * 0.4, base * 4);
+      const f = target / pinch.width;
+      paper.style.width = `${target}px`;
+      paper.style.height = 'auto';
+      isZoomed.current = true;
+      const scrollRect = scroll.getBoundingClientRect();
+      const midX = (a.x + b.x) / 2, midY = (a.y + b.y) / 2;
+      const pointX = pinch.scrollLeft + pinch.midX - scrollRect.left - pinch.paperLeft;
+      const pointY = pinch.scrollTop + pinch.midY - scrollRect.top - pinch.paperTop;
+      scroll.scrollLeft = paper.offsetLeft + pointX * f - (midX - scrollRect.left);
+      scroll.scrollTop = paper.offsetTop + pointY * f - (midY - scrollRect.top);
+    };
+    const onPointerEnd = (event: PointerEvent) => {
+      pointers.delete(event.pointerId);
+      if (pinch && pointers.size < 2) {
+        pinch = null;
+        const paper = paperRef.current;
+        if (paper && basePaperWidth.current) setZoomPercent(Math.round((paper.getBoundingClientRect().width / basePaperWidth.current) * 100));
+      }
+    };
+    // 2本指の間はネイティブのパン/ズームを止めて自前のピンチに専念させる
+    const onTouchMove = (event: TouchEvent) => { if (event.touches.length >= 2) event.preventDefault(); };
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      zoomAt(Math.exp(-event.deltaY * 0.002), event.clientX, event.clientY);
+    };
+    scroll.addEventListener('pointerdown', onPointerDown, { capture: true });
+    window.addEventListener('pointermove', onPointerMove, { capture: true });
+    window.addEventListener('pointerup', onPointerEnd, { capture: true });
+    window.addEventListener('pointercancel', onPointerEnd, { capture: true });
+    scroll.addEventListener('touchmove', onTouchMove, { passive: false });
+    scroll.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      scroll.removeEventListener('pointerdown', onPointerDown, { capture: true });
+      window.removeEventListener('pointermove', onPointerMove, { capture: true });
+      window.removeEventListener('pointerup', onPointerEnd, { capture: true });
+      window.removeEventListener('pointercancel', onPointerEnd, { capture: true });
+      scroll.removeEventListener('touchmove', onTouchMove);
+      scroll.removeEventListener('wheel', onWheel);
+    };
+  }, []);
 
   const startInteraction = (
     event: PointerEvent,
@@ -196,7 +328,9 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
   const selectedBounds = selectedPanel ? panelBounds(selectedPanel) : null;
 
   return (
-    <div ref={paperRef} class={`manga-paper ${showGuides ? 'show-guides' : ''} ${interactionMode ? 'is-interacting' : ''}`} onPointerDown={(event) => { if (event.target === event.currentTarget) onSelectElement(null); }}>
+    <div class="canvas-viewport">
+      <div ref={scrollRef} class="canvas-scroll">
+        <div ref={paperRef} class={`manga-paper ${showGuides ? 'show-guides' : ''} ${interactionMode ? 'is-interacting' : ''}`} onPointerDown={(event) => { if (event.target === event.currentTarget) onSelectElement(null); }}>
       <div class="paper-header"><span>{title}</span><span>{page.page} / {pageCount}</span></div>
       {author.trim() && <div class="paper-footer"><span>{author}</span></div>}
       <div class="safe-area" aria-hidden="true" />
@@ -268,16 +402,26 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
           <polygon class="panel-selection-shape" points={selectedPanel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} />
           <polygon class="panel-selection-hit-area" points={selectedPanel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} onPointerDown={startPanelMove} />
         </>}
-        <g class="panel-selection-label" transform={`translate(${selectedBounds.x + 1} ${selectedBounds.y < 12 ? selectedBounds.y + 10 : selectedBounds.y - 2})`}>
+        <g class="panel-selection-label" transform={`translate(${selectedBounds.x + 1} ${Math.max(8, selectedBounds.y - 2)})`} onPointerDown={startPanelMove}>
           <rect x="0" y="-7.5" width="35" height="9" rx="2" />
           <text x="3" y="-1.5">PANEL {String(selectedPanel.id).padStart(2, '0')}</text>
         </g>
         {(['nw', 'ne', 'sw', 'se'] as const).map((handle) => {
           const x = handle.includes('w') ? selectedBounds.x : selectedBounds.x + selectedBounds.w;
           const y = handle.includes('n') ? selectedBounds.y : selectedBounds.y + selectedBounds.h;
-          return <rect class={`panel-resize-handle panel-handle-${handle}`} x={x - 2.4} y={y - 2.4} width="4.8" height="4.8" rx=".7" onPointerDown={(event) => startPanelResize(event, handle)} key={handle} />;
+          return <g class={`panel-handle-${handle}`} key={handle}>
+            <rect class="panel-resize-handle" x={x - 3} y={y - 3} width="6" height="6" rx=".9" />
+            <rect class="panel-resize-hit" x={x - 6.5} y={y - 6.5} width="13" height="13" onPointerDown={(event) => startPanelResize(event, handle)} />
+          </g>;
         })}
       </svg>}
+      </div>
+      </div>
+      <div class="canvas-zoom-controls">
+        <button type="button" onClick={() => zoomAt(1 / 1.25)} aria-label="縮小" title="縮小（Ctrl+ホイール / 二本指ピンチ）"><ZoomOut size={14} /></button>
+        <button type="button" class="zoom-reset" onClick={resetZoom} title="ズームをリセット">{zoomPercent}%</button>
+        <button type="button" onClick={() => zoomAt(1.25)} aria-label="拡大" title="拡大（Ctrl+ホイール / 二本指ピンチ）"><ZoomIn size={14} /></button>
+      </div>
     </div>
   );
 }
