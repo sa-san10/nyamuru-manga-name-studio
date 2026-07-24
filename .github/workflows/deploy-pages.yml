@@ -35,9 +35,13 @@ jobs:
       - name: Collect pages artifact
         run: |
           mkdir -p pages
-          cp standalone/pages-loader.html pages/index.html
+          # OGP用の絶対URLをリポジトリ情報から組み立てて埋め込む（ソースにはドメインを置かない）
+          base="https://${GITHUB_REPOSITORY%%/*}.github.io/${GITHUB_REPOSITORY#*/}"
+          sed "s|__PAGES_BASE__|${base}|g" standalone/pages-loader.html > pages/index.html
           cp dist-standalone/index.html pages/app.html
           cp dist-standalone/THIRD_PARTY_NOTICES.txt pages/THIRD_PARTY_NOTICES.txt
+          cp public/ogp.png pages/ogp.png
+          cp public/icons/icon-192.png pages/icon-192.png
       - uses: actions/upload-pages-artifact@v3
         with:
           path: pages
