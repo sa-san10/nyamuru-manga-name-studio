@@ -431,8 +431,8 @@ panels:
 canvas: {w: 210, h: 297, unit: mm}
 panels:
   - {id: 1, shape: {type: polygon, points: [[10,10],[200,10],[200,65],[10,90]]}}      # 斜めトップ（勢い）
-  - {id: 2, shape: {type: polygon, points: [[200,70],[200,150],[112,150],[122,95]]}}   # 右中・対角
-  - {id: 3, shape: {type: polygon, points: [[117,95],[107,150],[10,150],[10,95]]}}     # 左中・対角
+  - {id: 2, shape: {type: polygon, points: [[200,70],[200,150],[112,150],[122,80]]}}   # 右中・対角
+  - {id: 3, shape: {type: polygon, points: [[117,81],[107,150],[10,150],[10,95]]}}     # 左中・対角
   - {id: 4, shape: {type: polygon, points: [[200,155],[200,287],[82,287],[100,155]]}}  # 右下大（衝撃の受け）
   - {id: 5, shape: {type: polygon, points: [[95,155],[77,287],[10,287],[10,155]]}}     # 左下細（リアクション）
 ```
