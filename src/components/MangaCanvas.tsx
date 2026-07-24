@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
 import type { BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
@@ -40,6 +40,24 @@ function panelStyle(panel: Panel): Record<string, string | number> {
     left: `${minX / 2.1}%`, top: `${minY / 2.97}%`, width: `${width / 2.1}%`, height: `${height / 2.97}%`,
     clipPath: `polygon(${points})`,
   };
+}
+
+// フキダシ内テキスト。はみ出す場合は --bubble-fit（縮小率）で自動縮小する。
+// 率で持つことでズーム（cqh変化）してもフィットが保たれる
+function BubbleText({ text, lengthClass, boxW, boxH }: { text: string; lengthClass: string; boxW: number; boxH: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty('--bubble-fit', '1');
+    for (let i = 0; i < 2; i++) {
+      const overflow = Math.max(el.scrollWidth / Math.max(1, el.clientWidth), el.scrollHeight / Math.max(1, el.clientHeight));
+      if (overflow <= 1.02) break;
+      const current = parseFloat(el.style.getPropertyValue('--bubble-fit')) || 1;
+      el.style.setProperty('--bubble-fit', String(Math.max(0.35, current / overflow)));
+    }
+  }, [text, lengthClass, boxW, boxH]);
+  return <span ref={ref} class={`vertical-text bubble-text ${lengthClass}`}>{text}</span>;
 }
 
 function bboxStyle(box: BBox, panel: Panel): Record<string, string> {
@@ -383,7 +401,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
               <BubbleShapeSvg shape={bubble.shape} />
-              <span class={`vertical-text bubble-text ${textLengthClass}`}>{bubble.text}</span>
+              <BubbleText text={bubble.text} lengthClass={textLengthClass} boxW={box.w} boxH={box.h} />
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
           })}

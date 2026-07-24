@@ -192,15 +192,15 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bubble-shape-whisper .bubble-svg-source-surface { stroke-dasharray: .4 5.5; stroke-linecap: round; }
 .bubble-svg-detail { fill: none; stroke: #2b292e; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 .vertical-text { position: relative; z-index: 2; max-width: 100%; max-height: 100%; overflow: hidden; writing-mode: vertical-rl; font: 600 clamp(3px, .85cqh, 8px)/1.1 "Yu Mincho", serif; text-orientation: upright; }
-.bubble-guide .bubble-text { --bubble-text-top: 10%; --bubble-text-bottom: 15%; --bubble-text-horizontal: 28%; position: absolute; z-index: 4; inset: auto; top: var(--bubble-text-top); left: 50%; display: block; width: max-content; height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); min-width: 0; min-height: 0; max-width: calc(100% - var(--bubble-text-horizontal)); max-height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); transform: translateX(-50%); overflow: hidden; color: #17161a; font-size: clamp(12px, 2.55cqh, 24px); line-height: 1.05; text-align: start; text-shadow: 0 0 1px rgba(255,255,255,.8); }
+.bubble-guide .bubble-text { --bubble-text-top: 10%; --bubble-text-bottom: 15%; --bubble-text-horizontal: 28%; position: absolute; z-index: 4; inset: auto; top: var(--bubble-text-top); left: 50%; display: block; width: max-content; height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); min-width: 0; min-height: 0; max-width: calc(100% - var(--bubble-text-horizontal)); max-height: calc(100% - var(--bubble-text-top) - var(--bubble-text-bottom)); transform: translateX(-50%); overflow: hidden; color: #17161a; font-size: calc(clamp(12px, 2.55cqh, 24px) * var(--bubble-fit, 1)); line-height: 1.05; text-align: start; text-shadow: 0 0 1px rgba(255,255,255,.8); background: rgba(255,255,255,.62); border-radius: 3px; box-shadow: 0 0 0 2px rgba(255,255,255,.62); }
 .bubble-guide.bubble-thought .bubble-text { --bubble-text-top: 12%; --bubble-text-bottom: 19%; --bubble-text-horizontal: 34%; }
 .bubble-guide.bubble-square .bubble-text, .bubble-guide.bubble-caption .bubble-text { --bubble-text-top: 9%; --bubble-text-bottom: 9%; --bubble-text-horizontal: 22%; }
 .bubble-guide.bubble-flash .bubble-text, .bubble-guide.bubble-uniflash .bubble-text { --bubble-text-top: 22%; --bubble-text-bottom: 22%; --bubble-text-horizontal: 44%; }
 .bubble-guide.bubble-wobbly .bubble-text { --bubble-text-top: 12%; --bubble-text-bottom: 12%; --bubble-text-horizontal: 30%; }
 .bubble-guide.bubble-whisper .bubble-text { --bubble-text-top: 11%; --bubble-text-bottom: 16%; --bubble-text-horizontal: 32%; }
 .bubble-guide.bubble-handwritten .bubble-text { --bubble-text-top: 20%; --bubble-text-bottom: 20%; --bubble-text-horizontal: 40%; font-weight: 800; text-shadow: 0 0 2px rgba(255,255,255,.95); }
-.bubble-guide .bubble-text.is-long { font-size: clamp(10.5px, 2.16cqh, 21px); line-height: 1; }
-.bubble-guide .bubble-text.is-very-long { font-size: clamp(9px, 1.8cqh, 18px); line-height: .95; }
+.bubble-guide .bubble-text.is-long { font-size: calc(clamp(10.5px, 2.16cqh, 21px) * var(--bubble-fit, 1)); line-height: 1; }
+.bubble-guide .bubble-text.is-very-long { font-size: calc(clamp(9px, 1.8cqh, 18px) * var(--bubble-fit, 1)); line-height: .95; }
 .resize-handle { position: absolute; z-index: 30; width: 22px; height: 22px; display: grid; place-items: center; background: transparent; touch-action: none; }
 .resize-handle::before { content: ""; width: max(9px, 1.7cqh); height: max(9px, 1.7cqh); border: max(1px, .28cqh) solid white; border-radius: 3px; background: var(--accent); box-shadow: 0 1px 3px rgba(75,36,39,.5); }
 .handle-nw { left: 0; top: 0; transform: translate(-50%, -50%); cursor: nwse-resize; }
