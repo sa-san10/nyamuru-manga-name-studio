@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { BookOpen, BookOpenCheck, Boxes, Braces, Cat, ChevronLeft, ChevronRight, CircleHelp, Copy, Eye, EyeOff, FilePlus2, Files, Images, LayoutPanelTop, Settings2, SlidersHorizontal, Sparkles, UsersRound, Workflow, X } from 'lucide-preact';
+import { BookOpen, BookOpenCheck, Boxes, Braces, Cat, ChevronLeft, ChevronRight, CircleHelp, Eye, EyeOff, FilePlus2, Files, Images, LayoutPanelTop, Settings2, SlidersHorizontal, Sparkles, UsersRound, Workflow, X } from 'lucide-preact';
 import sampleYaml from '../content/sample.omny.yaml?raw';
 import { version as appVersion } from '../../package.json';
 import { sampleMangaPages } from '../lib/sampleMangaImages';
+import AskAiBlock, { REPO_URL } from './AskAiBlock';
 import Header from './Header';
 import PageSidebar from './PageSidebar';
 import MangaCanvas from './MangaCanvas';
@@ -40,10 +41,6 @@ const TABS: {
 type MobileStoryboardPane = 'pages' | 'editor' | 'panel';
 
 const HOWTO_INTRO_KEY = 'manga-name-studio.howto-intro.v1';
-
-const REPO_URL = 'https://github.com/sa-san10/nyamuru-manga-name-studio';
-
-const ASK_AI_TEXT = `このリポジトリについて教えて！\n${REPO_URL}`;
 
 // 見開きは右綴じ（1ページ目が右）。ビューアはこの配列順にめくる
 const SAMPLE_MANGA_PAGES = [sampleMangaPages.page1, sampleMangaPages.page2];
@@ -412,13 +409,7 @@ export default function App() {
         </div>
         <div class="howto-intro-ask-ai">
           <span>または、あなたの創作パートナーのAIに聞いてみる</span>
-          <div class="ask-ai-block">
-            <pre>{ASK_AI_TEXT}</pre>
-            <button type="button" onClick={async () => {
-              try { await navigator.clipboard.writeText(ASK_AI_TEXT); setToast('AIへの質問文をコピーしました'); }
-              catch { setToast('コピーできませんでした'); }
-            }}><Copy size={12} />コピー</button>
-          </div>
+          <AskAiBlock />
         </div>
       </section>
     </>}

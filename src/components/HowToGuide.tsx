@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight, Bot, Cat, Download, FilePlus2, LayoutPanelTop, Sparkles, Workflow } from 'lucide-preact';
+import AskAiBlock from './AskAiBlock';
 import type { WorkspaceTab } from '../types';
 
 interface Props {
@@ -76,6 +77,11 @@ export default function HowToGuide({ onNavigate }: Props) {
     </div>
     <div class="document-editor-body">
       <div class="howto-flow">
+        <section class="howto-ask-ai">
+          <h3><Bot size={15} aria-hidden="true" />とりあえず、あなたの創作パートナーのAIに聞いてみる</h3>
+          <p>下の質問文をコピーして、いつも使っているAI（Claude・ChatGPTなど）に貼り付ければ、このアプリのことを案内してもらえます。</p>
+          <AskAiBlock />
+        </section>
         <div class="howto-overview" aria-label="ワークフロー全体像">
           {OVERVIEW.map((label, index) => <>
             {index > 0 && <ArrowRight class="howto-overview-arrow" size={14} aria-hidden="true" />}

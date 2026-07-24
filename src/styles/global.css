@@ -335,6 +335,10 @@ input:disabled { background: #faf6f7; color: #9b9398; }
   .nyamurutan-spread-frame img { width: 100%; max-width: 560px; }
 }
 .howto-flow { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; }
+.howto-ask-ai { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; padding: 15px 18px 14px; border: 1px solid rgba(255,179,186,.55); border-radius: 16px; background: rgba(255,255,255,.94); box-shadow: 0 5px 18px rgba(255,107,129,.06); }
+.howto-ask-ai h3 { display: flex; align-items: center; gap: 7px; margin: 0; color: #3f3c44; font: 800 13px/1.4 Georgia, "Yu Mincho", serif; }
+.howto-ask-ai h3 svg { flex: none; color: var(--accent-dark); }
+.howto-ask-ai p { margin: 0; color: var(--muted); font-size: 10.5px; line-height: 1.7; }
 .howto-overview { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; padding: 13px 16px; border: 1px solid rgba(255,179,186,.55); border-radius: 16px; background: rgba(255,255,255,.94); box-shadow: 0 5px 18px rgba(255,107,129,.06); }
 .howto-overview-chip { padding: 6px 11px; border: 1px solid var(--retro-blue); border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 11px; font-weight: 800; white-space: nowrap; }
 .howto-overview-chip.is-goal { border-color: var(--retro-pink); background: var(--accent-soft); color: var(--accent-dark); }
