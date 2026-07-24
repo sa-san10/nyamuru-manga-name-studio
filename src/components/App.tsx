@@ -300,6 +300,16 @@ export default function App() {
       if (targetPanel) resizePanelToBounds(targetPanel, bounds);
     });
   };
+  const movePanelVertex = (panelIndex: number, vertexIndex: number, x: number, y: number) => {
+    mutate((draft) => {
+      const targetPanel = draft.manga.pages[activePage]?.panels[panelIndex];
+      if (!targetPanel || targetPanel.shape.type !== 'polygon') return;
+      const point = targetPanel.shape.points[vertexIndex];
+      if (!point) return;
+      point[0] = x;
+      point[1] = y;
+    });
+  };
   const applyTemplate = () => {
     if (!page) return;
     const template = findPanelTemplate(selectedTemplate);
@@ -354,7 +364,7 @@ export default function App() {
                 <button class={`guide-toggle ${showGuides ? 'is-active' : ''}`} onClick={() => setShowGuides(!showGuides)}>{showGuides ? <Eye size={16} /> : <EyeOff size={16} />}ガイド</button>
               </div>
             </div>
-            <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={page} pageCount={document.manga.pages.length} activePanel={activePanel} selectedElement={selectedElement} showGuides={showGuides} onSelectPanel={(index) => { setActivePanel(index); if (index === activePanel) setSelectedElement(null); }} onSelectElement={setSelectedElement} onChangeElementBBox={changeElementBBox} onMovePanel={movePanel} onResizePanel={resizePanel} />
+            <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={page} pageCount={document.manga.pages.length} activePanel={activePanel} selectedElement={selectedElement} showGuides={showGuides} onSelectPanel={(index) => { setActivePanel(index); if (index === activePanel) setSelectedElement(null); }} onSelectElement={setSelectedElement} onChangeElementBBox={changeElementBBox} onMovePanel={movePanel} onResizePanel={resizePanel} onMoveVertex={movePanelVertex} />
             <div class="canvas-legend"><span><i class="legend-figure" />人物 bbox</span><span><i class="legend-bubble" />フキダシ bbox</span><span>赤いコマ線をドラッグで移動</span><span>要素はドラッグ · 四隅でリサイズ</span></div>
           </div>
           <aside id="mobile-panel-pane" class="inspector-pane"><PanelInspector manga={document.manga} panel={panel} panelIndex={activePanel} selectedElement={selectedElement} onSelectElement={setSelectedElement} onChange={(nextPanel) => mutate((draft) => { draft.manga.pages[activePage].panels[activePanel] = nextPanel; })} onAdd={addPanel} onDuplicate={duplicatePanel} onDelete={deletePanel} /></aside>

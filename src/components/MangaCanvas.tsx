@@ -17,6 +17,7 @@ interface Props {
   onChangeElementBBox: (selection: CanvasElementSelection, bbox: BBox) => void;
   onMovePanel: (panelIndex: number, deltaX: number, deltaY: number) => void;
   onResizePanel: (panelIndex: number, bounds: BBox) => void;
+  onMoveVertex: (panelIndex: number, vertexIndex: number, x: number, y: number) => void;
 }
 
 interface Interaction extends InteractionGeometry {
@@ -42,8 +43,10 @@ function panelStyle(panel: Panel): Record<string, string | number> {
   };
 }
 
-// 人物/オブジェクト名。ボックス幅に収まらない場合は --name-fit（縮小率）で自動縮小する
-function FigureName({ name, boxW, boxH }: { name: string; boxW: number; boxH: number }) {
+// 人物/オブジェクト名。ボックス幅に収まらない場合は --name-fit（縮小率）で自動縮小する。
+// フォントのpx下限/上限があるため率は紙面サイズに依存する。fitEpoch（紙面サイズ確定・
+// ズームのたびに増える）を依存に入れて毎回再測定する
+function FigureName({ name, boxW, boxH, fitEpoch }: { name: string; boxW: number; boxH: number; fitEpoch: number }) {
   const ref = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const el = ref.current;
@@ -55,13 +58,12 @@ function FigureName({ name, boxW, boxH }: { name: string; boxW: number; boxH: nu
       const current = parseFloat(el.style.getPropertyValue('--name-fit')) || 1;
       el.style.setProperty('--name-fit', String(Math.max(0.35, current / overflow)));
     }
-  }, [name, boxW, boxH]);
+  }, [name, boxW, boxH, fitEpoch]);
   return <small ref={ref}>{name}</small>;
 }
 
-// フキダシ内テキスト。はみ出す場合は --bubble-fit（縮小率）で自動縮小する。
-// 率で持つことでズーム（cqh変化）してもフィットが保たれる
-function BubbleText({ text, lengthClass, boxW, boxH }: { text: string; lengthClass: string; boxW: number; boxH: number }) {
+// フキダシ内テキスト。はみ出す場合は --bubble-fit（縮小率）で自動縮小する
+function BubbleText({ text, lengthClass, boxW, boxH, fitEpoch }: { text: string; lengthClass: string; boxW: number; boxH: number; fitEpoch: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   useLayoutEffect(() => {
     const el = ref.current;
@@ -73,7 +75,7 @@ function BubbleText({ text, lengthClass, boxW, boxH }: { text: string; lengthCla
       const current = parseFloat(el.style.getPropertyValue('--bubble-fit')) || 1;
       el.style.setProperty('--bubble-fit', String(Math.max(0.35, current / overflow)));
     }
-  }, [text, lengthClass, boxW, boxH]);
+  }, [text, lengthClass, boxW, boxH, fitEpoch]);
   return <span ref={ref} class={`vertical-text bubble-text ${lengthClass}`}>{text}</span>;
 }
 
@@ -87,13 +89,15 @@ function bboxStyle(box: BBox, panel: Panel): Record<string, string> {
   };
 }
 
-export default function MangaCanvas({ title, author, page, pageCount, activePanel, selectedElement, showGuides, onSelectPanel, onSelectElement, onChangeElementBBox, onMovePanel, onResizePanel }: Props) {
+export default function MangaCanvas({ title, author, page, pageCount, activePanel, selectedElement, showGuides, onSelectPanel, onSelectElement, onChangeElementBBox, onMovePanel, onResizePanel, onMoveVertex }: Props) {
   const paperRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const [interactionMode, setInteractionMode] = useState<ResizeHandle | 'panel' | 'panel-resize' | null>(null);
   // ズームは直接DOMの幅を書き換える（ジェスチャ中の再レンダー回避）。stateは%表示のみ
   const [zoomPercent, setZoomPercent] = useState(100);
+  // 紙面の実サイズが変わるたびに増やして、テキスト自動縮小の再測定を促す
+  const [fitEpoch, setFitEpoch] = useState(0);
   const basePaperWidth = useRef(0);
   const isZoomed = useRef(false);
 
@@ -111,6 +115,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
     paper.style.width = `${width}px`;
     paper.style.height = 'auto';
     basePaperWidth.current = width;
+    setFitEpoch((value) => value + 1);
   };
 
   useEffect(() => {
@@ -141,6 +146,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
     scroll.scrollLeft = paper.offsetLeft + pointX * f - (midX - scrollRect.left);
     scroll.scrollTop = paper.offsetTop + pointY * f - (midY - scrollRect.top);
     setZoomPercent(Math.round((target / base) * 100));
+    setFitEpoch((value) => value + 1);
   };
 
   const resetZoom = () => {
@@ -201,6 +207,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
         pinch = null;
         const paper = paperRef.current;
         if (paper && basePaperWidth.current) setZoomPercent(Math.round((paper.getBoundingClientRect().width / basePaperWidth.current) * 100));
+        setFitEpoch((value) => value + 1);
       }
     };
     // 2本指の間はネイティブのパン/ズームを止めて自前のピンチに専念させる
@@ -347,6 +354,39 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
     window.addEventListener('pointercancel', finish);
   };
 
+  const startVertexDrag = (event: PointerEvent, vertexIndex: number) => {
+    if (!selectedPanel || selectedPanel.shape.type !== 'polygon' || !paperRef.current) return;
+    event.preventDefault();
+    event.stopPropagation();
+    onSelectElement(null);
+    const paperRect = paperRef.current.getBoundingClientRect();
+    const [startX, startY] = selectedPanel.shape.points[vertexIndex];
+    const startClientX = event.clientX;
+    const startClientY = event.clientY;
+    setInteractionMode('panel-resize');
+    document.body.classList.add('is-panel-dragging');
+
+    const move = (pointerEvent: PointerEvent) => {
+      pointerEvent.preventDefault();
+      const x = clamp(roundMm(startX + (pointerEvent.clientX - startClientX) * (210 / paperRect.width)), 0, 210);
+      const y = clamp(roundMm(startY + (pointerEvent.clientY - startClientY) * (297 / paperRect.height)), 0, 297);
+      onMoveVertex(activePanel, vertexIndex, x, y);
+    };
+    const finish = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', finish);
+      document.body.classList.remove('is-panel-dragging');
+      setInteractionMode(null);
+      cleanupRef.current = null;
+    };
+    cleanupRef.current?.();
+    cleanupRef.current = finish;
+    window.addEventListener('pointermove', move, { passive: false });
+    window.addEventListener('pointerup', finish);
+    window.addEventListener('pointercancel', finish);
+  };
+
   const renderHandles = (panelIndex: number, selection: CanvasElementSelection, box: BBox) => (
     <>
       {(['nw', 'ne', 'sw', 'se'] as const).map((handle) => <span
@@ -397,7 +437,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
               <UserRound size={12} />
-              <FigureName name={figure.name} boxW={box.w} boxH={box.h} />
+              <FigureName name={figure.name} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
           })}
@@ -417,7 +457,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
               <BubbleShapeSvg shape={bubble.shape} />
-              <BubbleText text={bubble.text} lengthClass={textLengthClass} boxW={box.w} boxH={box.h} />
+              <BubbleText text={bubble.text} lengthClass={textLengthClass} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
           })}
@@ -448,6 +488,10 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
             <rect class="panel-resize-hit" x={x - 6.5} y={y - 6.5} width="13" height="13" onPointerDown={(event) => startPanelResize(event, handle)} />
           </g>;
         })}
+        {selectedPanel.shape.type === 'polygon' && selectedPanel.shape.points.map(([x, y], vertexIndex) => <g class="panel-vertex-handle" key={`vertex-${vertexIndex}`}>
+          <circle class="panel-vertex-dot" cx={x} cy={y} r="2.4" />
+          <rect class="panel-resize-hit" x={x - 5.5} y={y - 5.5} width="11" height="11" onPointerDown={(event) => startVertexDrag(event, vertexIndex)} />
+        </g>)}
       </svg>}
       </div>
       </div>

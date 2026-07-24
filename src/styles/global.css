@@ -166,6 +166,8 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .panel-resize-hit { fill: transparent; stroke: none; pointer-events: all; touch-action: none; }
 .panel-handle-nw, .panel-handle-se { cursor: nwse-resize; }
 .panel-handle-ne, .panel-handle-sw { cursor: nesw-resize; }
+.panel-vertex-handle { cursor: move; }
+.panel-vertex-dot { fill: var(--accent); stroke: white; stroke-width: 1.6; vector-effect: non-scaling-stroke; filter: drop-shadow(0 1px 1px rgba(31,29,35,.35)); }
 .panel-selection-label { pointer-events: all; cursor: move; touch-action: none; }
 .panel-selection-label rect { fill: var(--accent); }
 .panel-selection-label text { fill: white; font: 700 4.5px/1 ui-monospace, monospace; letter-spacing: .04em; }
