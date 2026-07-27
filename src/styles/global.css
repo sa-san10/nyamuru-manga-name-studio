@@ -286,6 +286,9 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .document-editor-head h2 { margin: 5px 0 3px; font: 800 22px/1.1 Georgia, "Yu Mincho", serif; }
 .document-editor-head p { margin: 0; max-width: 650px; color: var(--muted); font-size: 10px; }
 .document-head-actions { display: flex; align-items: center; gap: 7px; }
+.docs-lang-toggle { display: inline-flex; align-items: center; padding: 2px; background: #f3f2f5; border: 1px solid #d1ced5; border-radius: 7px; }
+.document-head-actions .docs-lang-toggle button { min-height: 28px; padding: 4px 10px; border: none; border-radius: 5px; background: transparent; color: #77747d; font-size: 11px; font-weight: 800; letter-spacing: .04em; cursor: pointer; transition: background .12s, color .12s; }
+.document-head-actions .docs-lang-toggle button.is-active { background: white; color: var(--accent-dark); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 .document-editor-body { min-height: 0; overflow: auto; padding: 24px 30px 50px; }
 .content-card { max-width: 940px; margin: 0 auto 15px; padding: 20px; background: rgba(255,255,255,.94); border: 1px solid rgba(255,179,186,.55); border-radius: 16px; box-shadow: 0 5px 18px rgba(255,107,129,.06); }
 .form-grid-wide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; }

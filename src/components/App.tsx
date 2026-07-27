@@ -17,7 +17,7 @@ import { CharactersEditor, MaterialsEditor, MetaEditor, RawYamlEditor, SettingEd
 import { cloneDocument, newPage, newPanel, parseMangaYaml, safeFileName, STORAGE_KEY, toMangaYaml, validateManga } from '../lib/manga';
 import { resizePanelToBounds, translatePanel } from '../lib/canvasGeometry';
 import { applyPanelTemplate, findPanelTemplate, PANEL_TEMPLATES, type PanelTemplate } from '../lib/panelTemplates';
-import type { BBox, CanvasElementSelection, MangaDocument, WorkspaceTab } from '../types';
+import type { BBox, CanvasElementSelection, DocsLanguage, MangaDocument, WorkspaceTab } from '../types';
 
 const TABS: {
   id: WorkspaceTab;
@@ -41,6 +41,14 @@ const TABS: {
 type MobileStoryboardPane = 'pages' | 'editor' | 'panel';
 
 const HOWTO_INTRO_KEY = 'manga-name-studio.howto-intro.v1';
+const DOCS_LANG_KEY = 'manga-name-studio.docs-lang.v1';
+
+function initialDocsLang(): DocsLanguage {
+  try {
+    if (localStorage.getItem(DOCS_LANG_KEY) === 'en') return 'en';
+  } catch { /* private mode */ }
+  return 'ja';
+}
 
 // 見開きは右綴じ（1ページ目が右）。ビューアはこの配列順にめくる
 const SAMPLE_MANGA_PAGES = [sampleMangaPages.page1, sampleMangaPages.page2];
@@ -75,6 +83,7 @@ export default function App() {
   const [activePanel, setActivePanel] = useState(0);
   const [selectedElement, setSelectedElement] = useState<CanvasElementSelection | null>(null);
   const [tab, setTab] = useState<WorkspaceTab>(initialTab);
+  const [docsLang, setDocsLangState] = useState<DocsLanguage>(initialDocsLang);
   const [mobileStoryboardPane, setMobileStoryboardPane] = useState<MobileStoryboardPane>('editor');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGuides, setShowGuides] = useState(true);
@@ -188,6 +197,10 @@ export default function App() {
   }, [document, past, future, showNewDialog, showHowtoIntro, mangaViewerPage]);
 
   const changeTab = (next: WorkspaceTab) => { setTab(next); if (next !== 'storyboard' && window.innerWidth < 800) setSidebarCollapsed(true); };
+  const changeDocsLang = (next: DocsLanguage) => {
+    setDocsLangState(next);
+    try { localStorage.setItem(DOCS_LANG_KEY, next); } catch { /* private mode */ }
+  };
   const mutate = (recipe: (draft: MangaDocument) => void) => { const next = cloneDocument(document); recipe(next); setDocument(next); };
 
   const download = () => {
@@ -373,11 +386,11 @@ export default function App() {
         {tab === 'setting' && <SettingEditor document={document} onChange={setDocument} />}
         {tab === 'characters' && <CharactersEditor document={document} onChange={setDocument} />}
         {tab === 'materials' && <MaterialsEditor document={document} onChange={setDocument} />}
-        {tab === 'schema' && <SchemaGuide onNotify={setToast} />}
-        {tab === 'nyamurutan' && <NyamurutanGuide onNotify={setToast} />}
+        {tab === 'schema' && <SchemaGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
+        {tab === 'nyamurutan' && <NyamurutanGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
         {tab === 'howto' && <HowToGuide onNavigate={changeTab} />}
-        {tab === 'prompt' && <GenerationPromptGuide onNotify={setToast} />}
-        {tab === 'workflow' && <AgentWorkflowGuide onNotify={setToast} />}
+        {tab === 'prompt' && <GenerationPromptGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
+        {tab === 'workflow' && <AgentWorkflowGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
         {tab === 'yaml' && <RawYamlEditor source={rawSource} error={rawError} onSourceChange={setRawSource} onApply={applyRaw} onFormat={formatRaw} />}
       </section>
     </main>

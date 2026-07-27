@@ -1,5 +1,7 @@
 import { ClipboardCopy, Download } from 'lucide-preact';
+import DocsLangToggle from './DocsLangToggle';
 import MarkdownArticle from './MarkdownArticle';
+import type { DocsLanguage } from '../types';
 
 interface Props {
   readmeMarkdown: string;
@@ -9,17 +11,21 @@ interface Props {
   description: string;
   fileName: string;
   resourceName: string;
+  lang: DocsLanguage;
+  onChangeLang: (lang: DocsLanguage) => void;
   onNotify: (message: string) => void;
 }
 
-export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, eyebrow, title, description, fileName, resourceName, onNotify }: Props) {
+export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, eyebrow, title, description, fileName, resourceName, lang, onChangeLang, onNotify }: Props) {
+  const en = lang === 'en';
+
   const handleCopy = async () => {
     try {
       if (!navigator.clipboard?.writeText) throw new Error('clipboard API unavailable');
       await navigator.clipboard.writeText(markdown);
-      onNotify(`${resourceName}のMarkdownをコピーしました`);
+      onNotify(en ? `Copied the ${resourceName} Markdown` : `${resourceName}のMarkdownをコピーしました`);
     } catch {
-      onNotify(`${resourceName}のコピーに失敗しました`);
+      onNotify(en ? `Failed to copy the ${resourceName}` : `${resourceName}のコピーに失敗しました`);
     }
   };
 
@@ -31,15 +37,19 @@ export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, ey
     anchor.download = fileName;
     anchor.click();
     URL.revokeObjectURL(url);
-    onNotify(`${resourceName}のMarkdownを保存しました`);
+    onNotify(en ? `Saved the ${resourceName} Markdown` : `${resourceName}のMarkdownを保存しました`);
   };
+
+  const copyLabel = en ? 'Copy the Markdown' : 'Markdownの内容をコピー';
+  const downloadLabel = en ? 'Download the Markdown file' : 'Markdownファイルをダウンロード';
 
   return <div class="document-editor">
     <div class="document-editor-head">
       <div><span class="eyebrow">{eyebrow}</span><h2>{title}</h2><p>{description}</p></div>
       <div class="document-head-actions markdown-resource-actions">
-        <button type="button" class="secondary-button" title="Markdownの内容をコピー" aria-label="Markdownの内容をコピー" onClick={handleCopy}><ClipboardCopy size={16} /><span>内容をコピー</span></button>
-        <button type="button" class="primary-button" title="Markdownファイルをダウンロード" aria-label="Markdownファイルをダウンロード" onClick={handleDownload}><Download size={16} /><span>Markdown保存</span></button>
+        <DocsLangToggle lang={lang} onChange={onChangeLang} />
+        <button type="button" class="secondary-button" title={copyLabel} aria-label={copyLabel} onClick={handleCopy}><ClipboardCopy size={16} /><span>{en ? 'Copy content' : '内容をコピー'}</span></button>
+        <button type="button" class="primary-button" title={downloadLabel} aria-label={downloadLabel} onClick={handleDownload}><Download size={16} /><span>{en ? 'Save Markdown' : 'Markdown保存'}</span></button>
       </div>
     </div>
     <div class="document-editor-body schema-markdown-wrap">

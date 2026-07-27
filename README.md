@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+> **English**: Nyamuru🐱 Manga Name Studio is an open-source PWA for creating and editing manga *names* — the Japanese term for manga storyboards / rough drafts (not "names" as in labels). Storyboards are written in **Open Manga Name YAML (OMNY)**, a YAML representation of the **Nyamuru Data Model (NDM)**, and can be edited through a paper-style page preview and structured forms. Try it in your browser on [GitHub Pages](https://sa-san10.github.io/nyamuru-manga-name-studio/), or download the standalone single-HTML build that runs offline from a `file://` URL. The app UI and documentation are currently Japanese-only. Source code, prompts, docs, samples, and original assets by sa-san10 are released under the [MIT License](./LICENSE); third-party libraries keep their own licenses, and the license does not automatically extend to manuscripts you load or works you create with the app.
+
 **Nyamuru Data Model（NDM）**は、漫画ネームのためのデータモデルです。正式名称に猫の絵文字は含めず、愛称は **Nyamuru🐱** です。
 
 このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。

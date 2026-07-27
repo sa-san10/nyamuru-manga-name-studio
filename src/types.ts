@@ -77,3 +77,4 @@ export interface CanvasElementSelection { type: CanvasElementType; index: number
 export type IssueLevel = 'error' | 'warning';
 export interface ValidationIssue { level: IssueLevel; path: string; message: string }
 export type WorkspaceTab = 'storyboard' | 'meta' | 'setting' | 'characters' | 'materials' | 'schema' | 'nyamurutan' | 'howto' | 'prompt' | 'workflow' | 'yaml';
+export type DocsLanguage = 'ja' | 'en';
