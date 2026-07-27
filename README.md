@@ -76,6 +76,14 @@ npm run build:standalone
 
 「生成ワークフロー」タブでは、OMNYとキャラクター素材から漫画を生成・検品するエージェント向け手順を確認できます。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。
 
+## 公式マスコット「にゃむるたん」
+
+<img src="./docs/images/nyamurutan-reference.webp" alt="にゃむるたんの立ち絵（リファレンス）" width="360">
+
+**にゃむるたん（Nyamuru-tan）** は、Nyamuru Data Model（NDM）データモデルの妖精で、本プロジェクトの公式マスコットです。内蔵サンプル漫画『押しかけ妖精にゃむるたん』にも登場します。
+
+キャラクター設定と立ち絵素材はアプリ内「にゃむるたん」タブで閲覧・ダウンロードできます。キャラクターデザインは [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja)（にゃむるたん © sa-san10）で提供します。
+
 ## 作者・ライセンス
 
 Copyright © 2026 [sa-san10](https://github.com/sa-san10)

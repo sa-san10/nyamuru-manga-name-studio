@@ -30,7 +30,7 @@ The **Nyamuru Data Model (NDM)** is a data model that defines the structure of a
 
 ## What you need
 
-- `nyamuru-manga-generation-prompt-v10.1.md`: the full prompt to give to the LLM (written in Japanese)
+- `nyamuru-manga-generation-prompt-v10.md`: the full prompt to give to the LLM (written in Japanese)
 - The script, synopsis, theme, or dialogue you want to turn into manga
 - An LLM environment that can handle a long prompt and your manuscript at once
 

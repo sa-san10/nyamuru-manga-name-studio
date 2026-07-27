@@ -1,6 +1,6 @@
 import readmeMarkdownJa from '../content/nyamuru-manga-generation-prompt-readme.md?raw';
 import readmeMarkdownEn from '../content/nyamuru-manga-generation-prompt-readme.en.md?raw';
-import promptMarkdown from '../content/nyamuru-manga-generation-prompt-v10.1.md?raw';
+import promptMarkdown from '../content/nyamuru-manga-generation-prompt-v10.md?raw';
 import DownloadableMarkdownGuide from './DownloadableMarkdownGuide';
 import type { DocsLanguage } from '../types';
 
@@ -20,7 +20,7 @@ export default function GenerationPromptGuide({ lang, onChangeLang, onNotify }: 
     description={en
       ? 'The full prompt (written in Japanese) that structures a story manuscript into NDM v10 and outputs it in OMNY format.'
       : 'ストーリー原稿をNDM v10へ構造化し、OMNY形式で出力するための完全版プロンプトです。'}
-    fileName="nyamuru-manga-generation-prompt-v10.1.md"
+    fileName="nyamuru-manga-generation-prompt-v10.md"
     resourceName={en ? 'generation prompt' : '漫画ネーム生成プロンプト'}
     lang={lang}
     onChangeLang={onChangeLang}
