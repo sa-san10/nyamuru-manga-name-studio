@@ -2,7 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+## サンプル漫画
+
 ![ネームから生成した完成漫画の例（にゃむるたん © sa-san10 / CC BY 4.0）](./docs/images/sample-generated-manga.webp)
+
+## メイン画面
 
 ![メイン画面（ネーム編集）](./docs/images/editor-main-screen.webp)
 
@@ -17,6 +21,8 @@
 **Nyamuru Data Model（NDM）**は、漫画ネームのためのデータモデルです。正式名称に猫の絵文字は含めず、愛称は **Nyamuru🐱** です。
 
 このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。
+
+## ネームサンプル
 
 ![内蔵サンプル「押しかけ妖精にゃむるたん」の紙面プレビュー](./docs/images/sample-name-preview.webp)
 
