@@ -132,6 +132,7 @@ Page definitions match page_count. Starting artwork.
 - Size balloons to hold their dialogue, preventing cut-off text, overflow, and overlap.
 - The number of balloons must cover every utterance, monologue, and thought frame the OMNY requires — no shortfalls.
 - Reflect `action` in the artwork; never print the stage directions themselves on the page.
+- Never draw internal numbers such as panel numbers or OMNY `id` values on the page.
 - Words marked with `emphasis` are emphasized within their balloon, at roughly 1.3–1.5× size.
 - `monologue: true` is drawn in the specified thought frame, visually distinct from ordinary dialogue balloons.
 - Stage signature lines, key reactions, and declarations of resolve with close-ups or large panels.
@@ -150,7 +151,7 @@ Page definitions match page_count. Starting artwork.
 - Always include the following instruction in every page prompt:
 
 ```text
-Generate the finished manga page as an image, dialogue and speech balloons included. Do not draw balloon tails. However, if tails do get drawn, that alone is not a reason to regenerate as long as the speaker mapping is correct. Garbled text, typos, missing characters, or missing lines inside balloons are proofread by humans downstream, so only record them in the inspection report; do not regenerate for those alone. Text errors outside balloons — hand lettering, titles, page numbers, sound effects, signs, on-screen displays — as well as missing title / page number / author name that the OMNY specifies, wrong balloon positions, too few balloons, and wrong reading order or speakers, are regeneration targets.
+Generate the finished manga page as an image, dialogue and speech balloons included. Do not draw balloon tails. However, if tails do get drawn, that alone is not a reason to regenerate as long as the speaker mapping is correct. Garbled text, typos, missing characters, or missing lines inside balloons are proofread by humans downstream, so only record them in the inspection report; do not regenerate for those alone. Text errors outside balloons — hand lettering, titles, page numbers, sound effects, signs, on-screen displays — as well as missing title / page number / author name that the OMNY specifies, wrong balloon positions, too few balloons, and wrong reading order or speakers, are regeneration targets. Do not draw internal numbers such as panel numbers or OMNY ids on the page; if they get drawn, that is also a regeneration target.
 ```
 
 - Even when running image generation in parallel, reliably tie each returned result to its page number.
@@ -187,6 +188,7 @@ Check each page against the OMNY:
 - Important props, backgrounds, and staging
 - Typos, garbled text, missing characters, or missing lines inside balloons
 - Text errors outside balloons: hand lettering, titles, page numbers, sound effects, signs, on-screen displays
+- No internal numbers (such as panel numbers) drawn on the page
 - Cut-off text, overflow, overlap
 - Presence of balloon tails (their presence is not a failure; if present, check that each tail connects to the correct speaker)
 
@@ -194,7 +196,7 @@ Check each page against the OMNY:
 
 - Regenerate a failed page — that page only — via image generation.
 - However, when the **only** problems are garbled text, typos, missing characters, or missing lines inside balloons, do not fail the page: **record it in the inspection report and accept it** (proofreading is the human downstream step).
-- **Wrong balloon positions, too few balloons, wrong hand lettering outside balloons, wrong speakers, wrong reading order, wrong panel layout, and wrong characters, backgrounds, props, or staging** are regeneration targets.
+- **Wrong balloon positions, too few balloons, wrong hand lettering outside balloons, internal numbers such as panel numbers drawn on the page, wrong speakers, wrong reading order, wrong panel layout, and wrong characters, backgrounds, props, or staging** are regeneration targets.
 - **A page where the OMNY includes a title or author name but the image does not show it** counts as a missing drawing and is a regeneration target; do not settle it as `inspected`.
 - **The fact that balloon tails were drawn is not, by itself, a failure reason.** If a tail connects to the correct speaker, accept the page and record "tail present (correctly connected)" in the inspection report.
 - Only when a tail connects to the wrong speaker is it a "speaker error" and a regeneration target.
