@@ -2,11 +2,21 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-> **English**: Nyamuru🐱 Manga Name Studio is an open-source PWA for creating and editing manga *names* — the Japanese term for manga storyboards / rough drafts (not "names" as in labels). Storyboards are written in **Open Manga Name YAML (OMNY)**, a YAML representation of the **Nyamuru Data Model (NDM)**, and can be edited through a paper-style page preview and structured forms. Try it in your browser on [GitHub Pages](https://sa-san10.github.io/nyamuru-manga-name-studio/), or download the standalone single-HTML build that runs offline from a `file://` URL. The app UI and documentation are currently Japanese-only. Source code, prompts, docs, samples, and original assets by sa-san10 are released under the [MIT License](./LICENSE); third-party libraries keep their own licenses, and the license does not automatically extend to manuscripts you load or works you create with the app.
+![メイン画面（ネーム編集）](./docs/images/editor-main-screen.webp)
+
+> **English**: Nyamuru🐱 Manga Name Studio is an open-source PWA for creating and editing manga *names* — the Japanese term for manga storyboards / rough drafts (not "names" as in labels).
+>
+> - Storyboards are written in **Open Manga Name YAML (OMNY)**, a YAML representation of the **Nyamuru Data Model (NDM)**.
+> - You edit them through a paper-style page preview and structured forms.
+> - Try it in your browser on [GitHub Pages](https://sa-san10.github.io/nyamuru-manga-name-studio/), or download the standalone single-HTML build that runs offline from a `file://` URL.
+> - The app UI and documentation are currently Japanese-only.
+> - Source code, prompts, docs, samples, and original assets by sa-san10 are released under the [MIT License](./LICENSE). Third-party libraries keep their own licenses. The license does not automatically extend to manuscripts you load or works you create with the app.
 
 **Nyamuru Data Model（NDM）**は、漫画ネームのためのデータモデルです。正式名称に猫の絵文字は含めず、愛称は **Nyamuru🐱** です。
 
 このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。
+
+![内蔵サンプル「押しかけ妖精にゃむるたん」の紙面プレビュー](./docs/images/sample-name-preview.webp)
 
 OSS公開用リポジトリは [sa-san10/nyamuru-manga-name-studio](https://github.com/sa-san10/nyamuru-manga-name-studio) です。
 
@@ -58,11 +68,13 @@ npm run build:standalone
 
 ## コマ割りテンプレート
 
-ネーム画面上部の「コマ割り」から、NDM v10のパターンA〜Q（N〜Qはタチキリ系）を選択して適用できます。既存のコマ、人物、フキダシは読み順を保ったまま再配置され、各 `bbox` は新しいコマに合わせたA4キャンバス上の絶対mm座標へ更新されます。テンプレートの方が少ない場合も内容は削除せず、近い読み順のコマへ統合します。
+ネーム画面上部の「コマ割り」から、NDM v10のパターンA〜U（N〜Qはタチキリ系、R〜Uは斜め・多角形コマ系）を選択して適用できます。既存のコマ、人物、フキダシは読み順を保ったまま再配置され、各 `bbox` は新しいコマに合わせたA4キャンバス上の絶対mm座標へ更新されます。テンプレートの方が少ない場合も内容は削除せず、近い読み順のコマへ統合します。
 
 ## エージェント漫画生成ワークフロー
 
 「生成ワークフロー」タブでは、OMNYとキャラクター素材から漫画を生成・検品するエージェント向け手順を確認できます。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。
+
+![ネームから生成した完成漫画の例（にゃむるたん © sa-san10 / CC BY 4.0）](./docs/images/sample-generated-manga.webp)
 
 ## 作者・ライセンス
 

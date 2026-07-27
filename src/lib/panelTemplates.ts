@@ -11,7 +11,7 @@ export interface PanelTemplate {
 const rect = (x: number, y: number, w: number, h: number): PanelShape => ({ type: 'rect', x, y, w, h });
 const polygon = (points: [number, number][]): PanelShape => ({ type: 'polygon', points });
 
-/** NDM v10で定義したコマ割りパターンA〜M。 */
+/** NDM v10で定義したコマ割りパターンA〜U。 */
 export const PANEL_TEMPLATES: PanelTemplate[] = [
   {
     id: 'A', name: '3コマ縦積み', usage: '落ち着いた会話・ナレーション',
@@ -91,6 +91,42 @@ export const PANEL_TEMPLATES: PanelTemplate[] = [
   {
     id: 'Q', name: 'タチキリ登場ワイド', usage: '冒頭の登場を横断ち切りで見せる',
     shapes: [rect(0, 10, 210, 120), rect(10, 135, 190, 70), rect(108, 210, 92, 77), rect(10, 210, 93, 77)],
+  },
+  {
+    id: 'R', name: '斜め4段タタミカケ', usage: '追走・焦り・加速する展開',
+    shapes: [
+      polygon([[10, 10], [200, 10], [200, 70], [10, 85]]),
+      polygon([[10, 90], [200, 75], [200, 140], [10, 150]]),
+      polygon([[10, 155], [200, 145], [200, 215], [10, 205]]),
+      polygon([[10, 210], [200, 220], [200, 287], [10, 287]]),
+    ],
+  },
+  {
+    id: 'S', name: '対決ツイン', usage: '対峙・にらみ合い・対決の火花',
+    shapes: [
+      rect(10, 10, 190, 60),
+      polygon([[200, 75], [200, 230], [85, 230], [125, 75]]),
+      polygon([[120, 75], [80, 230], [10, 230], [10, 75]]),
+      rect(10, 235, 190, 52),
+    ],
+  },
+  {
+    id: 'T', name: 'クサビ畳みかけ', usage: 'パニック・混乱・畳みかけ',
+    shapes: [
+      rect(10, 10, 190, 55),
+      polygon([[200, 70], [200, 210], [152, 210], [120, 70]]),
+      polygon([[115, 70], [147, 210], [57, 210], [85, 70]]),
+      polygon([[80, 70], [52, 210], [10, 210], [10, 70]]),
+      rect(10, 215, 190, 72),
+    ],
+  },
+  {
+    id: 'U', name: '斜めメクリドン', usage: '衝撃の受け・急展開を勢いで見せる',
+    shapes: [
+      polygon([[10, 10], [200, 10], [200, 200], [10, 170]]),
+      polygon([[200, 205], [200, 287], [103, 287], [113, 192]]),
+      polygon([[108, 192], [98, 287], [10, 287], [10, 175]]),
+    ],
   },
 ];
 

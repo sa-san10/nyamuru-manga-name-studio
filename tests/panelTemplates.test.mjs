@@ -12,9 +12,9 @@ function panel(id, shape, overrides = {}) {
   return { id, shape, bg: 1, bubbles: [], action: null, ...overrides };
 }
 
-test('プロンプト§DのパターンA〜Qを選択肢として持つ', () => {
-  assert.equal(PANEL_TEMPLATES.map((template) => template.id).join(''), 'ABCDEFGHIJKLMNOPQ');
-  assert.deepEqual(PANEL_TEMPLATES.map((template) => template.shapes.length), [3, 6, 1, 4, 5, 4, 4, 6, 4, 5, 5, 3, 1, 4, 3, 4, 4]);
+test('プロンプト§DのパターンA〜Uを選択肢として持つ', () => {
+  assert.equal(PANEL_TEMPLATES.map((template) => template.id).join(''), 'ABCDEFGHIJKLMNOPQRSTU');
+  assert.deepEqual(PANEL_TEMPLATES.map((template) => template.shapes.length), [3, 6, 1, 4, 5, 4, 4, 6, 4, 5, 5, 3, 1, 4, 3, 4, 4, 4, 4, 5, 3]);
   assert.deepEqual(PANEL_TEMPLATES.find((template) => template.id === 'B').shapes[1], {
     type: 'polygon', points: [[200, 95], [200, 170], [105, 170], [115, 95]],
   });
@@ -28,6 +28,20 @@ test('タチキリ系テンプレートN〜Qは紙端(x=0/x=210/y=297)に達し�
     assert.ok(bleeds.length >= 1 && bleeds.length <= 2, `${id}のタチキリコマは1〜2個`);
     for (const s of template.shapes) {
       assert.ok(s.y >= 10, `${id}の上端はヘッダー帯のためy=10まで`);
+    }
+  }
+});
+
+test('多角形系テンプレートR〜Uは多角形コマを含み、余白(x:10〜200, y:10〜287)に収まる', () => {
+  for (const id of ['R', 'S', 'T', 'U']) {
+    const template = PANEL_TEMPLATES.find((t) => t.id === id);
+    const polygons = template.shapes.filter((s) => s.type === 'polygon');
+    assert.ok(polygons.length >= 2, `${id}は多角形コマを2個以上持つ`);
+    for (const shape of polygons) {
+      for (const [x, y] of shape.points) {
+        assert.ok(x >= 10 && x <= 200, `${id}のx座標は余白内`);
+        assert.ok(y >= 10 && y <= 287, `${id}のy座標は余白内`);
+      }
     }
   }
 });

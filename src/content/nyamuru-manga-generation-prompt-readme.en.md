@@ -30,7 +30,7 @@ The **Nyamuru Data Model (NDM)** is a data model that defines the structure of a
 
 ## What you need
 
-- `nyamuru-manga-generation-prompt-v10.md`: the full prompt to give to the LLM (written in Japanese)
+- `nyamuru-manga-generation-prompt-v10.1.md`: the full prompt to give to the LLM (written in Japanese)
 - The script, synopsis, theme, or dialogue you want to turn into manga
 - An LLM environment that can handle a long prompt and your manuscript at once
 
@@ -40,7 +40,7 @@ This prompt assumes an LLM at the level of Claude Fable 5 or above.
 
 1. Set the full prompt as the LLM's project instructions or system instructions.
 2. Provide the manuscript you want to adapt, plus your preferences such as page count and art style.
-3. Save the OMNY the LLM outputs, and review its content and validation results.
+3. Download the OMNY `.yaml` file the LLM provides, and review its content and validation results.
 4. Edit the OMNY as needed and pass it on to your manga production workflow.
 
 ## Example request
@@ -64,7 +64,7 @@ This prompt assumes an LLM at the level of Claude Fable 5 or above.
 | Type | Content |
 |---|---|
 | Input | Script, synopsis, theme, desired page count, art style and staging preferences |
-| Output | A manga storyboard in OMNY format conforming to NDM v10, plus validation results |
+| Output | A manga storyboard in OMNY format conforming to NDM v10 (as a downloadable `.yaml` file), plus validation results |
 
 Always review the generated result. For the detailed schema structure and the meaning of each field, see the Nyamuru Data Model specification.
 
