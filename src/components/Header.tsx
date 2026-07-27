@@ -23,7 +23,7 @@ export default function Header({ title, version, issues, savedAt, canUndo, canRe
   return (
     <header class="app-header">
       <div class="brand-wrap">
-        <div class="brand-mark" aria-hidden="true"><span>M</span></div>
+        <div class="brand-mark" aria-hidden="true"><span>🐱</span></div>
         <div class="brand-copy">
           <div class="eyebrow">Nyamuru🐱 · MANGA NAME STUDIO</div>
           <h1>{title || '無題の漫画'}</h1>

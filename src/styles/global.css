@@ -57,7 +57,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .brand-wrap, .header-actions, .brand-copy, .save-state, .validation-pill { display: flex; align-items: center; }
 .brand-wrap { gap: 11px; min-width: 0; flex: 1 1 auto; }
 .brand-mark { width: 36px; height: 36px; flex: none; display: grid; place-items: center; background: linear-gradient(135deg, var(--retro-pink), var(--retro-blue)); color: white; border-radius: 50%; transform: none; box-shadow: 0 3px 10px rgba(122,175,214,.2); }
-.brand-mark span { font: 900 19px/1 Georgia, serif; }
+.brand-mark span { font-size: 19px; line-height: 1; }
 .brand-copy { align-items: baseline; gap: 12px; min-width: 0; }
 .eyebrow { display: block; font-size: 9px; line-height: 1.2; letter-spacing: .18em; font-weight: 800; color: var(--accent); text-transform: uppercase; }
 .brand-copy .eyebrow { color: var(--accent); white-space: nowrap; }
