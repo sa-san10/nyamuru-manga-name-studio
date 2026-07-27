@@ -18,6 +18,14 @@
 > - The app UI and documentation are currently Japanese-only.
 > - Source code, prompts, docs, samples, and original assets by sa-san10 are released under the [MIT License](./LICENSE). Third-party libraries keep their own licenses. The license does not automatically extend to manuscripts you load or works you create with the app.
 
+> **简体中文**: Nyamuru🐱 Manga Name Studio 是一款开源 PWA，用于创作和编辑漫画分镜草稿（日语称为「ネーム / name」，指分镜稿，而非「名字」）。
+>
+> - 分镜稿以 **Open Manga Name YAML (OMNY)** 格式编写，它是 **Nyamuru Data Model (NDM)** 的 YAML 表示形式。
+> - 通过纸面风格的页面预览和结构化表单进行编辑。
+> - 可在 [GitHub Pages](https://sa-san10.github.io/nyamuru-manga-name-studio/) 上直接在浏览器中试用，也可下载单文件 HTML 独立版，通过 `file://` 离线运行。
+> - 应用界面和文档目前仅提供日语版。
+> - 由 sa-san10 创作的源代码、提示词、文档、示例及原创素材以 [MIT License](./LICENSE) 发布。第三方库遵循各自的许可证。该许可证不会自动适用于您加载的原稿或您使用本应用创作的作品。
+
 **Nyamuru Data Model（NDM）**は、漫画ネームのためのデータモデルです。正式名称に猫の絵文字は含めず、愛称は **Nyamuru🐱** です。
 
 このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。
