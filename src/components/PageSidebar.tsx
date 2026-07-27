@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { ChevronLeft, ChevronRight, Copy, FilePlus2, PanelTop, Trash2 } from 'lucide-preact';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, FilePlus2, PanelTop, Trash2 } from 'lucide-preact';
 import type { MangaDocument, ValidationIssue, WorkspaceTab } from '../types';
 
 interface Props {
@@ -36,9 +36,12 @@ export default function PageSidebar(props: Props) {
           {manga.pages.map((page, index) => {
             const pageIssues = issues.filter((issue) => issue.path.startsWith(`manga.pages[${index}]`));
             return (
-              <button
+              <div
                 class={`page-card ${activePage === index ? 'is-active' : ''} ${dragIndex === index ? 'is-dragging' : ''} ${dragIndex !== null && dragIndex !== index && overIndex === index ? (dragIndex < index ? 'is-drop-after' : 'is-drop-before') : ''}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => props.onSelectPage(index)}
+                onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); props.onSelectPage(index); } }}
                 draggable
                 onDragStart={(event) => { setDragIndex(index); if (event.dataTransfer) { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', String(index)); } }}
                 onDragOver={(event) => { if (dragIndex === null) return; event.preventDefault(); if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'; setOverIndex(index); }}
@@ -60,7 +63,11 @@ export default function PageSidebar(props: Props) {
                   <span>{page.panels.length}コマ · bg2 {page.panels.filter((panel) => panel.bg === 2).length}</span>
                 </div>
                 {pageIssues.length > 0 && <span class={`issue-dot ${pageIssues.some((issue) => issue.level === 'error') ? 'error' : ''}`}>{pageIssues.length}</span>}
-              </button>
+                <span class="page-move">
+                  <button type="button" disabled={index === 0} onClick={(event) => { event.stopPropagation(); props.onReorderPage(index, index - 1); }} aria-label={`ページ ${index + 1} を上へ移動`} title="上へ移動"><ChevronUp size={13} /></button>
+                  <button type="button" disabled={index === manga.pages.length - 1} onClick={(event) => { event.stopPropagation(); props.onReorderPage(index, index + 1); }} aria-label={`ページ ${index + 1} を下へ移動`} title="下へ移動"><ChevronDown size={13} /></button>
+                </span>
+              </div>
             );
           })}
         </div>

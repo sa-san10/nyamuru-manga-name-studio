@@ -102,6 +102,11 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .page-card { position: relative; display: grid; grid-template-columns: 50px 1fr; align-items: center; gap: 11px; min-height: 70px; padding: 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; text-align: left; cursor: pointer; }
 .page-card:hover { background: rgba(255,255,255,.8); border-color: var(--soft-line); }
 .page-card.is-dragging { opacity: .45; }
+.page-move { position: absolute; right: 5px; bottom: 5px; display: flex; flex-direction: column; gap: 1px; opacity: .4; }
+.page-card:hover .page-move, .page-card.is-active .page-move { opacity: 1; }
+.page-move button { display: grid; place-items: center; width: 19px; height: 16px; padding: 0; border: 0; border-radius: 5px; background: transparent; color: #77747d; cursor: pointer; }
+.page-move button:hover { background: var(--accent-soft); color: var(--accent-dark); }
+.page-move button:disabled { opacity: .3; cursor: default; }
 .page-card.is-drop-before::after, .page-card.is-drop-after::after { content: ""; position: absolute; left: 4px; right: 4px; height: 3px; border-radius: 2px; background: var(--accent); pointer-events: none; }
 .page-card.is-drop-before::after { top: -5px; }
 .page-card.is-drop-after::after { bottom: -5px; }
