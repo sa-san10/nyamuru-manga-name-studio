@@ -87,6 +87,7 @@ export default function App() {
   const [mobileStoryboardPane, setMobileStoryboardPane] = useState<MobileStoryboardPane>('editor');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGuides, setShowGuides] = useState(true);
+  const [spreadView, setSpreadView] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [showHowtoIntro, setShowHowtoIntro] = useState(false);
@@ -105,6 +106,10 @@ export default function App() {
   const issues = useMemo(() => validateManga(document), [document]);
   const page = document.manga.pages[activePage];
   const panel = page?.panels[activePanel];
+  // 見開きの相方ページ。右綴じなので若いページが右に並ぶ
+  const spreadPartnerIndex = spreadView && document.manga.pages.length > 1
+    ? (activePage + 1 < document.manga.pages.length ? activePage + 1 : activePage - 1)
+    : null;
 
   const setDocument = (next: MangaDocument) => {
     next.manga.meta.page_count = next.manga.pages.length;
@@ -275,6 +280,23 @@ export default function App() {
     if (document.manga.pages.length <= 1 || !confirm(`ページ ${activePage + 1} を削除しますか？`)) return;
     mutate((draft) => { draft.manga.pages.splice(activePage, 1); draft.manga.pages.forEach((item, index) => { item.page = index + 1; }); setActivePage(Math.max(0, activePage - 1)); setActivePanel(0); });
   };
+  const reorderPage = (from: number, to: number) => {
+    if (from === to) return;
+    mutate((draft) => {
+      const pages = draft.manga.pages;
+      const [moved] = pages.splice(from, 1);
+      pages.splice(to, 0, moved);
+      pages.forEach((item, index) => { item.page = index + 1; });
+    });
+    // 表示中のページが移動後どこへ行ったかを追従する
+    const next = activePage === from ? to
+      : activePage > from && activePage <= to ? activePage - 1
+      : activePage < from && activePage >= to ? activePage + 1
+      : activePage;
+    setActivePage(next);
+    setActivePanel(0);
+    setToast(`ページ ${from + 1} を ${to + 1} 番目へ移動しました`);
+  };
   const addPanel = () => {
     if (!page || page.panels.length >= 6) { setToast('1ページに追加できるのは6コマまでです'); return; }
     mutate((draft) => { const panels = draft.manga.pages[activePage].panels; panels.push(newPanel(panels.length + 1, Math.min(210, panels.length * 45))); setActivePanel(panels.length - 1); });
@@ -354,7 +376,7 @@ export default function App() {
     </nav>
 
     <main class={`workspace-shell ${tab === 'storyboard' ? 'is-storyboard' : ''} mobile-pane-${mobileStoryboardPane}`}>
-      <PageSidebar document={document} activePage={activePage} tab={tab} issues={issues} collapsed={sidebarCollapsed} onCollapse={() => setSidebarCollapsed(!sidebarCollapsed)} onSelectPage={(index) => { setActivePage(index); setActivePanel(0); setTab('storyboard'); setMobileStoryboardPane('editor'); }} onAddPage={addPage} onDuplicatePage={duplicatePage} onDeletePage={deletePage} />
+      <PageSidebar document={document} activePage={activePage} tab={tab} issues={issues} collapsed={sidebarCollapsed} onCollapse={() => setSidebarCollapsed(!sidebarCollapsed)} onSelectPage={(index) => { setActivePage(index); setActivePanel(0); setTab('storyboard'); setMobileStoryboardPane('editor'); }} onAddPage={addPage} onDuplicatePage={duplicatePage} onDeletePage={deletePage} onReorderPage={reorderPage} />
 
       <section class={`workspace-main ${tab === 'storyboard' ? 'has-mobile-storyboard-tabs' : ''}`}>
         {tab === 'storyboard' && <nav class="mobile-storyboard-tabs" aria-label="ネーム作業エリア" role="tablist">
@@ -374,10 +396,22 @@ export default function App() {
                   </select>
                   <button onClick={applyTemplate}>適用</button>
                 </div>
+                <button class={`guide-toggle ${spreadView ? 'is-active' : ''}`} onClick={() => setSpreadView(!spreadView)} disabled={document.manga.pages.length < 2} title="2ページを見開きで並べて表示"><BookOpen size={16} />見開き</button>
                 <button class={`guide-toggle ${showGuides ? 'is-active' : ''}`} onClick={() => setShowGuides(!showGuides)}>{showGuides ? <Eye size={16} /> : <EyeOff size={16} />}ガイド</button>
               </div>
             </div>
-            <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={page} pageCount={document.manga.pages.length} activePanel={activePanel} selectedElement={selectedElement} showGuides={showGuides} onSelectPanel={(index) => { setActivePanel(index); if (index === activePanel) setSelectedElement(null); }} onSelectElement={setSelectedElement} onChangeElementBBox={changeElementBBox} onMovePanel={movePanel} onResizePanel={resizePanel} onMoveVertex={movePanelVertex} />
+            {(() => {
+              const activeCanvas = <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={page} pageCount={document.manga.pages.length} activePanel={activePanel} selectedElement={selectedElement} showGuides={showGuides} onSelectPanel={(index) => { setActivePanel(index); if (index === activePanel) setSelectedElement(null); }} onSelectElement={setSelectedElement} onChangeElementBBox={changeElementBBox} onMovePanel={movePanel} onResizePanel={resizePanel} onMoveVertex={movePanelVertex} />;
+              if (spreadPartnerIndex === null) return activeCanvas;
+              const switchToPartner = (panelIndex = 0) => { setActivePage(spreadPartnerIndex); setActivePanel(panelIndex); };
+              const partnerCanvas = <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={document.manga.pages[spreadPartnerIndex]} pageCount={document.manga.pages.length} activePanel={-1} selectedElement={null} showGuides={showGuides} onSelectPanel={switchToPartner} onSelectElement={() => switchToPartner()} onChangeElementBBox={() => {}} onMovePanel={() => {}} onResizePanel={() => {}} onMoveVertex={() => {}} />;
+              // 右綴じ: 若いページが右（flexの後ろ）に来る
+              const leftIndex = Math.max(activePage, spreadPartnerIndex);
+              return <div class="canvas-spread">
+                <div class={`spread-pane ${leftIndex !== activePage ? 'is-spread-partner' : ''}`} title={leftIndex !== activePage ? `ページ ${spreadPartnerIndex + 1} をクリックで編集` : undefined}>{leftIndex === activePage ? activeCanvas : partnerCanvas}</div>
+                <div class={`spread-pane ${leftIndex === activePage ? 'is-spread-partner' : ''}`} title={leftIndex === activePage ? `ページ ${spreadPartnerIndex + 1} をクリックで編集` : undefined}>{leftIndex === activePage ? partnerCanvas : activeCanvas}</div>
+              </div>;
+            })()}
             <div class="canvas-legend"><span><i class="legend-figure" />人物 bbox</span><span><i class="legend-bubble" />フキダシ bbox</span><span>赤いコマ線をドラッグで移動</span><span>要素はドラッグ · 四隅でリサイズ</span></div>
           </div>
           <aside id="mobile-panel-pane" class="inspector-pane"><PanelInspector manga={document.manga} panel={panel} panelIndex={activePanel} selectedElement={selectedElement} onSelectElement={setSelectedElement} onChange={(nextPanel) => mutate((draft) => { draft.manga.pages[activePage].panels[activePanel] = nextPanel; })} onAdd={addPanel} onDuplicate={duplicatePanel} onDelete={deletePanel} /></aside>

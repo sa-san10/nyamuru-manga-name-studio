@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { ChevronLeft, ChevronRight, Copy, FilePlus2, PanelTop, Trash2 } from 'lucide-preact';
 import type { MangaDocument, ValidationIssue, WorkspaceTab } from '../types';
 
@@ -12,11 +13,15 @@ interface Props {
   onAddPage: () => void;
   onDuplicatePage: () => void;
   onDeletePage: () => void;
+  onReorderPage: (from: number, to: number) => void;
 }
 
 export default function PageSidebar(props: Props) {
   const { document, activePage, issues, collapsed } = props;
   const manga = document.manga;
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+  const resetDrag = () => { setDragIndex(null); setOverIndex(null); };
   return (
     <aside id="mobile-pages-pane" class={`page-sidebar ${collapsed ? 'is-collapsed' : ''}`}>
       <div class="sidebar-heading">
@@ -31,7 +36,18 @@ export default function PageSidebar(props: Props) {
           {manga.pages.map((page, index) => {
             const pageIssues = issues.filter((issue) => issue.path.startsWith(`manga.pages[${index}]`));
             return (
-              <button class={`page-card ${activePage === index ? 'is-active' : ''}`} onClick={() => props.onSelectPage(index)} key={`${page.page}-${index}`}>
+              <button
+                class={`page-card ${activePage === index ? 'is-active' : ''} ${dragIndex === index ? 'is-dragging' : ''} ${dragIndex !== null && dragIndex !== index && overIndex === index ? (dragIndex < index ? 'is-drop-after' : 'is-drop-before') : ''}`}
+                onClick={() => props.onSelectPage(index)}
+                draggable
+                onDragStart={(event) => { setDragIndex(index); if (event.dataTransfer) { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', String(index)); } }}
+                onDragOver={(event) => { if (dragIndex === null) return; event.preventDefault(); if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'; setOverIndex(index); }}
+                onDragLeave={() => { if (overIndex === index) setOverIndex(null); }}
+                onDrop={(event) => { event.preventDefault(); if (dragIndex !== null && dragIndex !== index) props.onReorderPage(dragIndex, index); resetDrag(); }}
+                onDragEnd={resetDrag}
+                title="ドラッグでページ順を入れ替え"
+                key={`${page.page}-${index}`}
+              >
                 <div class="page-thumb">
                   <span class="paper-corner" />
                   <span class="thumb-number">{String(index + 1).padStart(2, '0')}</span>
