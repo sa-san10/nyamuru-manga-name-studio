@@ -46,18 +46,20 @@ This prompt assumes an LLM at the level of Claude Fable 5 or above.
 ## Example request
 
 ```text
-次の原稿を、Nyamuru Data Model v10に準拠した漫画ネームへ変換してください。
-出力はOpen Manga Name YAML（OMNY）形式にしてください。
+Convert the following manuscript into a manga storyboard (name) conforming to Nyamuru Data Model v10.
+Output it in Open Manga Name YAML (OMNY) format.
 
-ページ数：4ページ
-形式：カラー漫画
-希望する雰囲気：明るい日常コメディ
+- **Title**:
+- **Author**:
+- **Tone / mood**:
+- **Art style**:
+- **Page count**:
 
-原稿：
-（ここに台本やあらすじを入力）
+Manuscript:
+(Paste your script or synopsis here)
 ```
 
-(The example above is in Japanese, matching the prompt: "Convert the following manuscript into a manga storyboard conforming to Nyamuru Data Model v10, output in OMNY format. Pages: 4. Format: color manga. Desired mood: light slice-of-life comedy. Manuscript: …")
+(The full prompt itself is written in Japanese, and generated manga pages use Japanese text — but you can write your request and manuscript in either language.)
 
 ## Input and output
 
