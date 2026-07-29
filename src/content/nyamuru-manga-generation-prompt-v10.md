@@ -137,7 +137,6 @@ OMNY本体は、チャット内のコードブロックとして貼り付ける�
 ## §A Nyamuru Data Model（NDM）v10 スキーマ定義（OMNY表現）
 
 ```
-下記のNyamuru Data Model（NDM）v10をOpen Manga Name YAML（OMNY）形式で記述した内容に従って漫画を生成して。 #ChatGPT向け冒頭プロンプト。スキーマ違反でもこれも含める。
 manga:
   schema_name: "Nyamuru Data Model"   # NDMの正式な識別名・固定。絵文字は含めない
   schema_version: 10                  # NDMのバージョン・整数
