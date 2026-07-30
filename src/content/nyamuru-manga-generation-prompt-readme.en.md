@@ -6,7 +6,7 @@
 >
 > This document is provided under the MIT License described in the `LICENSE` file at the repository root.
 
-This is an LLM prompt that structures a story manuscript or idea into a manga *name* (ネーム — the Japanese term for a manga storyboard) conforming to the **Nyamuru Data Model (NDM) v10**, and outputs it in **Open Manga Name YAML (OMNY)** format.
+This is an LLM prompt that structures a story manuscript or idea into a manga *name* (ネーム — the Japanese term for a manga storyboard) conforming to the **Nyamuru Data Model (NDM) v10.2**, and outputs it in **Open Manga Name YAML (OMNY)** format.
 
 Give it a script, synopsis, or theme, and it generates a machine-readable storyboard including page structure, panel layout, character placement, speech balloons, backgrounds, and asset references.
 
@@ -20,7 +20,7 @@ If you need another manga format or language, many parts of the prompt change to
 - Specify the position and size of characters and speech balloons
 - Structure dialogue, monologue, sound effects, and staging
 - Specify background detail levels and reference assets
-- Self-verify the OMNY output against NDM v10 rules
+- Self-verify the OMNY output against NDM v10.2 rules
 
 ## NDM and OMNY
 
@@ -46,7 +46,7 @@ This prompt assumes an LLM at the level of Claude Fable 5 or above.
 ## Example request
 
 ```text
-Convert the following manuscript into a manga storyboard (name) conforming to Nyamuru Data Model v10.
+Convert the following manuscript into a manga storyboard (name) conforming to Nyamuru Data Model v10.2.
 Output it in Open Manga Name YAML (OMNY) format.
 
 - **Title**:
@@ -66,7 +66,7 @@ Manuscript:
 | Type | Content |
 |---|---|
 | Input | Script, synopsis, theme, desired page count, art style and staging preferences |
-| Output | A manga storyboard in OMNY format conforming to NDM v10 (as a downloadable `.yaml` file), plus validation results |
+| Output | A manga storyboard in OMNY format conforming to NDM v10.2 (as a downloadable `.yaml` file), plus validation results |
 
 Always review the generated result. For the detailed schema structure and the meaning of each field, see the Nyamuru Data Model specification.
 

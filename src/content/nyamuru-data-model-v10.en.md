@@ -1,4 +1,4 @@
-# Nyamuru Data Model (NDM) v10 / Open Manga Name YAML (OMNY) Quick Guide
+# Nyamuru Data Model (NDM) v10.2 / Open Manga Name YAML (OMNY) Quick Guide
 
 The **Nyamuru Data Model (NDM)** is a data model that defines the structure of a manga *name* (storyboard): panel layout, characters, speech balloons, and asset references. Its nickname is **Nyamuru🐱**.
 
@@ -11,7 +11,7 @@ The root is always `manga`. It gathers work metadata, setting, characters, asset
 ```yaml
 manga:
   schema_name: "Nyamuru Data Model"
-  schema_version: 10
+  schema_version: 10.2
   meta: { ... }
   layout_spec: |
     # Description of the A4 coordinate system
@@ -27,7 +27,7 @@ manga:
 | Field | Rule |
 |---|---|
 | `schema_name` | NDM's formal identifier, fixed to `"Nyamuru Data Model"`. No emoji |
-| `schema_version` | The current NDM schema version, the integer `10` |
+| `schema_version` | The current NDM schema version, `10.2` |
 | `meta.author` | Author name (optional). If set, it is drawn small in the footer at the bottom center of each page; if empty, nothing is drawn |
 | `meta.page_count` | Must match the actual length of the `pages` array |
 | `meta.reading_direction` | Fixed to `"right-to-left"` |
@@ -42,7 +42,8 @@ manga:
 - `panels` holds at most 6 panels per page.
 - Array order and `id` follow reading order, from top right to bottom left.
 - `shape.type` is `rect` or `polygon`.
-- `bg` is required and is `0` / `1` / `2`. At most 2 panels per page may use `2`.
+- `bg` is required and is `-1` / `0` / `1` / `2`. At most 2 panels per page may use `2` (`-1` does not count toward this limit).
+- `bg: -1` means no background art (a single flat mid-gray fill only, with no contact shadow). Use it only for panels specified in the request; never select it automatically as a staging choice.
 
 ### Panel shapes
 
@@ -63,7 +64,7 @@ shape:
 - `figures[].bbox` and `bubbles[].bbox` are also **absolute coordinates on the whole page**, not panel-local coordinates.
 - `anchor` expresses a position relative to the panel and takes precedence over bbox.
 - Speech balloons must not intersect the face zone — the top third of a character's bbox.
-- Composition precedence is `action` > `anchor` > `bbox`.
+- Composition precedence is `action` > `anchor` > speaking order = standing position > `size` > `bbox` (a transcription of the precedence table in §C of the generation prompt).
 
 ## 4. Character placement
 
@@ -157,7 +158,7 @@ Below is an empty OMNY template for two pages. You can paste it straight into th
 ```yaml
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sa-san10
-# Nyamuru Data Model (NDM) v10 serialized as Open Manga Name YAML (OMNY)
+# Nyamuru Data Model (NDM) v10.2 serialized as Open Manga Name YAML (OMNY)
 # Nickname: Nyamuru🐱
 
 # Root of an OMNY document. All information about the work goes inside
@@ -166,7 +167,7 @@ manga:
   schema_name: "Nyamuru Data Model"
 
   # Version of the NDM schema in use
-  schema_version: 10
+  schema_version: 10.2
 
   # Basic information about the whole work
   meta:
