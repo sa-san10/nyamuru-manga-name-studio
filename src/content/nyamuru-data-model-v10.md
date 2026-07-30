@@ -1,4 +1,4 @@
-# Nyamuru Data Model（NDM）v10 / Open Manga Name YAML（OMNY）簡易ガイド
+# Nyamuru Data Model（NDM）v10.2 / Open Manga Name YAML（OMNY）簡易ガイド
 
 **Nyamuru Data Model（NDM）** は、漫画ネームの構造、コマ割り、人物、フキダシ、素材参照を定義するデータモデルです。愛称は **Nyamuru🐱** です。
 
@@ -11,7 +11,7 @@
 ```yaml
 manga:
   schema_name: "Nyamuru Data Model"
-  schema_version: 10
+  schema_version: 10.2
   meta: { ... }
   layout_spec: |
     # A4座標系の説明
@@ -27,7 +27,7 @@ manga:
 | フィールド | 決まり |
 |---|---|
 | `schema_name` | NDMの正式な識別名 `"Nyamuru Data Model"` 固定。絵文字は含めない |
-| `schema_version` | 現在のNDMスキーマバージョンは整数 `10` |
+| `schema_version` | 現在のNDMスキーマバージョンは `10.2` |
 | `meta.author` | 作者名（任意）。指定があれば各ページ下端中央のフッターに小さく描く。空なら描かない |
 | `meta.page_count` | `pages` 配列の実数と一致させる |
 | `meta.reading_direction` | `"right-to-left"` 固定 |
@@ -158,7 +158,7 @@ pages:
 ```yaml
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sa-san10
-# Nyamuru Data Model (NDM) v10 serialized as Open Manga Name YAML (OMNY)
+# Nyamuru Data Model (NDM) v10.2 serialized as Open Manga Name YAML (OMNY)
 # Nickname: Nyamuru🐱
 
 # OMNY文書のルート。作品全体の情報をこの中にまとめる
@@ -167,7 +167,7 @@ manga:
   schema_name: "Nyamuru Data Model"
 
   # 使用するNDMスキーマのバージョン
-  schema_version: 10
+  schema_version: 10.2
 
   # 作品全体の基本情報
   meta:

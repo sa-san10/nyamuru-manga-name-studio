@@ -21,12 +21,12 @@ export function MetaEditor({ document, onChange }: BaseProps) {
         <Field label="形式"><input value={manga.meta.format} onInput={(event) => update((draft) => { draft.manga.meta.format = event.currentTarget.value; })} /></Field>
         <Field label="ページ数" hint="自動同期"><input type="number" value={manga.pages.length} disabled /></Field>
         <Field label="NDMスキーマ名" hint="固定"><input value={manga.schema_name} disabled /></Field>
-        <Field label="NDMバージョン"><input type="number" min="9" max="10" value={manga.schema_version} onInput={(event) => update((draft) => { draft.manga.schema_version = Number(event.currentTarget.value); })} /></Field>
+        <Field label="NDMバージョン"><input type="number" min="9" max="10.2" step="0.1" value={manga.schema_version} onInput={(event) => update((draft) => { draft.manga.schema_version = Number(event.currentTarget.value); })} /></Field>
         <Field label="読み方向"><input value={manga.meta.reading_direction} onInput={(event) => update((draft) => { draft.manga.meta.reading_direction = event.currentTarget.value; })} /></Field>
         <Field label="文字方向"><input value={manga.meta.text_orientation} onInput={(event) => update((draft) => { draft.manga.meta.text_orientation = event.currentTarget.value; })} /></Field>
         <Field label="フォント"><input value={manga.meta.font} onInput={(event) => update((draft) => { draft.manga.meta.font = event.currentTarget.value; })} /></Field>
       </div>
-      {manga.schema_version !== 10 && <div class="upgrade-banner"><div><WandSparkles size={20} /><span><strong>NDM v10の説明書を使用中</strong><small>構造を保ったままNDMバージョンを更新できます。</small></span></div><button onClick={() => update((draft) => { draft.manga.schema_version = 10; })}>NDM v10 に更新</button></div>}
+      {manga.schema_version !== 10.2 && <div class="upgrade-banner"><div><WandSparkles size={20} /><span><strong>NDM v10.2の説明書を使用中</strong><small>構造を保ったままNDMバージョンを更新できます。</small></span></div><button onClick={() => update((draft) => { draft.manga.schema_version = 10.2; })}>NDM v10.2 に更新</button></div>}
     </section>
     <section class="content-card">
       <SectionTitle index="02" title="作画・演出ルール" description={`${manga.meta.style_notes.length} 個の style_notes`} />
@@ -105,7 +105,7 @@ export function ValidationPanel({ issues, onClose }: { issues: ValidationIssue[]
   return <div class="validation-drawer">
     <div class="drawer-head"><div><span class="eyebrow">NDM CHECK</span><h2>NDM検査結果</h2></div><button onClick={onClose}>×</button></div>
     <div class="drawer-body">
-      {!issues.length ? <div class="all-valid"><Check size={24} /><strong>すべての検査を通過しました</strong><span>v10の主要なフィールド規則に適合しています。</span></div> : issues.map((issue, index) => <div class={`issue-row ${issue.level}`} key={`${issue.path}-${index}`}>{issue.level === 'error' ? <AlertCircle size={18} /> : <CircleAlert size={18} />}<div><strong>{issue.message}</strong><code>{issue.path}</code></div></div>)}
+      {!issues.length ? <div class="all-valid"><Check size={24} /><strong>すべての検査を通過しました</strong><span>v10.2の主要なフィールド規則に適合しています。</span></div> : issues.map((issue, index) => <div class={`issue-row ${issue.level}`} key={`${issue.path}-${index}`}>{issue.level === 'error' ? <AlertCircle size={18} /> : <CircleAlert size={18} />}<div><strong>{issue.message}</strong><code>{issue.path}</code></div></div>)}
     </div>
   </div>;
 }

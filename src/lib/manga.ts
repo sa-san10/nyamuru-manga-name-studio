@@ -65,7 +65,7 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
   const manga = document?.manga;
   if (!manga) return [{ level: 'error', path: 'manga', message: 'manga ルートが必要です' }];
   if (manga.schema_name !== NDM_SCHEMA_NAME) issues.push({ level: 'error', path: 'manga.schema_name', message: `固定値「${NDM_SCHEMA_NAME}」にしてください` });
-  if (manga.schema_version !== 10) issues.push({ level: 'warning', path: 'manga.schema_version', message: `NDMスキーマは v10 です（現在 v${manga.schema_version ?? '不明'}）` });
+  if (manga.schema_version !== 10.2) issues.push({ level: 'warning', path: 'manga.schema_version', message: `NDMスキーマは v10.2 です（現在 v${manga.schema_version ?? '不明'}）` });
   if (!manga.meta?.title?.trim()) issues.push({ level: 'error', path: 'manga.meta.title', message: '作品タイトルは必須です' });
   if (manga.meta?.page_count !== manga.pages?.length) issues.push({ level: 'error', path: 'manga.meta.page_count', message: `pages の実数 ${manga.pages?.length ?? 0} と一致しません` });
   const fixed = [['reading_direction', 'right-to-left'], ['text_orientation', 'vertical'], ['font', 'アンチック体']] as const;

@@ -8,7 +8,7 @@ const sampleSource = readFileSync(new URL('../src/content/sample.omny.yaml', imp
 test('サンプルがNDMの正式なスキーマ名とバージョンを持つ', () => {
   const document = parseMangaYaml(sampleSource);
   assert.equal(document.manga.schema_name, NDM_SCHEMA_NAME);
-  assert.equal(document.manga.schema_version, 10);
+  assert.equal(document.manga.schema_version, 10.2);
 });
 
 test('サンプルは作者名を持ち、フッター規則がstyle_notesとlayout_specに揃っている', () => {
