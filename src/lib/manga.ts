@@ -1,8 +1,9 @@
 import { parse, stringify } from 'yaml';
-import type { MangaDocument, MangaPage, Panel, ValidationIssue } from '../types';
+import type { Manga, MangaDocument, MangaPage, Panel, ValidationIssue } from '../types';
 
 export const STORAGE_KEY = 'manga-name-studio.document.v1';
 export const NDM_SCHEMA_NAME = 'Nyamuru Data Model' as const;
+export const OMAY_SPEC_NAME = 'Open Manga Artwork YAML' as const;
 const LEGACY_OMNY_SCHEMA_NAME = 'Open Manga Name YAML';
 export const BUBBLE_SHAPES = ['normal', 'thought', 'square', 'caption', 'flash', 'uniflash', 'wobbly', 'whisper', 'handwritten'] as const;
 export const ANCHORS = ['right', 'left', 'center', 'top-right', 'top-left', 'bottom-right', 'bottom-left'] as const;
@@ -16,6 +17,45 @@ export function parseMangaYaml(source: string): MangaDocument {
 
 export function toMangaYaml(document: MangaDocument): string {
   return stringify(document, { indent: 2, lineWidth: 0, defaultStringType: 'QUOTE_DOUBLE', defaultKeyType: 'PLAIN' });
+}
+
+// 画像生成指示分離版：作画・演出ルール（style_notes）とレイアウト仕様（layout_spec）を含まない純粋なネームデータ
+export function toSeparatedMangaYaml(document: MangaDocument): string {
+  const next = cloneDocument(document);
+  delete (next.manga.meta as Partial<Manga['meta']>).style_notes;
+  delete (next.manga as Partial<Manga>).layout_spec;
+  return toMangaYaml(next);
+}
+
+// 画像生成指示ファイル OMAY（Open Manga Artwork YAML）
+export interface OmayDocument {
+  spec_name: string;
+  spec_version?: number;
+  style_notes: string[];
+  layout_spec: string;
+}
+
+export function parseOmayYaml(source: string): OmayDocument {
+  const value = parse(source) as Partial<OmayDocument> | null;
+  if (!value || typeof value !== 'object') throw new Error('OMAYとして解釈できません');
+  if (!Array.isArray(value.style_notes) || typeof value.layout_spec !== 'string') {
+    throw new Error('style_notes（配列）と layout_spec（複数行テキスト）が必要です');
+  }
+  return {
+    spec_name: typeof value.spec_name === 'string' ? value.spec_name : OMAY_SPEC_NAME,
+    spec_version: typeof value.spec_version === 'number' ? value.spec_version : undefined,
+    style_notes: value.style_notes.map(String),
+    layout_spec: value.layout_spec,
+  };
+}
+
+export function toOmayYaml(document: MangaDocument): string {
+  return stringify({
+    spec_name: OMAY_SPEC_NAME,
+    spec_version: document.manga.schema_version,
+    style_notes: document.manga.meta.style_notes,
+    layout_spec: document.manga.layout_spec ?? '',
+  }, { indent: 2, lineWidth: 0 });
 }
 
 export function cloneDocument(document: MangaDocument): MangaDocument {
@@ -45,6 +85,7 @@ export function normalizeDocument(document: MangaDocument): MangaDocument {
   manga.materials ??= [];
   manga.meta.author ??= '';
   manga.meta.style_notes ??= [];
+  manga.layout_spec ??= '';
   manga.setting.background ??= [];
   manga.setting.props ??= [];
   manga.pages.forEach((page, pageIndex) => {
@@ -103,6 +144,20 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
   return issues;
 }
 
+function safeBaseName(title: string): string {
+  return title.trim().replace(/[\\/:*?\"<>|]/g, '_') || 'manga-name';
+}
+
+// 全部入り版（ルール込み）
 export function safeFileName(title: string): string {
-  return `${title.trim().replace(/[\\/:*?\"<>|]/g, '_') || 'manga-name'}.yaml`;
+  return `${safeBaseName(title)}.yaml`;
+}
+
+// 画像生成指示分離版（純粋なネームデータ）
+export function omnyFileName(title: string): string {
+  return `${safeBaseName(title)}.omny.yaml`;
+}
+
+export function omayFileName(title: string): string {
+  return `${safeBaseName(title)}.omay.yaml`;
 }

@@ -1,6 +1,9 @@
-import { AlertCircle, BookOpenCheck, Check, CircleAlert, Plus, Sparkles, Trash2, WandSparkles } from 'lucide-preact';
+import { useRef } from 'preact/hooks';
+import { AlertCircle, BookOpenCheck, Check, CircleAlert, Download, FileUp, Plus, Sparkles, Trash2, WandSparkles } from 'lucide-preact';
 import type { ComponentChildren } from 'preact';
+import standardOmaySource from '../content/standard.omay.yaml?raw';
 import type { MangaDocument, MaterialType, ValidationIssue } from '../types';
+import { omayFileName, parseOmayYaml, toOmayYaml } from '../lib/manga';
 import { Field, SectionTitle, TextListEditor } from './Fields';
 
 interface BaseProps { document: MangaDocument; onChange: (document: MangaDocument) => void }
@@ -9,9 +12,47 @@ function mutateDocument(document: MangaDocument, onChange: (document: MangaDocum
   const next = structuredClone(document); recipe(next); onChange(next);
 }
 
-export function MetaEditor({ document, onChange }: BaseProps) {
+export function MetaEditor({ document, onChange, onNotify }: BaseProps & { onNotify?: (message: string) => void }) {
   const { manga } = document;
+  const omayInput = useRef<HTMLInputElement>(null);
   const update = (recipe: (draft: MangaDocument) => void) => mutateDocument(document, onChange, recipe);
+  const notify = (message: string) => onNotify?.(message);
+
+  // OMAY（画像生成指示ファイル）の読み込み。既存ルールがある場合は上書き確認を出す
+  const applyOmay = (source: string, label: string) => {
+    try {
+      const omay = parseOmayYaml(source);
+      const hasExistingRules = manga.meta.style_notes.length > 0 || Boolean(manga.layout_spec?.trim());
+      if (hasExistingRules && !confirm(`現在の作画・演出ルール（${manga.meta.style_notes.length}件）とレイアウト仕様を「${label}」の内容で上書きしますか？`)) return;
+      update((draft) => {
+        draft.manga.meta.style_notes = [...omay.style_notes];
+        draft.manga.layout_spec = omay.layout_spec;
+      });
+      if (omay.spec_version !== undefined && omay.spec_version !== manga.schema_version) {
+        notify(`${label}を読み込みました（OMAYのspec_version ${omay.spec_version} とNDM v${manga.schema_version} が不一致です）`);
+      } else {
+        notify(`${label}を読み込みました`);
+      }
+    } catch (error) {
+      notify(`OMAYの読み込みに失敗: ${error instanceof Error ? error.message : '不明なエラー'}`);
+    }
+  };
+
+  const importOmayFile = async (file?: File) => {
+    if (!file) return;
+    applyOmay(await file.text(), file.name);
+    if (omayInput.current) omayInput.current.value = '';
+  };
+
+  const downloadOmay = () => {
+    const blob = new Blob([toOmayYaml(document)], { type: 'application/yaml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = window.document.createElement('a');
+    anchor.href = url; anchor.download = omayFileName(manga.meta.title); anchor.click();
+    URL.revokeObjectURL(url);
+    notify('現在のルールをOMAYファイルへ書き出しました');
+  };
+
   return <EditorShell eyebrow="DOCUMENT" title="作品情報" description="作品全体の基本情報と、生成時に共通で使う作画ルールを管理します。">
     <section class="content-card">
       <SectionTitle index="01" title="基本情報" description="meta" />
@@ -29,11 +70,21 @@ export function MetaEditor({ document, onChange }: BaseProps) {
       {manga.schema_version !== 10.2 && <div class="upgrade-banner"><div><WandSparkles size={20} /><span><strong>NDM v10.2の説明書を使用中</strong><small>構造を保ったままNDMバージョンを更新できます。</small></span></div><button onClick={() => update((draft) => { draft.manga.schema_version = 10.2; })}>NDM v10.2 に更新</button></div>}
     </section>
     <section class="content-card">
-      <SectionTitle index="02" title="作画・演出ルール" description={`${manga.meta.style_notes.length} 個の style_notes`} />
+      <SectionTitle index="02" title="画像生成指示（OMAY）" description="style_notes / layout_spec の入出力" />
+      <p class="omay-note">作画・演出ルールとレイアウト仕様は、画像生成側のプロジェクト指示に設定する画像生成指示ファイル <strong>OMAY（Open Manga Artwork YAML）</strong> として入出力できます。読み込んだ内容は、下の2つの欄でそのまま閲覧・編集できます。</p>
+      <div class="omay-actions">
+        <button type="button" class="secondary-button" onClick={() => applyOmay(standardOmaySource, '標準テンプレート')}><WandSparkles size={16} />標準テンプレートを読み込み</button>
+        <button type="button" class="secondary-button" onClick={() => omayInput.current?.click()}><FileUp size={16} />OMAYファイルを読み込み</button>
+        <button type="button" class="secondary-button" onClick={downloadOmay}><Download size={16} />OMAYファイルへ書き出し</button>
+      </div>
+      <input ref={omayInput} type="file" accept=".yaml,.yml,text/yaml,application/yaml" hidden onChange={(event) => importOmayFile(event.currentTarget.files?.[0])} />
+    </section>
+    <section class="content-card">
+      <SectionTitle index="03" title="作画・演出ルール" description={`${manga.meta.style_notes.length} 個の style_notes`} />
       <TextListEditor values={manga.meta.style_notes} placeholder="作画ルール" onChange={(values) => update((draft) => { draft.manga.meta.style_notes = values; })} />
     </section>
     <section class="content-card">
-      <SectionTitle index="03" title="レイアウト仕様" description="layout_spec / 複数行テキスト" />
+      <SectionTitle index="04" title="レイアウト仕様" description="layout_spec / 複数行テキスト" />
       <Field label="画像生成AI向け座標・寸法ルール" wide><textarea class="large-textarea" value={manga.layout_spec} onInput={(event) => update((draft) => { draft.manga.layout_spec = event.currentTarget.value; })} /></Field>
     </section>
   </EditorShell>;

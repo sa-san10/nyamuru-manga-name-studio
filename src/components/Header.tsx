@@ -1,5 +1,9 @@
-import { CheckCircle2, ClipboardCopy, Download, FilePlus2, FileUp, Redo2, RotateCcw, Save, TriangleAlert, Undo2 } from 'lucide-preact';
+import { useState } from 'preact/hooks';
+import { CheckCircle2, ChevronDown, ClipboardCopy, Download, FilePlus2, FileUp, Redo2, RotateCcw, Save, TriangleAlert, Undo2 } from 'lucide-preact';
 import type { ValidationIssue } from '../types';
+
+// 全部入り版（.yaml・ルール込み）と画像生成指示分離版（.omny.yaml・純粋なネームデータ）
+export type OmnyDownloadKind = 'full' | 'separated';
 
 interface Props {
   title: string;
@@ -13,13 +17,15 @@ interface Props {
   onNew: () => void;
   onImport: () => void;
   onCopy: () => void;
-  onDownload: () => void;
+  onDownload: (kind: OmnyDownloadKind) => void;
   onReset: () => void;
   onValidate: () => void;
 }
 
 export default function Header({ title, version, issues, savedAt, canUndo, canRedo, onUndo, onRedo, onNew, onImport, onCopy, onDownload, onReset, onValidate }: Props) {
   const errors = issues.filter((issue) => issue.level === 'error').length;
+  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
+  const chooseDownload = (kind: OmnyDownloadKind) => { setDownloadMenuOpen(false); onDownload(kind); };
   return (
     <header class="app-header">
       <div class="brand-wrap">
@@ -46,7 +52,22 @@ export default function Header({ title, version, issues, savedAt, canUndo, canRe
         <button class="secondary-button new-button" onClick={onNew} title="新しい漫画を作成"><FilePlus2 size={17} />新規</button>
         <button class="secondary-button import-button" title="OMNYファイルを読み込む" aria-label="OMNYファイルを読み込む" onClick={onImport}><FileUp size={17} />読み込む</button>
         <button class="secondary-button copy-button" onClick={onCopy} title="OMNY形式の全文をクリップボードにコピー"><ClipboardCopy size={17} />OMNYコピー</button>
-        <button class="primary-button" onClick={onDownload}><Download size={17} />OMNY保存</button>
+        <div class="download-menu-wrap">
+          <button class="primary-button" onClick={() => setDownloadMenuOpen(!downloadMenuOpen)} aria-haspopup="menu" aria-expanded={downloadMenuOpen} title="ネームYAMLをダウンロード"><Download size={17} />OMNY保存<ChevronDown size={14} /></button>
+          {downloadMenuOpen && <>
+            <button class="menu-backdrop" onClick={() => setDownloadMenuOpen(false)} aria-label="保存メニューを閉じる" />
+            <div class="download-menu" role="menu" aria-label="ネームYAMLの保存形式">
+              <button type="button" role="menuitem" onClick={() => chooseDownload('separated')}>
+                <strong>画像生成指示分離版（.omny.yaml）</strong>
+                <small>画像生成ルールを含まない純粋なネームデータ。OMAYと組み合わせて使う標準形</small>
+              </button>
+              <button type="button" role="menuitem" onClick={() => chooseDownload('full')}>
+                <strong>全部入り版（.yaml）</strong>
+                <small>作画・演出ルールとレイアウト仕様を含む一枚もの。一枚で完結させたい場面用</small>
+              </button>
+            </div>
+          </>}
+        </div>
       </div>
     </header>
   );

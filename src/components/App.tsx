@@ -4,7 +4,7 @@ import sampleYaml from '../content/sample.omny.yaml?raw';
 import { version as appVersion, versionCode as appVersionCode } from '../../package.json';
 import { sampleMangaPages } from '../lib/sampleMangaImages';
 import AskAiBlock, { REPO_URL } from './AskAiBlock';
-import Header from './Header';
+import Header, { type OmnyDownloadKind } from './Header';
 import PageSidebar from './PageSidebar';
 import MangaCanvas from './MangaCanvas';
 import PanelInspector from './PanelInspector';
@@ -14,7 +14,7 @@ import GenerationPromptGuide from './GenerationPromptGuide';
 import HowToGuide from './HowToGuide';
 import NyamurutanGuide from './NyamurutanGuide';
 import { CharactersEditor, MaterialsEditor, MetaEditor, RawYamlEditor, SettingEditor, ValidationPanel } from './DocumentEditors';
-import { cloneDocument, newPage, newPanel, parseMangaYaml, safeFileName, STORAGE_KEY, toMangaYaml, validateManga } from '../lib/manga';
+import { cloneDocument, newPage, newPanel, omnyFileName, parseMangaYaml, safeFileName, STORAGE_KEY, toMangaYaml, toSeparatedMangaYaml, validateManga } from '../lib/manga';
 import { resizePanelToBounds, translatePanel } from '../lib/canvasGeometry';
 import { applyPanelTemplate, findPanelTemplate, PANEL_TEMPLATES, type PanelTemplate } from '../lib/panelTemplates';
 import type { BBox, CanvasElementSelection, DocsLanguage, MangaDocument, WorkspaceTab } from '../types';
@@ -208,13 +208,19 @@ export default function App() {
   };
   const mutate = (recipe: (draft: MangaDocument) => void) => { const next = cloneDocument(document); recipe(next); setDocument(next); };
 
-  const download = () => {
-    const source = toMangaYaml(document);
+  // 分離版はルール（style_notes/layout_spec）を含まない純粋なネームデータ。
+  // 全部入り版は分離版と同一のネームデータへ現在のルール欄を合成した一枚もの
+  const download = (kind: OmnyDownloadKind) => {
+    const separated = kind === 'separated';
+    const source = separated ? toSeparatedMangaYaml(document) : toMangaYaml(document);
     const blob = new Blob([source], { type: 'application/yaml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const anchor = window.document.createElement('a');
-    anchor.href = url; anchor.download = safeFileName(document.manga.meta.title); anchor.click();
-    URL.revokeObjectURL(url); setToast('OMNY形式を書き出しました');
+    anchor.href = url;
+    anchor.download = separated ? omnyFileName(document.manga.meta.title) : safeFileName(document.manga.meta.title);
+    anchor.click();
+    URL.revokeObjectURL(url);
+    setToast(separated ? '画像生成指示分離版（純粋なネームデータ）を書き出しました' : '全部入り版（ルール込み）を書き出しました');
   };
 
   const copyYaml = async () => {
@@ -416,7 +422,7 @@ export default function App() {
           </div>
           <aside id="mobile-panel-pane" class="inspector-pane"><PanelInspector manga={document.manga} panel={panel} panelIndex={activePanel} selectedElement={selectedElement} onSelectElement={setSelectedElement} onChange={(nextPanel) => mutate((draft) => { draft.manga.pages[activePage].panels[activePanel] = nextPanel; })} onAdd={addPanel} onDuplicate={duplicatePanel} onDelete={deletePanel} /></aside>
         </div>}
-        {tab === 'meta' && <MetaEditor document={document} onChange={setDocument} />}
+        {tab === 'meta' && <MetaEditor document={document} onChange={setDocument} onNotify={setToast} />}
         {tab === 'setting' && <SettingEditor document={document} onChange={setDocument} />}
         {tab === 'characters' && <CharactersEditor document={document} onChange={setDocument} />}
         {tab === 'materials' && <MaterialsEditor document={document} onChange={setDocument} />}

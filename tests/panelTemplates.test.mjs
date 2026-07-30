@@ -12,7 +12,7 @@ function panel(id, shape, overrides = {}) {
   return { id, shape, bg: 1, bubbles: [], action: null, ...overrides };
 }
 
-test('プロンプト§DのパターンA〜Uを選択肢として持つ', () => {
+test('プロンプト§BのパターンA〜Uを選択肢として持つ', () => {
   assert.equal(PANEL_TEMPLATES.map((template) => template.id).join(''), 'ABCDEFGHIJKLMNOPQRSTU');
   assert.deepEqual(PANEL_TEMPLATES.map((template) => template.shapes.length), [3, 6, 1, 4, 5, 4, 4, 6, 4, 5, 5, 3, 1, 4, 3, 4, 4, 4, 4, 5, 3]);
   assert.deepEqual(PANEL_TEMPLATES.find((template) => template.id === 'B').shapes[1], {
