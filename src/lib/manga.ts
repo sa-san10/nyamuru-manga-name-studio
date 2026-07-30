@@ -84,7 +84,7 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
     (page.panels ?? []).forEach((panel, panelIndex) => {
       const panelPath = `${base}.panels[${panelIndex}]`;
       if (panel.id !== panelIndex + 1) issues.push({ level: 'warning', path: `${panelPath}.id`, message: `読み順に合わせて ${panelIndex + 1} を推奨します` });
-      if (![0, 1, 2].includes(panel.bg)) issues.push({ level: 'error', path: `${panelPath}.bg`, message: '0 / 1 / 2 のいずれかが必須です' });
+      if (![-1, 0, 1, 2].includes(panel.bg)) issues.push({ level: 'error', path: `${panelPath}.bg`, message: '-1 / 0 / 1 / 2 のいずれかが必須です' });
       if (!panel.shape || !['rect', 'polygon'].includes(panel.shape.type)) issues.push({ level: 'error', path: `${panelPath}.shape`, message: 'rect または polygon が必要です' });
       (panel.assets ?? []).forEach((key) => {
         if (!materialKeys.has(key)) issues.push({ level: 'warning', path: `${panelPath}.assets`, message: `素材「${key}」が materials にありません` });

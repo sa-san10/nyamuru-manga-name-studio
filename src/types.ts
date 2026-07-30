@@ -28,7 +28,7 @@ export interface Bubble {
 export interface Panel {
   id: number;
   shape: PanelShape;
-  bg: 0 | 1 | 2;
+  bg: -1 | 0 | 1 | 2;
   figures?: Figure[];
   assets?: string[];
   bubbles: Bubble[];

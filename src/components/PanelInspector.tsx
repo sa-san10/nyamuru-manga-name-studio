@@ -58,7 +58,7 @@ export default function PanelInspector({ manga, panel, panelIndex, selectedEleme
       </Field>}
       <div class="bg-selector">
         <span class="sub-label">背景詳細度</span>
-        <div>{[0, 1, 2].map((level) => <button class={`bg-option bg-option-${level} ${panel.bg === level ? 'is-active' : ''}`} onClick={() => update((draft) => { draft.bg = level as 0 | 1 | 2; })} key={level}><strong>BG {level}</strong><span>{level === 0 ? '感情・効果' : level === 1 ? '簡易背景' : '詳細背景'}</span></button>)}</div>
+        <div>{[-1, 0, 1, 2].map((level) => <button class={`bg-option bg-option-${level} ${panel.bg === level ? 'is-active' : ''}`} onClick={() => update((draft) => { draft.bg = level as -1 | 0 | 1 | 2; })} key={level}><strong>BG {level}</strong><span>{level === -1 ? '背景無描画' : level === 0 ? '感情・効果' : level === 1 ? '簡易背景' : '詳細背景'}</span></button>)}</div>
       </div>
     </section>
 
