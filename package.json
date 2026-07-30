@@ -1,7 +1,7 @@
 {
   "name": "nyamuru-manga-name-studio",
-  "version": "1.4.0",
-  "versionCode": 8,
+  "version": "1.5.0",
+  "versionCode": 9,
   "private": true,
   "type": "module",
   "description": "Nyamuru Data Model（NDM）をOpen Manga Name YAML（OMNY）形式で閲覧・編集するPWA",

@@ -4,6 +4,8 @@
 
 **Open Manga Name YAML（OMNY）** は、NDMをYAMLとして保存・交換するためのシリアライズ形式です。
 
+**Open Manga Artwork YAML（OMAY）** は、NDMファミリーの画像生成指示ファイルとしてOMNYと並ぶ形式です。OMNYを漫画として描くための全コマ共通の作画・演出ルール（`style_notes`）とレイアウト仕様（`layout_spec`）を単体のYAMLとして持ち、`spec_name` / `spec_version` がOMNYの `schema_name` / `schema_version` と対応します。画像生成側のプロジェクト指示にOMAYを一度設定し、作品ごとにはOMNYのみを渡します。
+
 ## 1. 全体構造
 
 ルートは必ず `manga` です。作品情報、舞台、人物、素材、ページを一つの文書にまとめます。
@@ -33,8 +35,8 @@ manga:
 | `meta.reading_direction` | `"right-to-left"` 固定 |
 | `meta.text_orientation` | `"vertical"` 固定 |
 | `meta.font` | `"アンチック体"` 固定 |
-| `meta.style_notes` | 完全版プロンプト§Bの固定内容を保持する |
-| `layout_spec` | 完全版プロンプト§Cの固定内容を保持する |
+| `meta.style_notes` | 作品固有の作画指示（任意。画風の行など）。全コマ共通の作画・演出ルールはOMAYの `style_notes` が受け持ち、全部入り運用ではここへ合成して保持できる |
+| `layout_spec` | レイアウト仕様。標準の運用ではOMAYの `layout_spec` が受け持ち、OMNY側は省略できる（全部入り運用では保持する） |
 
 ## 2. ページとコマ
 
@@ -64,7 +66,7 @@ shape:
 - `figures[].bbox` と `bubbles[].bbox` も、コマ内座標ではなく**用紙全体の絶対座標**。
 - `anchor` はコマ内の相対位置を表し、bboxより優先する。
 - フキダシは、人物bbox上部1/3の顔ゾーンと交差させない。
-- 構図の優先順は `action` ＞ `anchor` ＞ 発言順＝立ち位置 ＞ `size` ＞ `bbox`（生成プロンプト§Cの優先順位表と同一内容の転記）。
+- 構図の優先順は `action` ＞ `anchor` ＞ 発言順＝立ち位置 ＞ `size` ＞ `bbox`（OMAYの `layout_spec` にある優先順位表と同一内容の転記）。
 
 ## 4. 人物配置
 
@@ -185,10 +187,12 @@ manga:
     text_orientation: "vertical"
     # 漫画本文の基本フォント。固定値
     font: "アンチック体"
-    # 作品全体に適用する作画・文字・演出ルールを配列で追加する
+    # この作品に固有の作画指示を配列で追加する（画風の行など）
+    # 全コマ共通の作画・演出ルールはOMAY側で管理する
     style_notes: []
 
   # A4座標、コマ枠、bboxなど、全ページ共通のレイアウト規則を書く
+  # 標準の運用ではOMAY側で管理するため空でよい
   # 複数行にする場合は空文字を | に替え、次の行から字下げして記述する
   layout_spec: ""
 

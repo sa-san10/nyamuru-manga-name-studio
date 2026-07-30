@@ -3,6 +3,21 @@ import Layout from '../layouts/Layout.astro';
 
 const releases = [
   {
+    version: '1.5.0',
+    code: 9,
+    date: '2026-07-30',
+    title: '画像生成指示（OMAY）の分離',
+    changes: [
+      '作画・演出ルールとレイアウト仕様を、画像生成指示ファイルOMAY（Open Manga Artwork YAML・standard.omay.yaml）へ分離。画像生成側のプロジェクト指示に一度設定すれば、作品ごとに渡すのはOMNYのみになり、生成のたびに定型ルールを転記出力するトークン浪費と転記変異をなくした',
+      '生成プロンプトを純粋なネームデータ（OMNY）のみの出力に変更。meta.style_notesは作品固有の作画指示（画風の行など）専用に',
+      '作品情報タブに「画像生成指示（OMAY）」セクションを新設：標準テンプレート読み込み（上書き確認あり）・OMAYファイル読み込み・OMAYファイル書き出しの3操作',
+      'ヘッダーの「OMNY保存」を2種類に：画像生成指示分離版（.omny.yaml・純粋なネームデータ）と全部入り版（.yaml・ルール込み）。全部入り版は分離版＋ルールの合成として生成',
+      '生成プロンプトタブにOMAY標準テンプレートの個別コピー・保存導線を追加',
+      '生成ワークフローをOMAY＋OMNYの2ファイル入力構成に更新：spec_versionとschema_versionの対応確認、OMAY未提供時は推測せず不足報告',
+      'NDM仕様・各READMEの英語版もOMAY分離の内容に追随',
+    ],
+  },
+  {
     version: '1.4.0',
     code: 8,
     date: '2026-07-30',

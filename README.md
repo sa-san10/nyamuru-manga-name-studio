@@ -13,6 +13,7 @@
 > **English**: Nyamuru🐱 Manga Name Studio is an open-source PWA for creating and editing manga *names* — the Japanese term for manga storyboards / rough drafts (not "names" as in labels).
 >
 > - Storyboards are written in **Open Manga Name YAML (OMNY)**, a YAML representation of the **Nyamuru Data Model (NDM)**.
+> - Artwork rules for image generation live in a separate **Open Manga Artwork YAML (OMAY)** file, so each work's OMNY stays pure name data.
 > - You edit them through a paper-style page preview and structured forms.
 > - Try it in your browser on [GitHub Pages](https://sa-san10.github.io/nyamuru-manga-name-studio/), or download the standalone single-HTML build that runs offline from a `file://` URL.
 > - The app UI and documentation are currently Japanese-only.
@@ -21,6 +22,7 @@
 > **简体中文**: Nyamuru🐱 Manga Name Studio 是一款开源 PWA，用于创作和编辑漫画分镜草稿（日语称为「ネーム / name」，指分镜稿，而非「名字」）。
 >
 > - 分镜稿以 **Open Manga Name YAML (OMNY)** 格式编写，它是 **Nyamuru Data Model (NDM)** 的 YAML 表示形式。
+> - 图像生成用的绘制规则由独立的 **Open Manga Artwork YAML (OMAY)** 文件管理，因此每部作品的 OMNY 保持为纯粹的分镜数据。
 > - 通过纸面风格的页面预览和结构化表单进行编辑。
 > - 可在 [GitHub Pages](https://sa-san10.github.io/nyamuru-manga-name-studio/) 上直接在浏览器中试用，也可下载单文件 HTML 独立版，通过 `file://` 离线运行。
 > - 应用界面和文档目前仅提供日语版。
@@ -72,7 +74,15 @@ npm run build:standalone
 
 ## 漫画ネーム生成プロンプト
 
-「生成プロンプト」タブでは、ストーリー原稿をNDM v10へ構造化してOMNY形式で出力する完全版プロンプトを確認できます。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。
+「生成プロンプト」タブでは、ストーリー原稿をNDM v10へ構造化してOMNY形式で出力する完全版プロンプトを確認できます。プロンプトが出力するのは純粋なネームデータ（OMNY）のみで、画像生成向けの作画ルールは含まれません。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。
+
+## 画像生成指示（OMAY）
+
+**Open Manga Artwork YAML（OMAY）** は、OMNYを漫画として描くための作画・演出ルール（`style_notes`）とレイアウト仕様（`layout_spec`）をまとめた画像生成指示ファイルです。標準テンプレートを [src/content/standard.omay.yaml](./src/content/standard.omay.yaml) として同梱しています。画像生成側のプロジェクト指示にOMAYを一度設定すれば、作品ごとに渡すのはOMNYファイルのみで済み、ルール改訂時はOMAYを貼り替えるだけで全作品に適用されます。
+
+- 「生成プロンプト」タブ：OMAY標準テンプレートの個別コピー・ダウンロード
+- 「作品情報」タブ：標準テンプレートの読み込み（上書き確認あり）／手元のOMAYファイルの読み込み／現在のルールのOMAY書き出し
+- ヘッダーの「OMNY保存」：**画像生成指示分離版**（`.omny.yaml`・ルールを含まない純粋なネームデータ）と**全部入り版**（`.yaml`・ルール込みの一枚もの）の2種類から選択。どちらもネームデータ部分は同一で、全部入り版は分離版＋ルールの合成として生成されます
 
 ## 紙面上の要素操作
 

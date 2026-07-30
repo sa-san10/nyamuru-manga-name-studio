@@ -4,6 +4,8 @@ The **Nyamuru Data Model (NDM)** is a data model that defines the structure of a
 
 **Open Manga Name YAML (OMNY)** is the serialization format for saving and exchanging NDM as YAML.
 
+**Open Manga Artwork YAML (OMAY)** is the NDM family's artwork instruction file, standing alongside OMNY. It holds, as a standalone YAML, the drawing & staging rules shared by every panel (`style_notes`) and the layout specification (`layout_spec`) for drawing OMNY as finished manga; its `spec_name` / `spec_version` correspond to the OMNY's `schema_name` / `schema_version`. Set the OMAY once in the image-generation side's project instructions, and pass only the OMNY per work.
+
 ## 1. Overall structure
 
 The root is always `manga`. It gathers work metadata, setting, characters, assets, and pages into a single document.
@@ -33,8 +35,8 @@ manga:
 | `meta.reading_direction` | Fixed to `"right-to-left"` |
 | `meta.text_orientation` | Fixed to `"vertical"` |
 | `meta.font` | Fixed to `"アンチック体"` (antique typeface, the standard font for Japanese manga dialogue) |
-| `meta.style_notes` | Holds the fixed content of §B of the full prompt |
-| `layout_spec` | Holds the fixed content of §C of the full prompt |
+| `meta.style_notes` | Work-specific drawing instructions (optional — e.g. an art-style line). The shared drawing & staging rules live in the OMAY's `style_notes`; in the all-in-one usage they can be merged in here |
+| `layout_spec` | The layout specification. In the standard usage the OMAY's `layout_spec` takes this role and the OMNY side can omit it (the all-in-one usage keeps it) |
 
 ## 2. Pages and panels
 
@@ -64,7 +66,7 @@ shape:
 - `figures[].bbox` and `bubbles[].bbox` are also **absolute coordinates on the whole page**, not panel-local coordinates.
 - `anchor` expresses a position relative to the panel and takes precedence over bbox.
 - Speech balloons must not intersect the face zone — the top third of a character's bbox.
-- Composition precedence is `action` > `anchor` > speaking order = standing position > `size` > `bbox` (a transcription of the precedence table in §C of the generation prompt).
+- Composition precedence is `action` > `anchor` > speaking order = standing position > `size` > `bbox` (a transcription of the precedence table in the OMAY's `layout_spec`).
 
 ## 4. Character placement
 
@@ -185,10 +187,12 @@ manga:
     text_orientation: "vertical"
     # Base font for manga text. Fixed value (Japanese antique typeface)
     font: "アンチック体"
-    # Add art, lettering, and staging rules applied to the whole work as an array
+    # Add work-specific drawing instructions as an array (e.g. an art-style line)
+    # The shared drawing & staging rules are managed on the OMAY side
     style_notes: []
 
   # Layout rules shared by all pages: A4 coordinates, panel borders, bboxes, etc.
+  # In the standard usage this is managed on the OMAY side, so it may stay empty
   # For multiple lines, replace the empty string with | and indent from the next line
   layout_spec: ""
 
