@@ -127,6 +127,13 @@ export default function HowToGuide({ onNavigate }: Props) {
           </div>
         </aside>
         <aside class="howto-tip">
+          <Sparkles size={16} aria-hidden="true" />
+          <div>
+            <strong>作品固有の画風・ルールはOMAYで作品ごとに管理</strong>
+            <p>作品固有の画風・ルールは、「作品情報」タブの「OMAYファイルへ書き出し」でその作品用のOMAYファイルとして保存し、作品ごとに管理してください（読み込みも同じタブからできます）。</p>
+          </div>
+        </aside>
+        <aside class="howto-tip">
           <Download size={16} aria-hidden="true" />
           <div>
             <strong>スタンドアロン版もあります</strong>
