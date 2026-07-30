@@ -1,18 +1,22 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
+const migrationGuideUrl = 'https://github.com/sa-san10/nyamuru-manga-name-studio/blob/main/docs/migration-from-v1.3.md';
+
 const releases = [
   {
     version: '1.6.0',
     code: 10,
     date: '2026-07-30',
     title: 'フキダシ尻尾の運用整理と作品別OMAY',
+    migrationGuide: true,
     changes: [
       '生成ワークフローからフキダシ尻尾の描画抑制指示を削除。尻尾はOMAYの指定（話者の口元へ向ける）どおり画像生成時に描画し、人間の後工程はフキダシ内テキスト校正と尻尾の検品に',
       '生成ワークフロー・READMEに作品別OMAYの参照ルールを追加：(作品名).omny.yaml と同じ作品名の (作品名).omay.yaml があればその作品に適用し、無ければ standard.omay.yaml を使用',
       '生成プロンプトから画像生成側の運用指示（文字は作画と同時に生成・後写植禁止の項）を削除し、bg:-1 の説明も画像生成の詳細に踏み込まない記述に整理',
       '生成プロンプトタブ：OMAY標準テンプレートの案内を「使い方」の手順内へ移動し、コピー・保存ボタンを作品情報ページへの誘導リンクに変更',
       '作品情報タブ：標準テンプレートを standard.omay.yaml として保存するボタンを追加',
+      '旧バージョンから更新して初めて開いたとき、v1.3.x からの移行ガイドへ誘導する案内を1回だけ表示（初回訪問でウェルカム案内が出る場合は表示しない）',
     ],
   },
   {
@@ -20,6 +24,7 @@ const releases = [
     code: 9,
     date: '2026-07-30',
     title: '画像生成指示（OMAY）の分離',
+    migrationGuide: true,
     changes: [
       '作画・演出ルールとレイアウト仕様を、画像生成指示ファイルOMAY（Open Manga Artwork YAML・standard.omay.yaml）へ分離。画像生成側のプロジェクト指示に一度設定すれば、作品ごとに渡すのはOMNYのみになり、生成のたびに定型ルールを転記出力するトークン浪費と転記変異をなくした',
       '生成プロンプトを純粋なネームデータ（OMNY）のみの出力に変更。meta.style_notesは作品固有の作画指示（画風の行など）専用に',
@@ -36,6 +41,7 @@ const releases = [
     code: 8,
     date: '2026-07-30',
     title: 'NDM v10.2：背景無描画 bg:-1 と配置規則の一本化',
+    migrationGuide: true,
     changes: [
       'NDMスキーマ・生成プロンプトをv10.2に更新',
       'bgに-1（背景無描画）を追加：後工程で背景を差し替えるコマ向けに、中間グレー1色のベタ塗り・接地影なしで作画する指定。依頼で指示したコマにのみ使い、演出判断では自動選択しない。ネーム画面のBG選択とNDM検査もbg:-1に対応',
@@ -159,6 +165,11 @@ const releases = [
         <ul>
           {release.changes.map((change) => <li>{change}</li>)}
         </ul>
+        {release.migrationGuide && (
+          <p class="migration-link">
+            <a href={migrationGuideUrl}>→ v1.3.x からの移行ガイド（変更内容と対応作業）</a>
+          </p>
+        )}
       </section>
     ))}
   </main>
@@ -181,6 +192,7 @@ const releases = [
   .release-code { padding: 3px 8px; border: 1px solid #f0d9df; border-radius: 999px; color: #a08a92; font: 700 10px/1 ui-monospace, monospace; }
   time { margin-left: auto; color: #7b8190; font: 700 11px/1 ui-monospace, monospace; }
   ul { margin: 0; padding-left: 22px; }
+  .migration-link { margin: 12px 0 0; font-size: 13px; }
   li { margin: 6px 0; color: #5e5a64; line-height: 1.75; }
   @media (max-width: 560px) {
     .changelog-page { width: min(100% - 20px, 860px); padding-top: 20px; }

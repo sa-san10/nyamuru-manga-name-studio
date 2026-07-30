@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+> **v1.3.x からお使いの方へ**：v1.4.0〜v1.6.0 で画像生成指示ファイル（OMAY）の分離と NDM v10.2 への更新が入りました。変更内容と対応作業は **[v1.3.x からの移行ガイド](./docs/migration-from-v1.3.md)** を参照してください。
+
 > **画像生成ワークフローのセットアップ（必須）**：AIエージェントのプロジェクト内へ、ワークフロー本体 [agent-manga-generation-workflow.md](./src/content/agent-manga-generation-workflow.md) と標準OMAY [standard.omay.yaml](./src/content/standard.omay.yaml) の2ファイルを配置してください。OMNYは作画指示を含まない純粋なネームデータのため、OMAYが無いと作画・演出ルールとレイアウト仕様が不足します。
 
 ## サンプル漫画
