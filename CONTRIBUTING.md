@@ -7,3 +7,20 @@ IssueやPull Requestを歓迎します。
 バグ報告・機能要望は、Issueテンプレート（バグ報告／機能要望）を利用してください。セキュリティ上の問題は公開Issueに書かず、[SECURITY.md](./SECURITY.md) の手順で非公開に報告してください。参加にあたっては [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) に従ってください。
 
 公開前は [OSS-PUBLISHING-CHECKLIST.md](./OSS-PUBLISHING-CHECKLIST.md) も確認してください。
+
+## NDM文書の二重掲載箇所（同期チェックリスト）
+
+NDMの規則の一部は、読者（ネーム担当と画像生成AI）が異なるため意図的に複数箇所へ掲載しています。次のいずれかを改定するときは、対応する掲載箇所を必ず全て揃えて直してください。
+
+- **配置の優先順位**（`action` ＞ `anchor` ＞ 発言順＝立ち位置 ＞ `size` ＞ `bbox`）
+  - 正文: 生成プロンプト §C「基本原則: 配置の優先順位」の表（`src/content/nyamuru-manga-generation-prompt-v10.md`）
+  - 転記: 同プロンプト §B `style_notes` 末尾の優先順位の行
+  - 転記: 簡易ガイド §3（`src/content/nyamuru-data-model-v10.md`）
+- **bg（背景詳細度）の定義**
+  - 生成プロンプト 手順4
+  - 生成プロンプト §B `style_notes` の bg 関連の行
+  - 生成プロンプト §C「背景詳細度(bg)」節
+  - 簡易ガイド §2 の bg の行
+- **コマ外周マージン・枠線・タチキリの数値**
+  - 生成プロンプト 手順2
+  - 生成プロンプト §C「コマ間の間隙とライン」節
