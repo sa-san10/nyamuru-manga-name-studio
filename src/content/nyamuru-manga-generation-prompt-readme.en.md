@@ -47,6 +47,8 @@ This prompt assumes an LLM at the level of Claude Fable 5 or above.
 3. Download the OMNY `.yaml` file the LLM provides, and review its content and validation results.
 4. Edit the OMNY as needed and pass it on to a manga production workflow that has the OMAY (artwork instruction file) set up.
 
+<!-- attachments -->
+
 ## Example request
 
 ```text

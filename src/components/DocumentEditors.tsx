@@ -44,13 +44,22 @@ export function MetaEditor({ document, onChange, onNotify }: BaseProps & { onNot
     if (omayInput.current) omayInput.current.value = '';
   };
 
-  const downloadOmay = () => {
-    const blob = new Blob([toOmayYaml(document)], { type: 'application/yaml;charset=utf-8' });
+  const saveYamlFile = (content: string, fileName: string) => {
+    const blob = new Blob([content], { type: 'application/yaml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const anchor = window.document.createElement('a');
-    anchor.href = url; anchor.download = omayFileName(manga.meta.title); anchor.click();
+    anchor.href = url; anchor.download = fileName; anchor.click();
     URL.revokeObjectURL(url);
+  };
+
+  const downloadOmay = () => {
+    saveYamlFile(toOmayYaml(document), omayFileName(manga.meta.title));
     notify('現在のルールをOMAYファイルへ書き出しました');
+  };
+
+  const downloadStandardOmay = () => {
+    saveYamlFile(standardOmaySource, 'standard.omay.yaml');
+    notify('標準テンプレートを standard.omay.yaml として保存しました');
   };
 
   return <EditorShell eyebrow="DOCUMENT" title="作品情報" description="作品全体の基本情報と、生成時に共通で使う作画ルールを管理します。">
@@ -74,6 +83,7 @@ export function MetaEditor({ document, onChange, onNotify }: BaseProps & { onNot
       <p class="omay-note">作画・演出ルールとレイアウト仕様は、画像生成側のプロジェクト指示に設定する画像生成指示ファイル <strong>OMAY（Open Manga Artwork YAML）</strong> として入出力できます。読み込んだ内容は、下の2つの欄でそのまま閲覧・編集できます。</p>
       <div class="omay-actions">
         <button type="button" class="secondary-button" onClick={() => applyOmay(standardOmaySource, '標準テンプレート')}><WandSparkles size={16} />標準テンプレートを読み込み</button>
+        <button type="button" class="secondary-button" onClick={downloadStandardOmay}><Download size={16} />標準テンプレートを保存</button>
         <button type="button" class="secondary-button" onClick={() => omayInput.current?.click()}><FileUp size={16} />OMAYファイルを読み込み</button>
         <button type="button" class="secondary-button" onClick={downloadOmay}><Download size={16} />OMAYファイルへ書き出し</button>
       </div>

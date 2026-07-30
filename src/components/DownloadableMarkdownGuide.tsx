@@ -1,15 +1,19 @@
-import { ClipboardCopy, Download } from 'lucide-preact';
+import { ArrowRight, ClipboardCopy, Download } from 'lucide-preact';
 import DocsLangToggle from './DocsLangToggle';
 import MarkdownArticle from './MarkdownArticle';
 import type { DocsLanguage } from '../types';
 
-// タブに併載する分割ファイル（OMAYなど）。個別にコピー・保存できる導線
+// README内のこのマーカー位置へ添付ファイル枠を差し込む。マーカーが無いREADMEでは先頭に表示する
+const ATTACHMENTS_SLOT = '<!-- attachments -->';
+
+// タブに併載する分割ファイル（OMAYなど）。既定はコピー・保存ボタン、link指定時は別ページへの誘導リンクを表示する
 export interface GuideAttachment {
   label: string;
   description: string;
   fileName: string;
   content: string;
   mime?: string;
+  link?: { label: string; onClick: () => void };
 }
 
 interface Props {
@@ -74,6 +78,25 @@ export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, ey
   const copyLabel = en ? 'Copy the Markdown' : 'Markdownの内容をコピー';
   const downloadLabel = en ? 'Download the Markdown file' : 'Markdownファイルをダウンロード';
 
+  const slotIndex = readmeMarkdown.indexOf(ATTACHMENTS_SLOT);
+  const attachmentsBlock = attachments && attachments.length > 0 && <div class="markdown-attachments">
+    {attachments.map((attachment) => <div class="markdown-attachment" key={attachment.fileName}>
+      <div class="markdown-attachment-copy">
+        <strong>{attachment.label}</strong>
+        <small>{attachment.description}</small>
+        <code>{attachment.fileName}</code>
+      </div>
+      <div class="markdown-attachment-actions">
+        {attachment.link
+          ? <button type="button" class="markdown-attachment-link" onClick={attachment.link.onClick}>{attachment.link.label}<ArrowRight size={14} /></button>
+          : <>
+            <button type="button" class="secondary-button" onClick={() => copyAttachment(attachment)}><ClipboardCopy size={15} /><span>{en ? 'Copy' : 'コピー'}</span></button>
+            <button type="button" class="secondary-button" onClick={() => downloadAttachment(attachment)}><Download size={15} /><span>{en ? 'Save' : '保存'}</span></button>
+          </>}
+      </div>
+    </div>)}
+  </div>;
+
   return <div class="document-editor">
     <div class="document-editor-head">
       <div><span class="eyebrow">{eyebrow}</span><h2>{title}</h2><p>{description}</p></div>
@@ -84,20 +107,14 @@ export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, ey
       </div>
     </div>
     <div class="document-editor-body schema-markdown-wrap">
-      {attachments && attachments.length > 0 && <div class="markdown-attachments">
-        {attachments.map((attachment) => <div class="markdown-attachment" key={attachment.fileName}>
-          <div class="markdown-attachment-copy">
-            <strong>{attachment.label}</strong>
-            <small>{attachment.description}</small>
-            <code>{attachment.fileName}</code>
-          </div>
-          <div class="markdown-attachment-actions">
-            <button type="button" class="secondary-button" onClick={() => copyAttachment(attachment)}><ClipboardCopy size={15} /><span>{en ? 'Copy' : 'コピー'}</span></button>
-            <button type="button" class="secondary-button" onClick={() => downloadAttachment(attachment)}><Download size={15} /><span>{en ? 'Save' : '保存'}</span></button>
-          </div>
-        </div>)}
-      </div>}
-      <MarkdownArticle markdown={readmeMarkdown} className="markdown-resource-readme" onNotify={onNotify} />
+      {slotIndex < 0 && attachmentsBlock}
+      {slotIndex >= 0
+        ? <>
+          <MarkdownArticle markdown={readmeMarkdown.slice(0, slotIndex)} className="markdown-resource-readme" onNotify={onNotify} />
+          {attachmentsBlock}
+          <MarkdownArticle markdown={readmeMarkdown.slice(slotIndex + ATTACHMENTS_SLOT.length)} className="markdown-resource-readme" onNotify={onNotify} />
+        </>
+        : <MarkdownArticle markdown={readmeMarkdown} className="markdown-resource-readme" onNotify={onNotify} />}
       <MarkdownArticle markdown={markdown} className="markdown-resource-document" onNotify={onNotify} />
     </div>
   </div>;

@@ -9,9 +9,10 @@ interface Props {
   lang: DocsLanguage;
   onChangeLang: (lang: DocsLanguage) => void;
   onNotify: (message: string) => void;
+  onOpenMeta: () => void;
 }
 
-export default function GenerationPromptGuide({ lang, onChangeLang, onNotify }: Props) {
+export default function GenerationPromptGuide({ lang, onChangeLang, onNotify, onOpenMeta }: Props) {
   const en = lang === 'en';
   return <DownloadableMarkdownGuide
     readmeMarkdown={en ? readmeMarkdownEn : readmeMarkdownJa}
@@ -30,6 +31,7 @@ export default function GenerationPromptGuide({ lang, onChangeLang, onNotify }: 
         : 'OMNYを漫画として描くための作画・演出ルール（style_notes）とレイアウト仕様（layout_spec）。画像生成側のプロジェクト指示に一度設定すれば、作品ごとに渡すのはOMNYファイルのみで済みます。',
       fileName: 'standard.omay.yaml',
       content: standardOmaySource,
+      link: { label: en ? 'Edit and download on the 作品情報 (work info) page' : '編集とダウンロードは作品情報ページで', onClick: onOpenMeta },
     }]}
     lang={lang}
     onChangeLang={onChangeLang}

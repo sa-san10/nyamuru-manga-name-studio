@@ -503,13 +503,16 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .download-menu small { color: var(--muted); font-size: 9.5px; line-height: 1.6; }
 
 /* 生成プロンプトタブなどの分割ファイル導線（OMAY等のコピー・保存） */
-.markdown-attachments { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.markdown-attachments { display: flex; flex-direction: column; gap: 10px; max-width: 1040px; margin: 0 auto 14px; }
 .markdown-attachment { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--retro-blue); border-radius: 12px; background: var(--blue-soft, #f4f9ff); }
 .markdown-attachment-copy { flex: 1 1 240px; display: flex; flex-direction: column; gap: 3px; }
 .markdown-attachment-copy strong { color: #45424a; font-size: 12px; }
 .markdown-attachment-copy small { color: var(--muted); font-size: 10px; line-height: 1.7; }
 .markdown-attachment-copy code { color: var(--blue); font-size: 9.5px; }
 .markdown-attachment-actions { display: flex; gap: 8px; }
+.markdown-attachment-link { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: var(--blue); font: inherit; font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.markdown-attachment-link:hover { color: var(--retro-blue); }
+.markdown-attachment-link:focus-visible { outline: 2px solid var(--retro-blue); outline-offset: 2px; }
 
 @media (max-width: 1100px) {
   .brand-copy .eyebrow, .save-state { display: none; }
