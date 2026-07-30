@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+> **画像生成ワークフローのセットアップ（必須）**：AIエージェントのプロジェクト内へ、ワークフロー本体 [agent-manga-generation-workflow.md](./src/content/agent-manga-generation-workflow.md) と標準OMAY [standard.omay.yaml](./src/content/standard.omay.yaml) の2ファイルを配置してください。OMNYは作画指示を含まない純粋なネームデータのため、OMAYが無いと作画・演出ルールとレイアウト仕様が不足します。
+
 ## サンプル漫画
 
 ![ネームから生成した完成漫画の例（にゃむるたん © sa-san10 / CC BY 4.0）](./docs/images/sample-generated-manga.webp)

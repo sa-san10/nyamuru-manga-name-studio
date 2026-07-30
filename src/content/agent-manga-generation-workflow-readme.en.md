@@ -10,14 +10,14 @@ This is a workflow that lets an AI agent take a manga *name* (storyboard) in Ope
 
 It defines the steps for parsing the OMAY and OMNY, preparing the required assets, generating images page by page, regenerating failed pages, naming files, writing an inspection report, and giving a final report.
 
-The drawing & staging rules and the layout specification are handled as the artwork instruction file **Open Manga Artwork YAML (OMAY)**. Set the standard OMAY (`standard.omay.yaml`) once on the project-instructions side, and per work it is enough to hand over only the OMNY file. To use work-specific artwork rules, pass a `(title).omay.yaml` with the same title alongside the OMNY.
+The drawing & staging rules and the layout specification are handled as the artwork instruction file **Open Manga Artwork YAML (OMAY)**. Set the standard OMAY ([standard.omay.yaml](./standard.omay.yaml)) once on the project-instructions side, and per work it is enough to hand over only the OMNY file. To use work-specific artwork rules, pass a `(title).omay.yaml` with the same title alongside the OMNY.
 
 This workflow assumes ChatGPTWork.
 
 ## What you need
 
 - `agent-manga-generation-workflow.md`: the workflow document the agent refers to
-- `standard.omay.yaml`: the standard artwork instruction file (OMAY) — drawing & staging rules plus the layout spec (available from the studio's "生成プロンプト" (generation prompt) tab, or exported from the "作品情報" (work info) tab). For works with their own rules, also prepare a `(title).omay.yaml` with the same title
+- [standard.omay.yaml](./standard.omay.yaml): the standard artwork instruction file (OMAY) — drawing & staging rules plus the layout spec (edited and exported on the studio's "作品情報" (work info) tab). For works with their own rules, also prepare a `(title).omay.yaml` with the same title
 - A manga storyboard file in OMNY format
 - Reference images for characters, backgrounds, props, and so on
 - An AI agent environment capable of image generation and file operations
@@ -35,6 +35,8 @@ Give reference images file names that identify the character or background they 
 
 ```text
 # This project produces manga
+
+The project contains the workflow document `agent-manga-generation-workflow.md` and the standard OMAY `standard.omay.yaml`.
 
 ## Steps
 
@@ -62,3 +64,5 @@ For the concrete generation rules, regeneration conditions, naming conventions, 
 MIT License
 
 Copyright © 2026 [sa-san10](https://github.com/sa-san10)
+
+<!-- attachments -->

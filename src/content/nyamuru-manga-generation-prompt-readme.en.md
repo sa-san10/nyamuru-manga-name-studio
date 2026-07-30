@@ -10,7 +10,7 @@ This is an LLM prompt that structures a story manuscript or idea into a manga *n
 
 Give it a script, synopsis, or theme, and it generates a machine-readable storyboard including page structure, panel layout, character placement, speech balloons, backgrounds, and asset references.
 
-The LLM outputs **pure name data (OMNY) only**. The drawing & staging rules and layout spec for image generation are managed separately as the artwork instruction file **Open Manga Artwork YAML (OMAY)** (`standard.omay.yaml`), set once in the image-generation side's project instructions and used alongside the OMNY.
+The LLM outputs **pure name data (OMNY) only**. The drawing & staging rules and layout spec for image generation are managed separately as the artwork instruction file **Open Manga Artwork YAML (OMAY)** ([standard.omay.yaml](./standard.omay.yaml)), set once in the image-generation side's project instructions and used alongside the OMNY.
 
 The prompt targets vertical-text, right-bound (right-to-left) manga, and the full prompt itself is written in Japanese.
 If you need another manga format or language, many parts of the prompt change together, so we recommend editing it with an LLM.
@@ -46,8 +46,6 @@ This prompt assumes an LLM at the level of Claude Fable 5 or above.
 2. Provide the manuscript you want to adapt, plus your preferences such as page count and art style.
 3. Download the OMNY `.yaml` file the LLM provides, and review its content and validation results.
 4. Edit the OMNY as needed and pass it on to a manga production workflow that has the OMAY (artwork instruction file) set up.
-
-<!-- attachments -->
 
 ## Example request
 

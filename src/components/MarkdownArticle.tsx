@@ -1,4 +1,5 @@
 import { useMemo } from 'preact/hooks';
+import standardOmaySource from '../content/standard.omay.yaml?raw';
 import { renderMarkdownWithCodeCopyButtons } from '../lib/markdown';
 
 interface Props {
@@ -12,8 +13,22 @@ export default function MarkdownArticle({ markdown, className = '', onNotify }: 
 
   const handleClick = async (event: MouseEvent) => {
     const target = event.target as Element;
-    const button = target.closest<HTMLButtonElement>('[data-copy-code]');
     const article = event.currentTarget as HTMLElement;
+
+    // md内の standard.omay.yaml へのリンクは、アプリ内にファイル実体が無いため同梱テンプレートのダウンロードに置き換える
+    const omayLink = target.closest<HTMLAnchorElement>('a[href$="standard.omay.yaml"]');
+    if (omayLink && article.contains(omayLink)) {
+      event.preventDefault();
+      const blob = new Blob([standardOmaySource], { type: 'application/yaml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url; anchor.download = 'standard.omay.yaml'; anchor.click();
+      URL.revokeObjectURL(url);
+      onNotify('standard.omay.yaml を保存しました');
+      return;
+    }
+
+    const button = target.closest<HTMLButtonElement>('[data-copy-code]');
     if (!button || !article.contains(button)) return;
     const code = button.closest('.markdown-code-block')?.querySelector('code')?.textContent;
     if (code == null) return;

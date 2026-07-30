@@ -79,6 +79,8 @@ export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, ey
   const downloadLabel = en ? 'Download the Markdown file' : 'Markdownファイルをダウンロード';
 
   const slotIndex = readmeMarkdown.indexOf(ATTACHMENTS_SLOT);
+  const readmeBefore = slotIndex >= 0 ? readmeMarkdown.slice(0, slotIndex) : readmeMarkdown;
+  const readmeAfter = slotIndex >= 0 ? readmeMarkdown.slice(slotIndex + ATTACHMENTS_SLOT.length) : '';
   const attachmentsBlock = attachments && attachments.length > 0 && <div class="markdown-attachments">
     {attachments.map((attachment) => <div class="markdown-attachment" key={attachment.fileName}>
       <div class="markdown-attachment-copy">
@@ -108,13 +110,9 @@ export default function DownloadableMarkdownGuide({ readmeMarkdown, markdown, ey
     </div>
     <div class="document-editor-body schema-markdown-wrap">
       {slotIndex < 0 && attachmentsBlock}
-      {slotIndex >= 0
-        ? <>
-          <MarkdownArticle markdown={readmeMarkdown.slice(0, slotIndex)} className="markdown-resource-readme" onNotify={onNotify} />
-          {attachmentsBlock}
-          <MarkdownArticle markdown={readmeMarkdown.slice(slotIndex + ATTACHMENTS_SLOT.length)} className="markdown-resource-readme" onNotify={onNotify} />
-        </>
-        : <MarkdownArticle markdown={readmeMarkdown} className="markdown-resource-readme" onNotify={onNotify} />}
+      {readmeBefore.trim() && <MarkdownArticle markdown={readmeBefore} className="markdown-resource-readme" onNotify={onNotify} />}
+      {slotIndex >= 0 && attachmentsBlock}
+      {readmeAfter.trim() && <MarkdownArticle markdown={readmeAfter} className="markdown-resource-readme" onNotify={onNotify} />}
       <MarkdownArticle markdown={markdown} className="markdown-resource-document" onNotify={onNotify} />
     </div>
   </div>;

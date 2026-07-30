@@ -10,7 +10,7 @@
 
 **Nyamuru Data Model（NDM）** は、漫画ネームの構造、コマ割り、人物、フキダシ、素材参照を定義するデータモデルです。愛称は **Nyamuru🐱** です。
 **Open Manga Name YAML（OMNY）** は、NDMをYAMLとして保存・交換するためのシリアライズ形式です。
-**Open Manga Artwork YAML（OMAY）** は、OMNYを漫画として描くための作画・演出ルール（style_notes）とレイアウト仕様（layout_spec）をまとめた画像生成指示ファイルです（`standard.omay.yaml`）。
+**Open Manga Artwork YAML（OMAY）** は、OMNYを漫画として描くための作画・演出ルール（style_notes）とレイアウト仕様（layout_spec）をまとめた画像生成指示ファイルです（[standard.omay.yaml](./standard.omay.yaml)）。
 
 新しい原稿が渡されたら、下記の手順とテンプレートに従ってOMNY形式を出力してください。
 出力するOMNYには、各ページのコマ割り座標（A4基準）を含めます。画像生成AI向けの作画・演出ルールとレイアウト仕様はOMAYが受け持つため、**OMNYへは含めません**（OMAYは画像生成側のプロジェクト指示に一度設定し、作品ごとに渡すのはOMNYのみ、という運用）。

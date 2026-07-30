@@ -10,14 +10,14 @@ Open Manga Name YAML（OMNY）形式の漫画ネームとリファレンス画�
 
 OMAY・OMNYの解析、必要素材の準備、ページ単位の画像生成、失敗ページの再生成、ファイル命名、検品レポート、最終報告までの手順を定義しています。
 
-作画・演出ルールとレイアウト仕様は、画像生成指示ファイル **OMAY（Open Manga Artwork YAML）** として扱います。標準のOMAY（`standard.omay.yaml`）をプロジェクト指示側に一度設定すれば、作品ごとに渡すのはOMNYファイルのみで済みます。作品別の作画ルールを使う場合は、同じ作品名の `(作品名).omay.yaml` をOMNYと一緒に渡します。
+作画・演出ルールとレイアウト仕様は、画像生成指示ファイル **OMAY（Open Manga Artwork YAML）** として扱います。標準のOMAY（[standard.omay.yaml](./standard.omay.yaml)）をプロジェクト指示側に一度設定すれば、作品ごとに渡すのはOMNYファイルのみで済みます。作品別の作画ルールを使う場合は、同じ作品名の `(作品名).omay.yaml` をOMNYと一緒に渡します。
 
 本ワークフローはChatGPTWorkを想定しています。
 
 ## 用意するもの
 
 - `agent-manga-generation-workflow.md`：エージェントが参照するワークフロー本体
-- `standard.omay.yaml`：標準の画像生成指示ファイル（OMAY）。作画・演出ルールとレイアウト仕様（スタジオの「生成プロンプト」タブ、または「作品情報」タブの書き出しで取得）。作品別のルールを使う作品には、同じ作品名の `(作品名).omay.yaml` を追加で用意
+- [standard.omay.yaml](./standard.omay.yaml)：標準の画像生成指示ファイル（OMAY）。作画・演出ルールとレイアウト仕様（スタジオの「作品情報」タブで編集・書き出しできます）。作品別のルールを使う作品には、同じ作品名の `(作品名).omay.yaml` を追加で用意
 - OMNY形式の漫画ネームファイル
 - キャラクター、背景、小道具などのリファレンス画像
 - 画像生成とファイル操作が可能なAIエージェント環境
@@ -35,6 +35,8 @@ OMAY・OMNYの解析、必要素材の準備、ページ単位の画像生成、
 
 ```text
 # このプロジェクトでは漫画を制作します
+
+プロジェクト内に、ワークフロー本体 `agent-manga-generation-workflow.md` と標準OMAY `standard.omay.yaml` を配置している。
 
 ## 作業手順
 
@@ -62,3 +64,5 @@ OMAY・OMNYの解析、必要素材の準備、ページ単位の画像生成、
 MIT License
 
 Copyright © 2026 [sa-san10](https://github.com/sa-san10)
+
+<!-- attachments -->
