@@ -1,4 +1,4 @@
-# Nyamuru Data Model（NDM）/ Open Manga Name YAML（OMNY）漫画ネーム生成プロンプト v10.2
+# Nyamuru Data Model（NDM）/ Open Manga Name YAML（OMNY）漫画ネーム生成プロンプト v10.3
 
 > SPDX-License-Identifier: MIT
 >
