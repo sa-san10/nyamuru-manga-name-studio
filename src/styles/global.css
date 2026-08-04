@@ -193,6 +193,11 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .panel-selection-label { pointer-events: all; cursor: move; touch-action: none; }
 .panel-selection-label rect { fill: var(--accent); }
 .panel-selection-label text { fill: white; font: 700 4.5px/1 ui-monospace, monospace; letter-spacing: .04em; }
+.anchor-indicator { pointer-events: none; }
+.anchor-indicator line { stroke: rgba(230,79,104,.55); stroke-width: 1.2; stroke-dasharray: 2.2 1.8; vector-effect: non-scaling-stroke; }
+.anchor-indicator-dot { fill: rgba(255,201,51,.75); stroke: rgba(255,255,255,.85); stroke-width: 1.2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 1px 1px rgba(31,29,35,.25)); }
+.anchor-indicator-label-bg { fill: rgba(29,28,34,.55); }
+.anchor-indicator-text { fill: rgba(255,255,255,.92); font: 700 4.8px/1 ui-monospace, monospace; letter-spacing: .04em; text-anchor: middle; }
 .manga-panel.panel-bg--1 { background-color: var(--panel-bg-n1-color); }
 .manga-panel.panel-bg-0 { background-color: var(--panel-bg-0-color); background-image: var(--panel-bg-0-image); }
 .manga-panel.panel-bg-1 { background-color: var(--panel-bg-1-color); background-image: var(--panel-bg-1-image); }

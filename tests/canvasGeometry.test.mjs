@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { clampedPanelDelta, convertPanelShape, fallbackBox, panelBounds, resizedBox, resizePanelToBounds, translatePanel } from '../src/lib/canvasGeometry.ts';
+import { anchorPoint, clampedPanelDelta, convertPanelShape, fallbackBox, panelBounds, resizedBox, resizePanelToBounds, translatePanel } from '../src/lib/canvasGeometry.ts';
 
 const rectPanel = {
   id: 1,
@@ -99,4 +99,17 @@ test('多角形コマの拡大縮小で各頂点を外接矩形へ合わせる',
   const panel = { ...rectPanel, shape: { type: 'polygon', points: [[10, 10], [100, 20], [110, 110], [20, 100]] } };
   resizePanelToBounds(panel, { x: 20, y: 30, w: 180, h: 160 });
   assert.deepEqual(panel.shape.points, [[20, 30], [182, 46], [200, 190], [38, 174]]);
+});
+
+test('アンカー種別ごとにコマ内の位置を求める（端は内側6mm）', () => {
+  const bounds = { x: 10, y: 10, w: 100, h: 80 };
+  assert.deepEqual(anchorPoint(bounds, 'center'), { x: 60, y: 50 });
+  assert.deepEqual(anchorPoint(bounds, 'left'), { x: 16, y: 50 });
+  assert.deepEqual(anchorPoint(bounds, 'right'), { x: 104, y: 50 });
+  assert.deepEqual(anchorPoint(bounds, 'top-left'), { x: 16, y: 16 });
+  assert.deepEqual(anchorPoint(bounds, 'bottom-right'), { x: 104, y: 84 });
+});
+
+test('小さいコマではアンカーの内側マージンを縮める', () => {
+  assert.deepEqual(anchorPoint({ x: 0, y: 0, w: 20, h: 10 }, 'top-left'), { x: 3, y: 1.5 });
 });

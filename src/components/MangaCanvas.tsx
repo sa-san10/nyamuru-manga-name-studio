@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
 import type { BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
-import { clamp, clampedPanelDelta, fallbackBox, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
+import { anchorPoint, clamp, clampedPanelDelta, fallbackBox, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
 
 interface Props {
   title: string;
@@ -401,6 +401,27 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
 
   const selectedPanel = page.panels[activePanel];
   const selectedBounds = selectedPanel ? panelBounds(selectedPanel) : null;
+  const selectedItem = selectedPanel && selectedElement
+    ? (selectedElement.type === 'figure' ? selectedPanel.figures?.[selectedElement.index] : selectedPanel.bubbles[selectedElement.index])
+    : undefined;
+
+  const renderAnchorIndicator = () => {
+    if (!selectedPanel || !selectedBounds || !selectedElement || !selectedItem?.anchor) return null;
+    const anchor = selectedItem.anchor;
+    const box = selectedItem.bbox ?? fallbackBox(selectedPanel, selectedElement.type, selectedElement.index);
+    const point = anchorPoint(selectedBounds, anchor);
+    const labelW = anchor.length * 3 + 4.5;
+    const labelH = 6.9;
+    const labelX = clamp(point.x - labelW / 2, 1, 209 - labelW);
+    const above = point.y - 3.9 - labelH;
+    const labelY = above < 1 ? point.y + 3.9 : above;
+    return <g class="anchor-indicator" aria-hidden="true">
+      <line x1={box.x + box.w / 2} y1={box.y + box.h / 2} x2={point.x} y2={point.y} />
+      <circle class="anchor-indicator-dot" cx={point.x} cy={point.y} r="2.7" />
+      <rect class="anchor-indicator-label-bg" x={labelX} y={labelY} width={labelW} height={labelH} rx="1.2" />
+      <text class="anchor-indicator-text" x={labelX + labelW / 2} y={labelY + 5}>{anchor}</text>
+    </g>;
+  };
 
   return (
     <div class="canvas-viewport">
@@ -492,6 +513,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
           <circle class="panel-vertex-dot" cx={x} cy={y} r="2.4" />
           <rect class="panel-resize-hit" x={x - 5.5} y={y - 5.5} width="11" height="11" onPointerDown={(event) => startVertexDrag(event, vertexIndex)} />
         </g>)}
+        {renderAnchorIndicator()}
       </svg>}
       </div>
       </div>

@@ -1,4 +1,4 @@
-import type { BBox, CanvasElementType, Panel } from '../types';
+import type { Anchor, BBox, CanvasElementType, Panel } from '../types';
 
 export type ResizeHandle = 'move' | 'nw' | 'ne' | 'sw' | 'se';
 
@@ -26,6 +26,15 @@ export function panelBounds(panel: Panel): BBox {
   const xs = panel.shape.points.map(([x]) => x);
   const ys = panel.shape.points.map(([, y]) => y);
   return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+}
+
+// アンカー種別が指すコマ内の位置（mm）。端寄せは枠から少し内側に取る
+export function anchorPoint(bounds: BBox, anchor: Anchor): { x: number; y: number } {
+  const insetX = Math.min(6, bounds.w * .15);
+  const insetY = Math.min(6, bounds.h * .15);
+  const x = anchor.includes('left') ? bounds.x + insetX : anchor.includes('right') ? bounds.x + bounds.w - insetX : bounds.x + bounds.w / 2;
+  const y = anchor.startsWith('top') ? bounds.y + insetY : anchor.startsWith('bottom') ? bounds.y + bounds.h - insetY : bounds.y + bounds.h / 2;
+  return { x, y };
 }
 
 export function fallbackBox(panel: Panel, type: CanvasElementType, index: number): BBox {
