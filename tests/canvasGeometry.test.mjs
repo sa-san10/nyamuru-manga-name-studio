@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { anchorPoint, clampedPanelDelta, convertPanelShape, fallbackBox, panelBounds, resizedBox, resizePanelToBounds, translatePanel } from '../src/lib/canvasGeometry.ts';
+import { anchorPoint, clampedPanelDelta, convertPanelShape, fallbackBox, nearestAnchor, panelBounds, resizedBox, resizePanelToBounds, translatePanel } from '../src/lib/canvasGeometry.ts';
 
 const rectPanel = {
   id: 1,
@@ -112,4 +112,13 @@ test('アンカー種別ごとにコマ内の位置を求める（端は内側6m
 
 test('小さいコマではアンカーの内側マージンを縮める', () => {
   assert.deepEqual(anchorPoint({ x: 0, y: 0, w: 20, h: 10 }, 'top-left'), { x: 3, y: 1.5 });
+});
+
+test('bbox中心に最も近いコマ内アンカーを求める', () => {
+  const bounds = { x: 10, y: 10, w: 190, h: 100 };
+  assert.equal(nearestAnchor(bounds, { x: 12, y: 12, w: 10, h: 10 }), 'top-left');
+  assert.equal(nearestAnchor(bounds, { x: 85, y: 40, w: 40, h: 40 }), 'center');
+  assert.equal(nearestAnchor(bounds, { x: 180, y: 40, w: 18, h: 40 }), 'right');
+  assert.equal(nearestAnchor(bounds, { x: 20, y: 80, w: 30, h: 28 }), 'bottom-left');
+  assert.equal(nearestAnchor(bounds, { x: 150, y: 12, w: 40, h: 20 }), 'top-right');
 });

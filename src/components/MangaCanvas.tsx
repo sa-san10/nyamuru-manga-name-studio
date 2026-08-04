@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
-import type { BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
-import { anchorPoint, clamp, clampedPanelDelta, fallbackBox, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
+import type { Anchor, BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
+import { anchorPoint, clamp, clampedPanelDelta, fallbackBox, nearestAnchor, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
 
 interface Props {
   title: string;
@@ -12,9 +12,12 @@ interface Props {
   activePanel: number;
   selectedElement: CanvasElementSelection | null;
   showGuides: boolean;
+  autoAnchor: boolean;
+  onToggleAutoAnchor: () => void;
   onSelectPanel: (index: number) => void;
   onSelectElement: (selection: CanvasElementSelection | null) => void;
   onChangeElementBBox: (selection: CanvasElementSelection, bbox: BBox) => void;
+  onChangeElementAnchor: (selection: CanvasElementSelection, anchor: Anchor, bbox: BBox) => void;
   onMovePanel: (panelIndex: number, deltaX: number, deltaY: number) => void;
   onResizePanel: (panelIndex: number, bounds: BBox) => void;
   onMoveVertex: (panelIndex: number, vertexIndex: number, x: number, y: number) => void;
@@ -89,7 +92,7 @@ function bboxStyle(box: BBox, panel: Panel): Record<string, string> {
   };
 }
 
-export default function MangaCanvas({ title, author, page, pageCount, activePanel, selectedElement, showGuides, onSelectPanel, onSelectElement, onChangeElementBBox, onMovePanel, onResizePanel, onMoveVertex }: Props) {
+export default function MangaCanvas({ title, author, page, pageCount, activePanel, selectedElement, showGuides, autoAnchor, onToggleAutoAnchor, onSelectPanel, onSelectElement, onChangeElementBBox, onChangeElementAnchor, onMovePanel, onResizePanel, onMoveVertex }: Props) {
   const paperRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
@@ -251,9 +254,11 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
     setInteractionMode(mode);
     document.body.classList.add('is-canvas-dragging');
 
+    let lastBox: BBox | null = null;
     const move = (pointerEvent: PointerEvent) => {
       pointerEvent.preventDefault();
-      onChangeElementBBox(selection, resizedBox(interaction, pointerEvent.clientX, pointerEvent.clientY));
+      lastBox = resizedBox(interaction, pointerEvent.clientX, pointerEvent.clientY);
+      onChangeElementBBox(selection, lastBox);
     };
     const finish = () => {
       window.removeEventListener('pointermove', move);
@@ -262,6 +267,9 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
       document.body.classList.remove('is-canvas-dragging');
       setInteractionMode(null);
       cleanupRef.current = null;
+      // 自動アンカー: 移動ドラッグの確定位置から、bbox中心に最も近いコマ内アンカーへ再設定する。
+      // 受け側はドラッグ開始時のdocumentを見ているため、確定bboxも一緒に渡して同時に書き込ませる
+      if (autoAnchor && mode === 'move' && lastBox) onChangeElementAnchor(selection, nearestAnchor(interaction.bounds, lastBox), lastBox);
     };
     cleanupRef.current?.();
     cleanupRef.current = finish;
@@ -517,6 +525,10 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
       </svg>}
       </div>
       </div>
+      <label class="canvas-auto-anchor" title="ドラッグ移動を終えたとき、bbox中心に最も近いコマ内アンカーへ自動で再設定します">
+        <input type="checkbox" checked={autoAnchor} onChange={onToggleAutoAnchor} />
+        自動アンカー
+      </label>
       <div class="canvas-zoom-controls">
         <button type="button" onClick={() => zoomAt(1 / 1.25)} aria-label="縮小" title="縮小（Ctrl+ホイール / 二本指ピンチ）"><ZoomOut size={14} /></button>
         <button type="button" class="zoom-reset" onClick={resetZoom} title="ズームをリセット">{zoomPercent}%</button>

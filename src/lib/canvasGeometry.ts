@@ -37,6 +37,21 @@ export function anchorPoint(bounds: BBox, anchor: Anchor): { x: number; y: numbe
   return { x, y };
 }
 
+export const ANCHORS: Anchor[] = ['center', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
+
+export function nearestAnchor(bounds: BBox, box: BBox): Anchor {
+  const centerX = box.x + box.w / 2;
+  const centerY = box.y + box.h / 2;
+  let best: Anchor = 'center';
+  let bestDistance = Infinity;
+  for (const anchor of ANCHORS) {
+    const point = anchorPoint(bounds, anchor);
+    const distance = (point.x - centerX) ** 2 + (point.y - centerY) ** 2;
+    if (distance < bestDistance) { bestDistance = distance; best = anchor; }
+  }
+  return best;
+}
+
 export function fallbackBox(panel: Panel, type: CanvasElementType, index: number): BBox {
   const bounds = panelBounds(panel);
   let width = Math.min(type === 'figure' ? 42 : 40, Math.max(MIN_SIZE_MM, bounds.w * .35));

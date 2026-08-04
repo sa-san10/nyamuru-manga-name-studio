@@ -17,7 +17,7 @@ import { CharactersEditor, MaterialsEditor, MetaEditor, RawYamlEditor, SettingEd
 import { cloneDocument, newPage, newPanel, omnyFileName, parseMangaYaml, safeFileName, STORAGE_KEY, toMangaYaml, toSeparatedMangaYaml, validateManga } from '../lib/manga';
 import { resizePanelToBounds, translatePanel } from '../lib/canvasGeometry';
 import { applyPanelTemplate, findPanelTemplate, PANEL_TEMPLATES, type PanelTemplate } from '../lib/panelTemplates';
-import type { BBox, CanvasElementSelection, DocsLanguage, MangaDocument, WorkspaceTab } from '../types';
+import type { Anchor, BBox, CanvasElementSelection, DocsLanguage, MangaDocument, WorkspaceTab } from '../types';
 
 const TABS: {
   id: WorkspaceTab;
@@ -44,12 +44,20 @@ const HOWTO_INTRO_KEY = 'manga-name-studio.howto-intro.v1';
 const MIGRATION_NOTICE_KEY = 'manga-name-studio.migration-notice.v1';
 const MIGRATION_GUIDE_URL = `${REPO_URL}/blob/main/docs/migration-from-v1.3.md`;
 const DOCS_LANG_KEY = 'manga-name-studio.docs-lang.v1';
+const AUTO_ANCHOR_KEY = 'manga-name-studio.auto-anchor.v1';
 
 function initialDocsLang(): DocsLanguage {
   try {
     if (localStorage.getItem(DOCS_LANG_KEY) === 'en') return 'en';
   } catch { /* private mode */ }
   return 'ja';
+}
+
+function initialAutoAnchor(): boolean {
+  try {
+    return localStorage.getItem(AUTO_ANCHOR_KEY) === '1';
+  } catch { /* private mode */ }
+  return false;
 }
 
 // 見開きは右綴じ（1ページ目が右）。ビューアはこの配列順にめくる
@@ -89,6 +97,7 @@ export default function App() {
   const [mobileStoryboardPane, setMobileStoryboardPane] = useState<MobileStoryboardPane>('editor');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showGuides, setShowGuides] = useState(true);
+  const [autoAnchor, setAutoAnchor] = useState(initialAutoAnchor);
   const [spreadView, setSpreadView] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [showNewDialog, setShowNewDialog] = useState(false);
@@ -340,6 +349,25 @@ export default function App() {
       }
     });
   };
+  const toggleAutoAnchor = () => {
+    const next = !autoAnchor;
+    setAutoAnchor(next);
+    try { localStorage.setItem(AUTO_ANCHOR_KEY, next ? '1' : '0'); } catch { /* private mode */ }
+  };
+  // ドラッグ確定時の自動アンカー。このハンドラはドラッグ開始時のdocumentを閉じ込めたまま
+  // 呼ばれるため、anchorだけ書くとドラッグ中のbbox更新を巻き戻してしまう。確定bboxも同時に書く
+  const changeElementAnchor = (selection: CanvasElementSelection, anchor: Anchor, bbox: BBox) => {
+    const targetPanel = document.manga.pages[activePage]?.panels[activePanel];
+    const item = selection.type === 'figure' ? targetPanel?.figures?.[selection.index] : targetPanel?.bubbles[selection.index];
+    if (!item || item.anchor === anchor) return;
+    mutate((draft) => {
+      const draftPanel = draft.manga.pages[activePage]?.panels[activePanel];
+      const draftItem = selection.type === 'figure' ? draftPanel?.figures?.[selection.index] : draftPanel?.bubbles[selection.index];
+      if (!draftItem) return;
+      draftItem.anchor = anchor;
+      draftItem.bbox = bbox;
+    });
+  };
   const movePanel = (panelIndex: number, deltaX: number, deltaY: number) => {
     mutate((draft) => {
       const targetPanel = draft.manga.pages[activePage]?.panels[panelIndex];
@@ -419,10 +447,10 @@ export default function App() {
               </div>
             </div>
             {(() => {
-              const activeCanvas = <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={page} pageCount={document.manga.pages.length} activePanel={activePanel} selectedElement={selectedElement} showGuides={showGuides} onSelectPanel={(index) => { setActivePanel(index); if (index === activePanel) setSelectedElement(null); }} onSelectElement={setSelectedElement} onChangeElementBBox={changeElementBBox} onMovePanel={movePanel} onResizePanel={resizePanel} onMoveVertex={movePanelVertex} />;
+              const activeCanvas = <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={page} pageCount={document.manga.pages.length} activePanel={activePanel} selectedElement={selectedElement} showGuides={showGuides} autoAnchor={autoAnchor} onToggleAutoAnchor={toggleAutoAnchor} onSelectPanel={(index) => { setActivePanel(index); if (index === activePanel) setSelectedElement(null); }} onSelectElement={setSelectedElement} onChangeElementBBox={changeElementBBox} onChangeElementAnchor={changeElementAnchor} onMovePanel={movePanel} onResizePanel={resizePanel} onMoveVertex={movePanelVertex} />;
               if (spreadPartnerIndex === null) return activeCanvas;
               const switchToPartner = (panelIndex = 0) => { setActivePage(spreadPartnerIndex); setActivePanel(panelIndex); };
-              const partnerCanvas = <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={document.manga.pages[spreadPartnerIndex]} pageCount={document.manga.pages.length} activePanel={-1} selectedElement={null} showGuides={showGuides} onSelectPanel={switchToPartner} onSelectElement={() => switchToPartner()} onChangeElementBBox={() => {}} onMovePanel={() => {}} onResizePanel={() => {}} onMoveVertex={() => {}} />;
+              const partnerCanvas = <MangaCanvas title={document.manga.meta.title} author={document.manga.meta.author} page={document.manga.pages[spreadPartnerIndex]} pageCount={document.manga.pages.length} activePanel={-1} selectedElement={null} showGuides={showGuides} autoAnchor={autoAnchor} onToggleAutoAnchor={() => {}} onSelectPanel={switchToPartner} onSelectElement={() => switchToPartner()} onChangeElementBBox={() => {}} onChangeElementAnchor={() => {}} onMovePanel={() => {}} onResizePanel={() => {}} onMoveVertex={() => {}} />;
               // 右綴じ: 若いページが右（flexの後ろ）に来る
               const leftIndex = Math.max(activePage, spreadPartnerIndex);
               return <div class="canvas-spread">
