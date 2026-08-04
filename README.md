@@ -34,7 +34,7 @@
 
 **Nyamuru Data Model（NDM）**は、漫画ネームのためのデータモデルです。愛称は **Nyamuru🐱** です。
 
-このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。
+このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。NDMの仕様書は [nyamuru-data-model-v10.md](./src/content/nyamuru-data-model-v10.md)（[EN](./src/content/nyamuru-data-model-v10.en.md)）、内蔵サンプルのネームは [sample.omny.yaml](./src/content/sample.omny.yaml) として同梱しています。
 
 ## ネームサンプル
 
@@ -78,7 +78,7 @@ npm run build:standalone
 
 ## 漫画ネーム生成プロンプト
 
-「生成プロンプト」タブでは、ストーリー原稿をNDM v10へ構造化してOMNY形式で出力する完全版プロンプトを確認できます。プロンプトが出力するのは純粋なネームデータ（OMNY）のみで、画像生成向けの作画ルールは含まれません。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。
+「生成プロンプト」タブでは、ストーリー原稿をNDM v10へ構造化してOMNY形式で出力する完全版プロンプトを確認できます。プロンプトが出力するのは純粋なネームデータ（OMNY）のみで、画像生成向けの作画ルールは含まれません。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。プロンプト本体は [nyamuru-manga-generation-prompt-v10.md](./src/content/nyamuru-manga-generation-prompt-v10.md)、その解説は [nyamuru-manga-generation-prompt-readme.md](./src/content/nyamuru-manga-generation-prompt-readme.md)（[EN](./src/content/nyamuru-manga-generation-prompt-readme.en.md)）にあります。
 
 ## 画像生成指示（OMAY）
 
@@ -102,7 +102,7 @@ npm run build:standalone
 
 ## エージェント漫画生成ワークフロー
 
-「生成ワークフロー」タブでは、OMNYとキャラクター素材から漫画を生成・検品するエージェント向け手順を確認できます。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。
+「生成ワークフロー」タブでは、OMNYとキャラクター素材から漫画を生成・検品するエージェント向け手順を確認できます。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。ワークフロー本体は [agent-manga-generation-workflow.md](./src/content/agent-manga-generation-workflow.md)（[EN](./src/content/agent-manga-generation-workflow.en.md)）、その解説は [agent-manga-generation-workflow-readme.md](./src/content/agent-manga-generation-workflow-readme.md)（[EN](./src/content/agent-manga-generation-workflow-readme.en.md)）にあります。
 
 ## 公式マスコット「にゃむるたん」
 
@@ -110,7 +110,7 @@ npm run build:standalone
 
 **にゃむるたん（Nyamuru-tan）** は、Nyamuru Data Model（NDM）データモデルの妖精で、本プロジェクトの公式マスコットです。内蔵サンプル漫画『押しかけ妖精にゃむるたん』にも登場します。
 
-キャラクター設定と立ち絵素材はアプリ内「にゃむるたん」タブで閲覧・ダウンロードできます。キャラクターデザインは [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja)（にゃむるたん © sa-san10）で提供します。
+キャラクター設定と立ち絵素材はアプリ内「にゃむるたん」タブで閲覧・ダウンロードできます。キャラクター設定書は [nyamurutan-character-setting.md](./src/content/nyamurutan-character-setting.md)（[EN](./src/content/nyamurutan-character-setting.en.md)）にあります。キャラクターデザインは [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja)（にゃむるたん © sa-san10）で提供します。
 
 ## 作者・ライセンス
 
