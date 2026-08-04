@@ -1,5 +1,5 @@
-import { ArrowDown, ArrowRight, Bot, Cat, Download, FilePlus2, LayoutPanelTop, Sparkles, Workflow } from 'lucide-preact';
-import AskAiBlock from './AskAiBlock';
+import { ArrowDown, ArrowRight, Bot, Cat, Download, ExternalLink, FilePlus2, LayoutPanelTop, Sparkles, Workflow } from 'lucide-preact';
+import AskAiBlock, { REPO_URL } from './AskAiBlock';
 import type { WorkspaceTab } from '../types';
 
 interface Props {
@@ -65,7 +65,7 @@ const STEPS: {
 const OVERVIEW = ['テーマ・原稿', 'ネーム（OMNY）', '調整済みネーム', '完成漫画画像'];
 
 // スタンドアロン版（file://起動）では配信元サイトのURLが確定しないため、
-// ダウンロードボタンは非表示にし、NOTICESは同梱ファイルへの相対リンクにする
+// ダウンロードボタンの代わりに配布元リポジトリへのリンクを表示し、NOTICESは同梱ファイルへの相対リンクにする
 const IS_STANDALONE = Boolean(import.meta.env.PUBLIC_STANDALONE);
 const STANDALONE_URL = '/standalone/nyamuru-manga-name-studio.html';
 const NOTICES_URL = IS_STANDALONE ? './THIRD_PARTY_NOTICES.txt' : '/standalone/THIRD_PARTY_NOTICES.txt';
@@ -138,7 +138,9 @@ export default function HowToGuide({ onNavigate }: Props) {
           <div>
             <strong>スタンドアロン版もあります</strong>
             <p>CSS・JS・アイコンまで全部入りの単一HTMLファイル版です。ダウンロードしたファイルをダブルクリックするだけで、サーバー不要・オフラインで起動します。USBメモリで持ち運んだり、ネットのない環境でネームを編集したいときにどうぞ。再配布するときは <a href={NOTICES_URL} download>THIRD_PARTY_NOTICES.txt</a> を一緒に添付してください。</p>
-            {!IS_STANDALONE && <a class="secondary-button howto-tip-download" href={STANDALONE_URL} download="nyamuru-manga-name-studio.html"><Download size={15} />スタンドアロン版をダウンロード</a>}
+            {IS_STANDALONE
+              ? <a class="secondary-button howto-tip-download" href={REPO_URL} target="_blank" rel="noreferrer"><ExternalLink size={15} />最新版の配布元（GitHub）を開く</a>
+              : <a class="secondary-button howto-tip-download" href={STANDALONE_URL} download="nyamuru-manga-name-studio.html"><Download size={15} />スタンドアロン版をダウンロード</a>}
           </div>
         </aside>
       </div>

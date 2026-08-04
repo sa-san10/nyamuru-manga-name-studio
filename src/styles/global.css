@@ -329,7 +329,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .content-columns .content-card { width: 100%; margin: 0; }
 .schema-source-badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border: 1px solid var(--retro-blue); border-radius: 999px; background: var(--blue-soft); color: var(--blue); font: 800 9px/1 ui-monospace, monospace; white-space: nowrap; }
 .schema-markdown-wrap { color: #4d4a52; }
-.schema-markdown { max-width: 940px; margin: 0 auto; padding: 28px 32px 42px; border: 1px solid rgba(255,179,186,.55); border-radius: 16px; background: rgba(255,255,255,.96); box-shadow: 0 5px 18px rgba(255,107,129,.06); font-size: 16.5px; line-height: 1.8; }
+.schema-markdown { max-width: 940px; margin: 0 auto; padding: 28px 32px 42px; border: 1px solid rgba(255,179,186,.55); border-radius: 16px; background: rgba(255,255,255,.96); box-shadow: 0 5px 18px rgba(255,107,129,.06); font-size: 16.5px; line-height: 1.8; overflow-wrap: anywhere; }
 .schema-markdown h1 { margin: 0 0 10px; color: #3f3c44; font: 800 clamp(21px, 2vw + 14px, 27px)/1.25 Georgia, "Yu Mincho", serif; }
 .schema-markdown h2 { margin: 30px 0 12px; padding-bottom: 7px; border-bottom: 1px solid var(--line); color: #47434c; font-size: 24px; }
 .schema-markdown h3 { margin: 22px 0 9px; color: #55515a; font-size: 19.5px; }
@@ -588,7 +588,7 @@ input:disabled { background: #faf6f7; color: #9b9398; }
   .workspace-tabs .mobile-menu-button span { display: inline; }
   .workspace-tabs button { justify-content: center; min-width: 46px; }
   .canvas-stage { min-height: 500px; }
-  .app-footer > span { display: none; }
+  .app-footer > span:not(.footer-links) { display: none; }
   .app-footer { grid-template-columns: 1fr auto; }
   .canvas-toolbar { padding: 0 7px; }
   .canvas-toolbar-actions { gap: 4px; }
