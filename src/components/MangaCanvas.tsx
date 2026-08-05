@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
+import FigureSizeSvg from './FigureSizeSvg';
 import type { Anchor, BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
 import { anchorPoint, clamp, clampedPanelDelta, fallbackBox, nearestAnchor, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
 
@@ -465,7 +466,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               title={`${figure.name}（ドラッグで移動）`}
               tabIndex={activePanel === panelIndex ? 0 : -1}
             >
-              <UserRound size={12} />
+              {figure.size ? <FigureSizeSvg size={figure.size} /> : <UserRound size={12} />}
               <FigureName name={figure.name} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
