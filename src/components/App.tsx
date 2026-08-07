@@ -468,7 +468,7 @@ export default function App() {
         {tab === 'materials' && <MaterialsEditor document={document} onChange={setDocument} />}
         {tab === 'schema' && <SchemaGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
         {tab === 'nyamurutan' && <NyamurutanGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
-        {tab === 'howto' && <HowToGuide onNavigate={changeTab} />}
+        {tab === 'howto' && <HowToGuide onNavigate={changeTab} onNotify={setToast} />}
         {tab === 'prompt' && <GenerationPromptGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} />}
         {tab === 'workflow' && <AgentWorkflowGuide lang={docsLang} onChangeLang={changeDocsLang} onNotify={setToast} onOpenMeta={() => changeTab('meta')} />}
         {tab === 'yaml' && <RawYamlEditor source={rawSource} error={rawError} onSourceChange={setRawSource} onApply={applyRaw} onFormat={formatRaw} />}

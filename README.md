@@ -42,6 +42,10 @@
 
 OSS公開用リポジトリは [sa-san10/nyamuru-manga-name-studio](https://github.com/sa-san10/nyamuru-manga-name-studio) です。
 
+## 使い方
+
+LLMと画像生成AIをつないで、テーマから完成漫画まで進む3ステップのワークフローを、アプリ内「使い方」タブで案内しています。同じ内容をハウツーガイド [how-to-guide.md](./src/content/how-to-guide.md) として同梱しているので、アプリを開かずに読むこともできます。
+
 ## 開発
 
 ```bash
@@ -60,7 +64,7 @@ npm run build
 
 ## スタンドアロン版（単一HTML）
 
-スタンドアロン版は、通常のサイトビルド（`npm run build`）でも `dist/standalone/nyamuru-manga-name-studio.html` として同梱され、公開サイトではこのパスで配信されます（アプリ内「使い方」タブのワンポイントアドバイスにダウンロードボタンがあります）。
+スタンドアロン版は、通常のサイトビルド（`npm run build`）でも `dist/standalone/nyamuru-manga-name-studio.html` として同梱され、公開サイトではこのパスで配信されます（アプリ内「使い方」タブのワンポイントアドバイスにダウンロードリンクがあります）。
 
 GitHub Pages（[sa-san10.github.io/nyamuru-manga-name-studio](https://sa-san10.github.io/nyamuru-manga-name-studio/)）でも、スタンドアロン版をそのままブラウザで試せます（`.github/workflows/deploy-pages.yml` が main への push ごとに自動デプロイ。リポジトリの Settings → Pages で Source を「GitHub Actions」にすると有効化されます）。
 
@@ -103,6 +107,12 @@ npm run build:standalone
 ## エージェント漫画生成ワークフロー
 
 「生成ワークフロー」タブでは、OMNYとキャラクター素材から漫画を生成・検品するエージェント向け手順を確認できます。Markdown全文のコピーと、`.md`ファイルのダウンロードに対応しています。ワークフロー本体は [agent-manga-generation-workflow.md](./src/content/agent-manga-generation-workflow.md)（[EN](./src/content/agent-manga-generation-workflow.en.md)）、その解説は [agent-manga-generation-workflow-readme.md](./src/content/agent-manga-generation-workflow-readme.md)（[EN](./src/content/agent-manga-generation-workflow-readme.en.md)）にあります。
+
+## 姉妹プロジェクト：rimochan-nyamuru-manga-forge
+
+[**rimochan-nyamuru-manga-forge**](https://github.com/sa-san10/rimochan-nyamuru-manga-forge) は、自然言語で頼むと漫画の原稿が出てくるClaude Code用スキルです。「5ページで、こういう話の漫画を描いて」と頼むだけで、OMNY（ネーム）の設計→作画→回収→検品→納品までを一本のパイプラインで実行します（作画は `codex` CLI へ投げます）。
+
+本アプリと同じOMNY形式・OMAY形式を使っているため、本アプリで作成・調整したネームをそのままforgeへ流して原稿化できますし、forgeが設計したネームを本アプリで開いて手直しすることもできます。OMNY / OMAYの仕様の大本（上流）は本リポジトリです。
 
 ## 公式マスコット「にゃむるたん」
 
