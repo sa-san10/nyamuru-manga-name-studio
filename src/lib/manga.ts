@@ -7,7 +7,10 @@ export const OMAY_SPEC_NAME = 'Open Manga Artwork YAML' as const;
 const LEGACY_OMNY_SCHEMA_NAME = 'Open Manga Name YAML';
 export const BUBBLE_SHAPES = ['normal', 'thought', 'square', 'caption', 'flash', 'uniflash', 'wobbly', 'whisper', 'handwritten'] as const;
 export const ANCHORS = ['right', 'left', 'center', 'top-right', 'top-left', 'bottom-right', 'bottom-left'] as const;
-export const FIGURE_SIZES = ['full', 'waist-up', 'bust-up', 'face'] as const;
+export const FIGURE_SIZES = ['full', 'waist-up', 'bust-up', 'face', 'hand', 'foot', 'part'] as const;
+export const FIGURE_ROLES = ['main', 'sub'] as const;
+export const BLEED_EDGES = ['left', 'right', 'bottom'] as const;
+export const SCREEN_TEXT_ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 export function parseMangaYaml(source: string): MangaDocument {
   const value = parse(source) as MangaDocument;
@@ -106,7 +109,7 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
   const manga = document?.manga;
   if (!manga) return [{ level: 'error', path: 'manga', message: 'manga ルートが必要です' }];
   if (manga.schema_name !== NDM_SCHEMA_NAME) issues.push({ level: 'error', path: 'manga.schema_name', message: `固定値「${NDM_SCHEMA_NAME}」にしてください` });
-  if (manga.schema_version !== 10.2) issues.push({ level: 'warning', path: 'manga.schema_version', message: `NDMスキーマは v10.2 です（現在 v${manga.schema_version ?? '不明'}）` });
+  if (manga.schema_version !== 10.3) issues.push({ level: 'warning', path: 'manga.schema_version', message: `NDMスキーマは v10.3 です（現在 v${manga.schema_version ?? '不明'}）` });
   if (!manga.meta?.title?.trim()) issues.push({ level: 'error', path: 'manga.meta.title', message: '作品タイトルは必須です' });
   if (manga.meta?.page_count !== manga.pages?.length) issues.push({ level: 'error', path: 'manga.meta.page_count', message: `pages の実数 ${manga.pages?.length ?? 0} と一致しません` });
   const fixed = [['reading_direction', 'right-to-left'], ['text_orientation', 'vertical'], ['font', 'アンチック体']] as const;
@@ -127,17 +130,44 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
       if (panel.id !== panelIndex + 1) issues.push({ level: 'warning', path: `${panelPath}.id`, message: `読み順に合わせて ${panelIndex + 1} を推奨します` });
       if (![-1, 0, 1, 2].includes(panel.bg)) issues.push({ level: 'error', path: `${panelPath}.bg`, message: '-1 / 0 / 1 / 2 のいずれかが必須です' });
       if (!panel.shape || !['rect', 'polygon'].includes(panel.shape.type)) issues.push({ level: 'error', path: `${panelPath}.shape`, message: 'rect または polygon が必要です' });
+      if (panel.bleed?.length) {
+        if (panel.shape?.type !== 'rect') {
+          issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed（タチキリ）は rect コマにのみ指定できます' });
+        } else {
+          const { x, y, w, h } = panel.shape;
+          panel.bleed.forEach((edge) => {
+            if (!BLEED_EDGES.includes(edge)) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: `断ち切れる辺は left / right / bottom です（「${edge}」は不可。上端はヘッダー帯のため断ち切れません）` });
+            else if (edge === 'left' && x !== 0) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: left のコマは x: 0（紙の左端）にしてください' });
+            else if (edge === 'right' && x + w !== 210) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: right のコマは x + w = 210（紙の右端）にしてください' });
+            else if (edge === 'bottom' && y + h !== 297) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: bottom のコマは y + h = 297（紙の下端）にしてください' });
+          });
+        }
+      }
+      const figureCount = panel.figures?.length ?? 0;
+      if (panel.no_figures && figureCount > 0) issues.push({ level: 'error', path: `${panelPath}.no_figures`, message: '意図的な無人コマ（no_figures: true）に figures は書けません' });
+      const hasSpokenBubble = (panel.bubbles ?? []).some((bubble) => bubble.speaker);
+      if (!panel.no_figures && figureCount === 0 && !hasSpokenBubble) issues.push({ level: 'warning', path: `${panelPath}.figures`, message: '人物も話者もいないコマです。意図的な無人コマなら no_figures: true を宣言してください' });
       (panel.assets ?? []).forEach((key) => {
         if (!materialKeys.has(key)) issues.push({ level: 'warning', path: `${panelPath}.assets`, message: `素材「${key}」が materials にありません` });
       });
       (panel.figures ?? []).forEach((figure, index) => {
         if (!characterNames.has(figure.name)) issues.push({ level: 'warning', path: `${panelPath}.figures[${index}].name`, message: `人物「${figure.name}」が characters にありません` });
+        if (figure.size && !FIGURE_SIZES.includes(figure.size)) issues.push({ level: 'error', path: `${panelPath}.figures[${index}].size`, message: `size は ${FIGURE_SIZES.join(' / ')} から選んでください` });
+        if (figure.role && !FIGURE_ROLES.includes(figure.role)) issues.push({ level: 'error', path: `${panelPath}.figures[${index}].role`, message: 'role は main / sub から選んでください' });
       });
+      const figureNames = new Set((panel.figures ?? []).map((figure) => figure.name));
       (panel.bubbles ?? []).forEach((bubble, bubbleIndex) => {
         const bubblePath = `${panelPath}.bubbles[${bubbleIndex}]`;
         if (!bubble.text?.trim()) issues.push({ level: 'error', path: `${bubblePath}.text`, message: 'フキダシ本文は必須です' });
         if (bubble.shape && !BUBBLE_SHAPES.includes(bubble.shape)) issues.push({ level: 'error', path: `${bubblePath}.shape`, message: '定義済みの9種類から選んでください' });
         if (bubble.speaker && !characterNames.has(bubble.speaker)) issues.push({ level: 'warning', path: `${bubblePath}.speaker`, message: `話者「${bubble.speaker}」が characters にありません` });
+        if (bubble.offscreen && !bubble.speaker) issues.push({ level: 'warning', path: `${bubblePath}.offscreen`, message: 'コマ外の声（offscreen）には話者（speaker）を明記してください' });
+        if (bubble.offscreen && bubble.speaker && figureNames.has(bubble.speaker)) issues.push({ level: 'warning', path: `${bubblePath}.offscreen`, message: `話者「${bubble.speaker}」が figures にいます。コマ内にいる話者に offscreen は付けません` });
+      });
+      (panel.screen_text ?? []).forEach((screenText, screenTextIndex) => {
+        const screenTextPath = `${panelPath}.screen_text[${screenTextIndex}]`;
+        if (!screenText.text?.trim()) issues.push({ level: 'error', path: `${screenTextPath}.text`, message: '画面内文字の本文は必須です' });
+        if (screenText.orientation && !SCREEN_TEXT_ORIENTATIONS.includes(screenText.orientation)) issues.push({ level: 'error', path: `${screenTextPath}.orientation`, message: 'orientation は horizontal / vertical から選んでください' });
       });
     });
   });

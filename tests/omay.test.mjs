@@ -10,7 +10,7 @@ const sampleSource = readFileSync(new URL('../src/content/sample.omny.yaml', imp
 test('標準OMAYテンプレートがspec情報と両ルールを持つ', () => {
   const omay = parseOmayYaml(omaySource);
   assert.equal(omay.spec_name, OMAY_SPEC_NAME);
-  assert.equal(omay.spec_version, 10.2);
+  assert.equal(omay.spec_version, 10.3);
   assert.ok(omay.style_notes.length > 0);
   assert.ok(omay.layout_spec.includes('出力枚数(最重要)'));
   assert.ok(omay.layout_spec.includes('ページフッターの座標'));

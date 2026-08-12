@@ -411,12 +411,15 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
   const selectedPanel = page.panels[activePanel];
   const selectedBounds = selectedPanel ? panelBounds(selectedPanel) : null;
   const selectedItem = selectedPanel && selectedElement
-    ? (selectedElement.type === 'figure' ? selectedPanel.figures?.[selectedElement.index] : selectedPanel.bubbles[selectedElement.index])
+    ? (selectedElement.type === 'figure' ? selectedPanel.figures?.[selectedElement.index]
+      : selectedElement.type === 'bubble' ? selectedPanel.bubbles[selectedElement.index]
+      : selectedPanel.screen_text?.[selectedElement.index])
     : undefined;
+  const selectedAnchor = selectedItem && 'anchor' in selectedItem ? selectedItem.anchor : undefined;
 
   const renderAnchorIndicator = () => {
-    if (!selectedPanel || !selectedBounds || !selectedElement || !selectedItem?.anchor) return null;
-    const anchor = selectedItem.anchor;
+    if (!selectedPanel || !selectedBounds || !selectedElement || !selectedItem || !selectedAnchor) return null;
+    const anchor = selectedAnchor;
     const box = selectedItem.bbox ?? fallbackBox(selectedPanel, selectedElement.type, selectedElement.index);
     const point = anchorPoint(selectedBounds, anchor);
     const labelW = anchor.length * 3 + 4.5;
@@ -471,6 +474,24 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
               {isSelected && renderHandles(panelIndex, selection, box)}
             </button>;
           })}
+          {(panel.screen_text ?? []).map((screenText, screenTextIndex) => {
+            const selection: CanvasElementSelection = { type: 'screen_text', index: screenTextIndex };
+            const box = screenText.bbox ?? fallbackBox(panel, 'screen_text', screenTextIndex);
+            const isSelected = activePanel === panelIndex && selectedElement?.type === 'screen_text' && selectedElement.index === screenTextIndex;
+            return <button
+              class={`canvas-element screen-text-guide ${screenText.orientation === 'vertical' ? 'is-vertical' : ''} ${isSelected ? 'is-element-selected' : ''}`}
+              style={bboxStyle(box, panel)}
+              onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
+              onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
+              onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
+              key={`screen-text-${screenTextIndex}`}
+              title={`画面内文字 ${screenTextIndex + 1}（ドラッグで移動）`}
+              tabIndex={activePanel === panelIndex ? 0 : -1}
+            >
+              <span class={`screen-text-body ${screenText.orientation === 'vertical' ? 'vertical-text' : ''}`}>{screenText.text || '画面内文字'}</span>
+              {isSelected && renderHandles(panelIndex, selection, box)}
+            </button>;
+          })}
           {panel.bubbles.map((bubble, bubbleIndex) => {
             const selection: CanvasElementSelection = { type: 'bubble', index: bubbleIndex };
             const box = bubble.bbox ?? fallbackBox(panel, 'bubble', bubbleIndex);
@@ -494,9 +515,20 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
         </div>
       ))}
       <svg class="panel-frame-overlay" viewBox="0 0 210 297" aria-hidden="true">
-        {page.panels.map((panel, panelIndex) => panel.shape.type === 'rect'
-          ? <rect x={panel.shape.x} y={panel.shape.y} width={panel.shape.w} height={panel.shape.h} key={`frame-${panel.id}-${panelIndex}`} />
-          : <polygon points={panel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} key={`frame-${panel.id}-${panelIndex}`} />)}
+        {page.panels.map((panel, panelIndex) => {
+          const key = `frame-${panel.id}-${panelIndex}`;
+          if (panel.shape.type !== 'rect') return <polygon points={panel.shape.points.map(([x, y]) => `${x},${y}`).join(' ')} key={key} />;
+          const bleed = panel.bleed ?? [];
+          if (!bleed.length) return <rect x={panel.shape.x} y={panel.shape.y} width={panel.shape.w} height={panel.shape.h} key={key} />;
+          // タチキリ（bleed）辺には枠線を描かない——辺ごとの線に分解する
+          const { x, y, w, h } = panel.shape;
+          return <g key={key}>
+            <line x1={x} y1={y} x2={x + w} y2={y} />
+            {!bleed.includes('right') && <line x1={x + w} y1={y} x2={x + w} y2={y + h} />}
+            {!bleed.includes('bottom') && <line x1={x} y1={y + h} x2={x + w} y2={y + h} />}
+            {!bleed.includes('left') && <line x1={x} y1={y} x2={x} y2={y + h} />}
+          </g>;
+        })}
       </svg>
       {selectedPanel && selectedBounds && <svg class="panel-selection-overlay" viewBox="0 0 210 297" aria-hidden="true">
         {selectedPanel.shape.type === 'rect' ? <>

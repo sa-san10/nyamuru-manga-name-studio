@@ -12,6 +12,8 @@ IssueやPull Requestを歓迎します。
 
 NDMの規則の一部は、読者（ネーム担当と画像生成AI）が異なるため意図的に複数箇所へ掲載しています。次のいずれかを改定するときは、対応する掲載箇所を必ず全て揃えて直してください。
 
+OMAY（`src/content/standard.omay.yaml`）の `style_notes` / `layout_spec` は、全部入りサンプル `src/content/sample.omny.yaml` にも同文が埋め込まれています。**OMAYを改定するときは sample 側も必ず揃えて直してください。**
+
 - **配置の優先順位**（`action` ＞ `anchor` ＞ 発言順＝立ち位置 ＞ `size` ＞ `bbox`）
   - 正文: 生成プロンプト §C「基本原則: 配置の優先順位」の表（`src/content/nyamuru-manga-generation-prompt-v10.md`）
   - 転記: 同プロンプト §B `style_notes` 末尾の優先順位の行
@@ -24,3 +26,17 @@ NDMの規則の一部は、読者（ネーム担当と画像生成AI）が異な
 - **コマ外周マージン・枠線・タチキリの数値**
   - 生成プロンプト 手順2
   - 生成プロンプト §C「コマ間の間隙とライン」節
+- **タチキリ（`bleed`）の宣言と作画手順**
+  - 生成プロンプト 手順2 のタチキリの項
+  - 生成プロンプト §A「フィールドの決まりごと」の bleed の行
+  - 生成プロンプト §B パターンM〜Qの座標例
+  - OMAY `layout_spec`「コマ間の間隙とライン」の例外（タチキリ）の項
+- **人物センター原則の適用範囲（`role: sub`・part系 `size`・`no_figures` の除外）**
+  - 生成プロンプト 手順3 の人物センター原則
+  - 生成プロンプト §A「フィールドの決まりごと」の size / role の行
+  - OMAY `layout_spec` figures 節の size / role
+  - 簡易ガイド §4
+- **フキダシ尻尾の規則（`offscreen` は尻尾を描かない）**
+  - OMAY `style_notes` の尻尾の行
+  - OMAY `layout_spec`「禁止事項」のしっぽの項
+  - 生成ワークフロー「6. ページ検品」の尻尾の項

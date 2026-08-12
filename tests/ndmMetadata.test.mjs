@@ -8,7 +8,33 @@ const sampleSource = readFileSync(new URL('../src/content/sample.omny.yaml', imp
 test('サンプルがNDMの正式なスキーマ名とバージョンを持つ', () => {
   const document = parseMangaYaml(sampleSource);
   assert.equal(document.manga.schema_name, NDM_SCHEMA_NAME);
-  assert.equal(document.manga.schema_version, 10.2);
+  assert.equal(document.manga.schema_version, 10.3);
+});
+
+test('サンプルはNDM検査でエラーを出さない', () => {
+  const issues = validateManga(parseMangaYaml(sampleSource));
+  assert.deepEqual(issues.filter((issue) => issue.level === 'error'), []);
+});
+
+test('bleed辺が紙端座標と一致しない場合はエラーになる', () => {
+  const document = parseMangaYaml(sampleSource);
+  document.manga.pages[0].panels[0].bleed = ['left']; // x:10 のコマなので左端に達していない
+  const issues = validateManga(document);
+  assert.ok(issues.some((issue) => issue.level === 'error' && issue.path.endsWith('.bleed')));
+});
+
+test('無人コマ宣言（no_figures）と figures の併用はエラーになる', () => {
+  const document = parseMangaYaml(sampleSource);
+  document.manga.pages[0].panels[0].no_figures = true; // figures があるコマ
+  const issues = validateManga(document);
+  assert.ok(issues.some((issue) => issue.level === 'error' && issue.path.endsWith('.no_figures')));
+});
+
+test('コマ内にいる話者への offscreen は警告になる', () => {
+  const document = parseMangaYaml(sampleSource);
+  document.manga.pages[0].panels[0].bubbles[1].offscreen = true; // 話者ツクルは figures にいる
+  const issues = validateManga(document);
+  assert.ok(issues.some((issue) => issue.level === 'warning' && issue.path.endsWith('.offscreen')));
 });
 
 test('サンプルは作者名を持ち、フッター規則がstyle_notesとlayout_specに揃っている', () => {

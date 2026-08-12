@@ -1,4 +1,4 @@
-# Nyamuru Data Model (NDM) v10.2 / Open Manga Name YAML (OMNY) Quick Guide
+# Nyamuru Data Model (NDM) v10.3 / Open Manga Name YAML (OMNY) Quick Guide
 
 The **Nyamuru Data Model (NDM)** is a data model that defines the structure of a manga *name* (storyboard): panel layout, characters, speech balloons, and asset references. Its nickname is **Nyamuru🐱**.
 
@@ -13,7 +13,7 @@ The root is always `manga`. It gathers work metadata, setting, characters, asset
 ```yaml
 manga:
   schema_name: "Nyamuru Data Model"
-  schema_version: 10.2
+  schema_version: 10.3
   meta: { ... }
   layout_spec: |
     # Description of the A4 coordinate system
@@ -29,7 +29,7 @@ manga:
 | Field | Rule |
 |---|---|
 | `schema_name` | NDM's formal identifier, fixed to `"Nyamuru Data Model"`. No emoji |
-| `schema_version` | The current NDM schema version, `10.2` |
+| `schema_version` | The current NDM schema version, `10.3` |
 | `meta.author` | Author name (optional). If set, it is drawn small in the footer at the bottom center of each page; if empty, nothing is drawn |
 | `meta.page_count` | Must match the actual length of the `pages` array |
 | `meta.reading_direction` | Fixed to `"right-to-left"` |
@@ -46,6 +46,9 @@ manga:
 - `shape.type` is `rect` or `polygon`.
 - `bg` is required and is `-1` / `0` / `1` / `2`. At most 2 panels per page may use `2` (`-1` does not count toward this limit).
 - `bg: -1` means no background art (a single flat mid-gray fill only, with no contact shadow). Use it only for panels specified in the request; never select it automatically as a staging choice.
+- `bleed` declares full-bleed (edge-to-edge) panel edges (optional; an array of `left` / `right` / `bottom`). Declared edges must also reach the paper edge in coordinates (left = `x: 0`, right = `x + w = 210`, bottom = `y + h = 297`). Rect panels only.
+- `no_figures: true` declares an intentionally figure-less panel (optional). Attach it to panels that draw no characters at all; do not combine it with `figures`.
+- `screen_text` is an array of non-balloon text on screens, signs, and paper surfaces (optional). Each entry has `text` (required), `bbox` (optional), and `orientation` (`horizontal` by default / `vertical`).
 
 ### Panel shapes
 
@@ -79,8 +82,9 @@ figures:
 ```
 
 - `name` must match a `characters[].name`.
-- `size` is `full` / `waist-up` / `bust-up` / `face`.
-- A voice from outside the panel does not go into `figures`.
+- `size` is `full` / `waist-up` / `bust-up` / `face` / `hand` / `foot` / `part`. The hand/foot/part values draw only a body part (and carry no face zone).
+- `role` is `main` (default) / `sub`. A `sub` figure is a supporting character placed small in a corner, exempt from the character-centering principle.
+- A voice from outside the panel does not go into `figures`; instead its balloon gets `offscreen: true`.
 
 ## 5. Speech balloons
 
@@ -110,6 +114,7 @@ The following 9 `shape` values are available.
 | `handwritten` | Sound effects, hand-drawn text |
 
 - Inner voices get `monologue: true`, and parentheses "（）" are removed from `text`.
+- Voices from outside the panel get `offscreen: true` (the speaker is off-panel: their figure is not drawn and the balloon gets no tail; still spell out `speaker`).
 - When `speaker` is omitted, the previous speaker within the same panel is inherited.
 - `speaker` can be omitted for speaker-less shapes such as `caption` and `handwritten`.
 
@@ -160,7 +165,7 @@ Below is an empty OMNY template for two pages. You can paste it straight into th
 ```yaml
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sa-san10
-# Nyamuru Data Model (NDM) v10.2 serialized as Open Manga Name YAML (OMNY)
+# Nyamuru Data Model (NDM) v10.3 serialized as Open Manga Name YAML (OMNY)
 # Nickname: Nyamuru🐱
 
 # Root of an OMNY document. All information about the work goes inside
@@ -169,7 +174,7 @@ manga:
   schema_name: "Nyamuru Data Model"
 
   # Version of the NDM schema in use
-  schema_version: 10.2
+  schema_version: 10.3
 
   # Basic information about the whole work
   meta:

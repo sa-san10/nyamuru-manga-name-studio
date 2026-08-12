@@ -21,6 +21,14 @@ test('プロンプト§BのパターンA〜Uを選択肢として持つ', () => 
   assert.deepEqual(PANEL_TEMPLATES.find((template) => template.id === 'M').shapes[0], rect(0, 10, 210, 287));
 });
 
+test('タチキリ系テンプレートは bleed 宣言を持ち、適用したコマへ引き継がれる', () => {
+  const template = PANEL_TEMPLATES.find((t) => t.id === 'M');
+  assert.deepEqual(template.bleeds[0], ['left', 'right', 'bottom']);
+  const page = pageWith([panel(1, rect(10, 10, 190, 100))]);
+  applyPanelTemplate(page, template);
+  assert.deepEqual(page.panels[0].bleed, ['left', 'right', 'bottom']);
+});
+
 test('タチキリ系テンプレートN〜Qは紙端(x=0/x=210/y=297)に達し、上端はy=10を守る', () => {
   for (const id of ['N', 'O', 'P', 'Q']) {
     const template = PANEL_TEMPLATES.find((t) => t.id === id);

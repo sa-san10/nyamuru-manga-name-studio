@@ -54,6 +54,17 @@ export function nearestAnchor(bounds: BBox, box: BBox): Anchor {
 
 export function fallbackBox(panel: Panel, type: CanvasElementType, index: number): BBox {
   const bounds = panelBounds(panel);
+  // 画面内文字（screen_text）は横組みが既定なので横長bboxを既定にする
+  if (type === 'screen_text') {
+    const width = Math.min(46, Math.max(MIN_SIZE_MM, bounds.w * .4));
+    const height = Math.min(18, Math.max(MIN_SIZE_MM, bounds.h * .2));
+    return {
+      x: clamp(bounds.x + (bounds.w - width) / 2, bounds.x, bounds.x + bounds.w - width),
+      y: clamp(bounds.y + bounds.h / 2 - height / 2 + index * 4, bounds.y, bounds.y + bounds.h - height),
+      w: roundMm(width),
+      h: roundMm(height),
+    };
+  }
   let width = Math.min(type === 'figure' ? 42 : 40, Math.max(MIN_SIZE_MM, bounds.w * .35));
   const height = Math.min(type === 'figure' ? 55 : 50, Math.max(MIN_SIZE_MM, bounds.h * .45));
   // 縦書きフキダシは縦長bbox（通常サイズの目安 w40×h50）を保つ
@@ -111,6 +122,11 @@ export function translatePanel(panel: Panel, deltaX: number, deltaY: number): vo
     bubble.bbox.x = roundMm(bubble.bbox.x + deltaX);
     bubble.bbox.y = roundMm(bubble.bbox.y + deltaY);
   });
+  panel.screen_text?.forEach((screenText) => {
+    if (!screenText.bbox) return;
+    screenText.bbox.x = roundMm(screenText.bbox.x + deltaX);
+    screenText.bbox.y = roundMm(screenText.bbox.y + deltaY);
+  });
 }
 
 export function resizePanelToBounds(panel: Panel, requestedBounds: BBox): void {
@@ -140,6 +156,7 @@ export function resizePanelToBounds(panel: Panel, requestedBounds: BBox): void {
   }
   panel.figures?.forEach((figure) => { if (figure.bbox) transformBox(figure.bbox); });
   panel.bubbles.forEach((bubble) => { if (bubble.bbox) transformBox(bubble.bbox); });
+  panel.screen_text?.forEach((screenText) => { if (screenText.bbox) transformBox(screenText.bbox); });
 }
 
 export function convertPanelShape(panel: Panel, type: 'rect' | 'polygon'): void {
