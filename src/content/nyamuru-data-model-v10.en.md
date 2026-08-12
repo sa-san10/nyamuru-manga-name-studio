@@ -83,7 +83,7 @@ figures:
 
 - `name` must match a `characters[].name`.
 - `size` is `full` / `waist-up` / `bust-up` / `face` / `hand` / `foot` / `part`. The hand/foot/part values draw only a body part (and carry no face zone).
-- `role` is `main` (default) / `sub`. A `sub` figure is a supporting character placed small in a corner, exempt from the character-centering principle.
+- `role` is `main` (default) / `sub`. A `sub` figure is a supporting character placed small in a corner. The character-centering principle is a default for `main` figures, not a hard rule — panels with staging intent may place figures freely via `anchor` / `bbox`.
 - A voice from outside the panel does not go into `figures`; instead its balloon gets `offscreen: true`.
 
 ## 5. Speech balloons
