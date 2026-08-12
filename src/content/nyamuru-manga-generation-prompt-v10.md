@@ -60,6 +60,7 @@ OMNY本体は、チャット内のコードブロックとして貼り付ける�
    - 手だけ・足だけなど**体の一部だけを描く人物**は、figures から外さずに `size` を `hand` / `foot` / `part` にする。part系は配置意図の優先順位2（役割・描写範囲の宣言）にあたり、顔ゾーンを持たない。
    - **意図的に人物を一人も描かないコマ**（暗転・風景の見せゴマ等）は `no_figures: true` を宣言する（figures の単純な省略＝構図おまかせとは意味が違う）。
    - モニター・看板・紙面など**画面の中の文字**は、フキダシにせず `screen_text`（text / bbox / orientation）で指定する。半角英数は `orientation: horizontal`（横組み）のまま崩さない。
+   - 小道具など**物の配置も figures で座標管理できる**——figures は人物専用ではない。物の figure は **`object: true` を付けて宣言**し、`name` に materials の `key` を書き、`bbox` / `anchor` で置き場所を示す（`size` / `role` は人物向けの語彙なので物には付けない）。顔ゾーン・センター配置の既定・発言順規則は、**object の無い figure（人物）にのみ適用**する。
    - 各フキダシに `bbox` と `anchor` を付ける。anchorと配列順（右上→左下）を一致させる。
    - 📐 **フキダシbboxの縦横比は、文字の組み方向に合わせる。** 縦書きのフキダシは**縦長**のバウンディングボックス（通常サイズの目安: w40 × h50mm）、横書きのフキダシは**横長**のバウンディングボックス（通常サイズの目安: w50 × h40mm）にする。文字量やコマの大きさに応じた拡縮は自由だが、縦長・横長の向きは崩さない。
    - 🚨 **フキダシbboxは、全figureの顔ゾーン（bbox上部1/3）と交差禁止。胴体との重なりは許容。**（`size` が hand/foot/part の figure は顔を描かないため顔ゾーンを持たない）OMNY出力後、交差判定（x範囲重複∧y範囲重複）を全ペア自己検証し、結果を報告する。あわせて人物配置も自己検証する——**配置意図の優先順位1・2で配置したコマ**は宣言（anchor / bbox / role / size / no_figures）が揃っているか、**優先順位3（既定＝センター配置）のコマ**は人物中心ズレ±5%チェックとページの面積重心チェックを行い、結果を報告する。
@@ -193,12 +194,13 @@ manga:
             # polygon の場合: points [[x1,y1],[x2,y2],...]（頂点座標・mm）
           bg:             # 背景詳細度 -1/0/1/2（必須）-1=背景無描画(依頼で指示されたコマのみ) 0=感情色＋効果のみ 1=簡易背景 2=詳細背景(1ページ2コマまで・位置自由)
           bleed:          # タチキリ（断ち切り）の辺の配列（任意。left/right/bottom。座標も紙端に一致させる）
-          no_figures:     # 意図的な無人コマなら true（任意。人物を一人も描かない宣言。figures と併用しない）
-          figures:        # コマ内の人物配置（配列・任意。無指定コマは発言順規則で自由構図）
-            - name:       # キャラ名（characters と一致させる）
+          no_figures:     # 意図的な無人コマなら true（任意。人物を一人も描かない宣言。人物の figure と併用しない——object: true の物は書ける）
+          figures:        # コマ内の人物・物の配置（配列・任意。人物の無指定コマは発言順規則で自由構図）
+            - name:       # キャラ名（characters と一致）または物の素材名（materials の key と一致）
+              object:     # この figure が物（小道具等）なら true（任意。省略=人物）
               bbox:       # {x, y, w, h} キャンバス絶対座標(mm)・描画領域の目安
               anchor:     # right/left/center/top-right/top-left/bottom-right/bottom-left（厳守指定）
-              size:       # full/waist-up/bust-up/face/hand/foot/part（bbox寸法より優先。hand/foot/part=体の一部だけ・顔ゾーンなし）
+              size:       # full/waist-up/bust-up/face/hand/foot/part（人物のみ。bbox寸法より優先。hand/foot/part=体の一部だけ・顔ゾーンなし。物には付けない）
               role:       # main/sub（任意。省略=main。sub=脇役＝人物センター原則の対象外）
           assets:         # このコマで使う素材（materials の key の配列・任意）
           bubbles:        # フキダシ（配列・縦書きなので右上のフキダシから順に）
@@ -230,10 +232,11 @@ manga:
 - `panels.shape.type` は `"rect"` か `"polygon"` のいずれか。
 - `panels.bg` は **-1/0/1/2 の整数・全コマ必須**。-1=背景無描画（依頼で指示されたコマのみ。演出判断で自動選択しない）、0=背景なし（感情色ベタ/グラデ＋効果のみ）、1=簡易背景（シーン色＋記号的要素1〜2点）、2=詳細背景（**1ページに2コマまで**・位置は自由）。bg:2 の2コマ制限のカウントに bg:-1 は関係しない。
 - `panels.bleed` は任意。タチキリ（断ち切り）コマで**断ち切る辺を宣言する配列**（`left` / `right` / `bottom`。上端はヘッダー帯のため断ち切れない）。宣言した辺は座標も紙端に一致させる（left=`x: 0`、right=`x + w = 210`、bottom=`y + h = 297`）。rect コマにのみ指定できる。
-- `panels.no_figures: true` は**意図的な無人コマ**の宣言（任意）。人物を一人も描かないコマ（暗転・風景の見せゴマ等）に付け、`figures` とは併用しない。figures の単純な省略（＝発言順規則で人物は描く）とは意味が違う。
+- `panels.no_figures: true` は**意図的な無人コマ**の宣言（任意）。人物を一人も描かないコマ（暗転・風景の見せゴマ等）に付け、人物の figure とは併用しない（**`object: true` の物の figure は書ける**）。figures の単純な省略（＝発言順規則で人物は描く）とは意味が違う。
 - `panels.screen_text` は任意。モニター・看板・紙面など**フキダシにしない画面内の文字**の配列。各要素は `text`（必須・一字一句正確に）・`bbox`（任意）・`orientation`（`horizontal`=横組みが既定／`vertical`=縦書き）。半角英数は横組みのまま崩さない。
 - `figures[].size` は `full` / `waist-up` / `bust-up` / `face` / `hand` / `foot` / `part`。hand/foot/part は**体の一部だけを描く**指定で、配置意図の優先順位2にあたり、顔ゾーン（bbox上部1/3）を持たない。
 - `figures[].role` は任意（`main` / `sub`。省略=main）。**役割の宣言であり、配置は規定しない**——`sub` は主対象でない脇役＝人物センター原則（配置意図の優先順位3の既定。手順3参照）の適用対象から外れ、配置は `bbox` / `anchor` の指定に従う。顔ゾーン交差の回避は role に関わらず全員に適用する。
+- `figures` は**人物専用ではない**。物（小道具等）の配置も figures で座標管理する——物の figure は **`object: true` で宣言**し、`name` を materials の `key` に一致させ、`bbox` / `anchor` で置き場所を示す（`size` / `role` は人物向けの語彙なので物には付けない）。顔ゾーン・人物センター原則・発言順規則は **object の無い figure（人物）にのみ適用**する。
 - `panels.assets` は任意。そのコマで参照すべき素材の `key` を並べる。bg:0の感情コマなど素材不要のコマは省略。
 - `bubbles` は**常に配列**（フキダシ1個でも配列）。`text` は各フキダシの必須フィールド。長いセリフの分割は手順7に従う。
 - `bubbles[].speaker` は任意。省略時は**同じコマ内の直前のフキダシと同じ話者**。ナレーション（caption）・効果音（handwritten）など話者のいないフキダシも省略する。

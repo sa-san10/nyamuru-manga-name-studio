@@ -81,7 +81,8 @@ figures:
     size: waist-up
 ```
 
-- `name` は `characters[].name` と一致させる。
+- `name` は `characters[].name`（人物）または `materials[].key`（物）と一致させる。
+- **`figures` は人物専用ではない**——小道具など物の配置も figures で座標管理できる。物は `object: true` を付け、`size` / `role` は付けずに `bbox` / `anchor` で置き場所を示す。顔ゾーンやセンター既定は人物（object の無い figure）にのみ適用される。
 - `size` は `full` / `waist-up` / `bust-up` / `face` / `hand` / `foot` / `part`。hand/foot/part は体の一部だけを描く指定（顔ゾーンを持たない）。
 - `role` は `main`（既定）/ `sub`。**役割の宣言であり、配置は規定しない**——`sub` は主対象でない脇役で、センター配置の既定の対象から外れる（配置は `bbox` / `anchor` の指定に従う）。人物の配置は**配置意図の優先順位**で決める：1. 演出意図の宣言（`anchor` / `bbox`）＞ 2. 役割・描写範囲の宣言（`role` / `size` / `no_figures`）＞ 3. 既定＝センター配置（`main` を中央に大きく）。
 - コマ外の声だけなら `figures` へ入れず、そのフキダシに `offscreen: true` を付ける。

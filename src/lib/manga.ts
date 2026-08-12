@@ -143,19 +143,29 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
           });
         }
       }
-      const figureCount = panel.figures?.length ?? 0;
-      if (panel.no_figures && figureCount > 0) issues.push({ level: 'error', path: `${panelPath}.no_figures`, message: '意図的な無人コマ（no_figures: true）に figures は書けません' });
+      // figures は人物専用ではない——object: true の figure は物（小道具等）の配置、無ければ人物
+      const personCount = (panel.figures ?? []).filter((figure) => !figure.object).length;
+      if (panel.no_figures && personCount > 0) issues.push({ level: 'error', path: `${panelPath}.no_figures`, message: '意図的な無人コマ（no_figures: true）に人物の figure は書けません（物の配置は書けます）' });
       const hasSpokenBubble = (panel.bubbles ?? []).some((bubble) => bubble.speaker);
-      if (!panel.no_figures && figureCount === 0 && !hasSpokenBubble) issues.push({ level: 'warning', path: `${panelPath}.figures`, message: '人物も話者もいないコマです。意図的な無人コマなら no_figures: true を宣言してください' });
+      if (!panel.no_figures && personCount === 0 && !hasSpokenBubble) issues.push({ level: 'warning', path: `${panelPath}.figures`, message: '人物も話者もいないコマです。意図的な無人コマなら no_figures: true を宣言してください' });
       (panel.assets ?? []).forEach((key) => {
         if (!materialKeys.has(key)) issues.push({ level: 'warning', path: `${panelPath}.assets`, message: `素材「${key}」が materials にありません` });
       });
       (panel.figures ?? []).forEach((figure, index) => {
-        if (!characterNames.has(figure.name)) issues.push({ level: 'warning', path: `${panelPath}.figures[${index}].name`, message: `人物「${figure.name}」が characters にありません` });
+        if (figure.object) {
+          if (characterNames.has(figure.name)) issues.push({ level: 'warning', path: `${panelPath}.figures[${index}].object`, message: `物（object: true）の名前「${figure.name}」が characters の人物と一致しています` });
+          else if (!materialKeys.has(figure.name)) issues.push({ level: 'warning', path: `${panelPath}.figures[${index}].name`, message: `物「${figure.name}」が materials にありません` });
+          if (figure.size || figure.role) issues.push({ level: 'warning', path: `${panelPath}.figures[${index}]`, message: 'size / role は人物向けの語彙です（物の figure には付けません）' });
+          return;
+        }
+        if (!characterNames.has(figure.name)) {
+          if (materialKeys.has(figure.name)) issues.push({ level: 'warning', path: `${panelPath}.figures[${index}].object`, message: `「${figure.name}」は materials の物と一致します。物の配置なら object: true を付けてください` });
+          else issues.push({ level: 'warning', path: `${panelPath}.figures[${index}].name`, message: `人物「${figure.name}」が characters にありません` });
+        }
         if (figure.size && !FIGURE_SIZES.includes(figure.size)) issues.push({ level: 'error', path: `${panelPath}.figures[${index}].size`, message: `size は ${FIGURE_SIZES.join(' / ')} から選んでください` });
         if (figure.role && !FIGURE_ROLES.includes(figure.role)) issues.push({ level: 'error', path: `${panelPath}.figures[${index}].role`, message: 'role は main / sub から選んでください' });
       });
-      const figureNames = new Set((panel.figures ?? []).map((figure) => figure.name));
+      const figureNames = new Set((panel.figures ?? []).filter((figure) => !figure.object).map((figure) => figure.name));
       (panel.bubbles ?? []).forEach((bubble, bubbleIndex) => {
         const bubblePath = `${panelPath}.bubbles[${bubbleIndex}]`;
         if (!bubble.text?.trim()) issues.push({ level: 'error', path: `${bubblePath}.text`, message: 'フキダシ本文は必須です' });

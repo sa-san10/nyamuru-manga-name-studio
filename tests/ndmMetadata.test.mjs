@@ -30,6 +30,29 @@ test('無人コマ宣言（no_figures）と figures の併用はエラーにな�
   assert.ok(issues.some((issue) => issue.level === 'error' && issue.path.endsWith('.no_figures')));
 });
 
+test('object: true の figure は物の配置として警告を出さない', () => {
+  const document = parseMangaYaml(sampleSource);
+  document.manga.pages[0].panels[0].figures.push({ name: 'ノートPC', object: true, bbox: { x: 120, y: 60, w: 30, h: 20 } });
+  const issues = validateManga(document);
+  assert.ok(!issues.some((issue) => issue.path.includes('.figures[1]')));
+});
+
+test('materials の物に一致する figure に object が無ければ付け忘れを提案する', () => {
+  const document = parseMangaYaml(sampleSource);
+  document.manga.pages[0].panels[0].figures.push({ name: 'ノートPC', bbox: { x: 120, y: 60, w: 30, h: 20 } });
+  const issues = validateManga(document);
+  assert.ok(issues.some((issue) => issue.level === 'warning' && issue.path.endsWith('.figures[1].object')));
+});
+
+test('無人コマ宣言（no_figures）でも物（object: true）の figure は書ける', () => {
+  const document = parseMangaYaml(sampleSource);
+  const panel = document.manga.pages[0].panels[0];
+  panel.figures = [{ name: 'ノートPC', object: true, bbox: { x: 120, y: 60, w: 30, h: 20 } }];
+  panel.no_figures = true;
+  const issues = validateManga(document);
+  assert.ok(!issues.some((issue) => issue.level === 'error' && issue.path.endsWith('.no_figures')));
+});
+
 test('コマ内にいる話者への offscreen は警告になる', () => {
   const document = parseMangaYaml(sampleSource);
   document.manga.pages[0].panels[0].bubbles[1].offscreen = true; // 話者ツクルは figures にいる

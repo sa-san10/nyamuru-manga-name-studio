@@ -13,6 +13,7 @@ export type PanelShape = RectShape | PolygonShape;
 
 export interface Figure {
   name: string;
+  object?: boolean;
   bbox?: BBox;
   anchor?: Anchor;
   size?: FigureSize;

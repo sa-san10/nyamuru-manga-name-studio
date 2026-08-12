@@ -96,15 +96,26 @@ export default function PanelInspector({ manga, panel, panelIndex, selectedEleme
     </section>
 
     <section class="editor-section">
-      <SectionTitle index="04" title="人物配置" description="figures / bbox" action={<button class="inline-add" disabled={panel.no_figures} onClick={() => { const index = panel.figures?.length ?? 0; update((draft) => { (draft.figures ??= []).push({ name: manga.characters[0]?.name ?? '', bbox: fallbackBox(panel, 'figure', index), anchor: 'center', size: 'waist-up' }); }); onSelectElement({ type: 'figure', index }); }}><UserPlus size={14} />人物を追加</button>} />
+      <SectionTitle index="04" title="人物・物の配置" description="figures / bbox" action={<button class="inline-add" onClick={() => { const index = panel.figures?.length ?? 0; update((draft) => { (draft.figures ??= []).push({ name: manga.characters[0]?.name ?? '', bbox: fallbackBox(panel, 'figure', index), anchor: 'center', size: 'waist-up' }); }); onSelectElement({ type: 'figure', index }); }}><UserPlus size={14} />追加</button>} />
       <label class="check-row"><input type="checkbox" checked={panel.no_figures ?? false} onChange={(event) => update((draft) => { event.currentTarget.checked ? draft.no_figures = true : delete draft.no_figures; })} /><span>意図的な無人コマ（no_figures）</span></label>
       <div class="nested-list">
         {(panel.figures ?? []).map((figure, index) => <div class={`nested-card selectable-card ${selectedElement?.type === 'figure' && selectedElement.index === index ? 'is-selected' : ''}`} key={index} onClick={() => onSelectElement({ type: 'figure', index })}>
-          <div class="nested-card-head"><strong>FIGURE {index + 1}{selectedElement?.type === 'figure' && selectedElement.index === index ? ' · 選択中' : ''}</strong><button onClick={(event) => { event.stopPropagation(); update((draft) => { draft.figures?.splice(index, 1); }); if (selectedElement?.type === 'figure') onSelectElement(null); }}>×</button></div>
+          <div class="nested-card-head"><strong>{figure.object ? 'OBJECT' : 'FIGURE'} {index + 1}{selectedElement?.type === 'figure' && selectedElement.index === index ? ' · 選択中' : ''}</strong><button onClick={(event) => { event.stopPropagation(); update((draft) => { draft.figures?.splice(index, 1); }); if (selectedElement?.type === 'figure') onSelectElement(null); }}>×</button></div>
           <div class="field-grid">
-            <Field label="人物"><select value={figure.name} onChange={(event) => update((draft) => { draft.figures![index].name = event.currentTarget.value; })}><option value="">未選択</option>{manga.characters.map((character) => <option value={character.name}>{character.name}</option>)}</select></Field>
-            <Field label="サイズ"><select value={figure.size ?? ''} onChange={(event) => update((draft) => { draft.figures![index].size = event.currentTarget.value as typeof figure.size; })}><option value="">自動</option>{FIGURE_SIZES.map((size) => <option value={size}>{size}</option>)}</select></Field>
-            <Field label="役割" hint="sub=脇役（センター既定の対象外）"><select value={figure.role ?? ''} onChange={(event) => update((draft) => { const value = event.currentTarget.value as typeof figure.role | ''; value ? draft.figures![index].role = value : delete draft.figures![index].role; })}><option value="">未指定（main扱い）</option>{FIGURE_ROLES.map((role) => <option value={role}>{FIGURE_ROLE_LABELS[role]}</option>)}</select></Field>
+            <Field label="対象" hint="人物または物"><select value={figure.name} onChange={(event) => update((draft) => {
+              const value = event.currentTarget.value;
+              const target = draft.figures![index];
+              target.name = value;
+              // 物（materials）を選んだら object: true を自動付与し、人物向けの語彙を外す
+              const isObject = value !== '' && !manga.characters.some((character) => character.name === value) && manga.materials.some((material) => material.key === value);
+              if (isObject) { target.object = true; delete target.size; delete target.role; } else delete target.object;
+            })}>
+              <option value="">未選択</option>
+              <optgroup label="人物（characters）">{manga.characters.map((character) => <option value={character.name}>{character.name}</option>)}</optgroup>
+              {manga.materials.some((material) => material.type === 'prop') && <optgroup label="物（materials・小道具）">{manga.materials.filter((material) => material.type === 'prop').map((material) => <option value={material.key}>{material.key}</option>)}</optgroup>}
+            </select></Field>
+            {!figure.object && <Field label="サイズ"><select value={figure.size ?? ''} onChange={(event) => update((draft) => { const value = event.currentTarget.value as typeof figure.size | ''; value ? draft.figures![index].size = value : delete draft.figures![index].size; })}><option value="">自動</option>{FIGURE_SIZES.map((size) => <option value={size}>{size}</option>)}</select></Field>}
+            {!figure.object && <Field label="役割" hint="sub=脇役（センター既定の対象外）"><select value={figure.role ?? ''} onChange={(event) => update((draft) => { const value = event.currentTarget.value as typeof figure.role | ''; value ? draft.figures![index].role = value : delete draft.figures![index].role; })}><option value="">未指定（main扱い）</option>{FIGURE_ROLES.map((role) => <option value={role}>{FIGURE_ROLE_LABELS[role]}</option>)}</select></Field>}
             <Field label="アンカー"><select value={figure.anchor ?? ''} onChange={(event) => update((draft) => { draft.figures![index].anchor = event.currentTarget.value as typeof figure.anchor; })}><option value="">未指定</option>{ANCHORS.map((anchor) => <option value={anchor}>{anchor}</option>)}</select></Field>
           </div>
           <span class="sub-label">BBOX <small>mm</small></span><BBoxEditor value={figure.bbox} onChange={(bbox) => update((draft) => { draft.figures![index].bbox = bbox; })} />
