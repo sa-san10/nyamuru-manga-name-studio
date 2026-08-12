@@ -628,6 +628,24 @@ manga:
               shape: "thought"   # 感情的な心の声はもくもく雲形（理性的な独白なら square）
               monologue: true    # 心の声はフキダシ単位で指定
           action: "真顔で背景が宇宙になってしまうギャグコマ"
+
+        # 無人コマ＝no_figures: true（意図的に人物を描かない宣言。figuresの省略＝構図おまかせとは別物）。
+        # コマ外の声（offscreen＝姿を描かず尻尾も描かない）と、画面内文字（screen_text＝フキダシにしない文字）の例
+        - id: 4
+          shape: {type: rect, x: 10, y: 175, w: 190, h: 60}
+          bg: 1
+          no_figures: true
+          bubbles:
+            - text: "まだ起きてたの？"
+              speaker: "キャラA"
+              offscreen: true    # コマ外の声。話者は明確にいるので speaker は明記する
+              bbox: {x: 160, y: 180, w: 28, h: 42}
+              anchor: "top-right"
+          screen_text:
+            - text: "23:45"
+              bbox: {x: 40, y: 195, w: 28, h: 14}
+              orientation: "horizontal"   # 画面・看板の文字は横組みが既定（半角英数を縦書きに崩さない）
+          action: "誰もいない暗い部屋。机の上のスマホ画面だけが光っている"
 ```
 
 ### 記入例（1コマ抜粋）
