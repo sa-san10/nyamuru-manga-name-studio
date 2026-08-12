@@ -198,13 +198,16 @@ Check each page against the OMNY:
 
 ### Judgment rules
 
-- Regenerate a failed page — that page only — via image generation.
-- However, when the **only** problems are garbled text, typos, missing characters, or missing lines inside balloons, do not fail the page: **record it in the inspection report and accept it** (proofreading is the human downstream step).
-- **Wrong balloon positions, too few balloons, wrong hand lettering outside balloons, internal numbers such as panel numbers drawn on the page, wrong speakers, wrong reading order, wrong panel layout, and wrong characters, backgrounds, props, or staging** are regeneration targets.
-- **A page where the OMNY includes a title or author name but the image does not show it** counts as a missing drawing and is a regeneration target; do not settle it as `inspected`.
-- **The fact that balloon tails were drawn is not, by itself, a failure reason.** If a tail connects to the correct speaker, accept the page and record "tail present (correctly connected)" in the inspection report.
-- Only when a tail connects to the wrong speaker is it a "speaker error" and a regeneration target.
-- Image editing by the AI, after-the-fact text fixes, and tail attachment are all forbidden.
+Problems found during inspection fall into two categories.
+
+- **Record and accept (hand off to the human downstream step)**:
+  - Pages whose **only** problems are garbled text, typos, missing characters, or missing lines inside balloons (proofreading is the human downstream step).
+  - Balloons whose drawn tail **connects to the correct speaker** (record "tail present (correctly connected)" in the inspection report; the tail's presence by itself is not a failure reason).
+- **Regeneration targets (redo that page only via image generation)**:
+  - Wrong balloon positions, too few balloons, wrong hand lettering outside balloons, internal numbers such as panel numbers drawn on the page, wrong speakers (**including a tail connected to the wrong speaker**), wrong reading order, wrong panel layout, and wrong characters, backgrounds, props, or staging.
+  - **A page where the OMNY includes a title or author name but the image does not show it** (a missing drawing; do not settle it as `inspected`).
+
+Image editing by the AI, after-the-fact text fixes, and tail attachment are all forbidden.
 
 ### Inspection completion conditions
 
