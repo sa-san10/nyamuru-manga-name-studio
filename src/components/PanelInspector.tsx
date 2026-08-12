@@ -1,8 +1,11 @@
-import { CopyPlus, MessageCircleMore, Plus, Trash2, UserPlus } from 'lucide-preact';
+import { CopyPlus, MessageCircleMore, MonitorSpeaker, Plus, Trash2, UserPlus } from 'lucide-preact';
 import { useEffect, useRef } from 'preact/hooks';
-import { ANCHORS, BUBBLE_SHAPES, FIGURE_SIZES } from '../lib/manga';
+import { ANCHORS, BLEED_EDGES, BUBBLE_SHAPES, FIGURE_ROLES, FIGURE_SIZES } from '../lib/manga';
 import { convertPanelShape, fallbackBox, resizePanelToBounds } from '../lib/canvasGeometry';
-import type { CanvasElementSelection, Manga, Panel } from '../types';
+import type { BleedEdge, CanvasElementSelection, Manga, Panel } from '../types';
+
+const BLEED_EDGE_LABELS: Record<BleedEdge, string> = { left: '左辺', right: '右辺', bottom: '下辺' };
+const FIGURE_ROLE_LABELS: Record<(typeof FIGURE_ROLES)[number], string> = { main: 'main / 主役', sub: 'sub / 脇役' };
 import { BBoxEditor, Field, SectionTitle } from './Fields';
 import BubbleShapeSvg from './BubbleShapeSvg';
 
@@ -56,6 +59,17 @@ export default function PanelInspector({ manga, panel, panelIndex, selectedEleme
           });
         }} />
       </Field>}
+      {panel.shape.type === 'rect' && <div class="bleed-selector">
+        <span class="sub-label">タチキリ（断ち切り辺） <small>紙端に接する辺のみ</small></span>
+        <div class="bleed-options">{BLEED_EDGES.map((edge) => <label class="check-row" key={edge}>
+          <input type="checkbox" checked={(panel.bleed ?? []).includes(edge)} onChange={(event) => update((draft) => {
+            const current = new Set(draft.bleed ?? []);
+            event.currentTarget.checked ? current.add(edge) : current.delete(edge);
+            const next = BLEED_EDGES.filter((item) => current.has(item));
+            next.length ? draft.bleed = next : delete draft.bleed;
+          })} /><span>{BLEED_EDGE_LABELS[edge]}</span>
+        </label>)}</div>
+      </div>}
       <div class="bg-selector">
         <span class="sub-label">背景詳細度</span>
         <div>{[-1, 0, 1, 2].map((level) => <button class={`bg-option bg-option-${level} ${panel.bg === level ? 'is-active' : ''}`} onClick={() => update((draft) => { draft.bg = level as -1 | 0 | 1 | 2; })} key={level}><strong>BG {level}</strong><span>{level === -1 ? '背景無描画' : level === 0 ? '感情・効果' : level === 1 ? '簡易背景' : '詳細背景'}</span></button>)}</div>
@@ -82,14 +96,16 @@ export default function PanelInspector({ manga, panel, panelIndex, selectedEleme
     </section>
 
     <section class="editor-section">
-      <SectionTitle index="04" title="人物配置" description="figures / bbox" action={<button class="inline-add" onClick={() => { const index = panel.figures?.length ?? 0; update((draft) => { (draft.figures ??= []).push({ name: manga.characters[0]?.name ?? '', bbox: fallbackBox(panel, 'figure', index), anchor: 'center', size: 'waist-up' }); }); onSelectElement({ type: 'figure', index }); }}><UserPlus size={14} />人物を追加</button>} />
+      <SectionTitle index="04" title="人物配置" description="figures / bbox" action={<button class="inline-add" disabled={panel.no_figures} onClick={() => { const index = panel.figures?.length ?? 0; update((draft) => { (draft.figures ??= []).push({ name: manga.characters[0]?.name ?? '', bbox: fallbackBox(panel, 'figure', index), anchor: 'center', size: 'waist-up' }); }); onSelectElement({ type: 'figure', index }); }}><UserPlus size={14} />人物を追加</button>} />
+      <label class="check-row"><input type="checkbox" checked={panel.no_figures ?? false} onChange={(event) => update((draft) => { event.currentTarget.checked ? draft.no_figures = true : delete draft.no_figures; })} /><span>意図的な無人コマ（no_figures）</span></label>
       <div class="nested-list">
         {(panel.figures ?? []).map((figure, index) => <div class={`nested-card selectable-card ${selectedElement?.type === 'figure' && selectedElement.index === index ? 'is-selected' : ''}`} key={index} onClick={() => onSelectElement({ type: 'figure', index })}>
           <div class="nested-card-head"><strong>FIGURE {index + 1}{selectedElement?.type === 'figure' && selectedElement.index === index ? ' · 選択中' : ''}</strong><button onClick={(event) => { event.stopPropagation(); update((draft) => { draft.figures?.splice(index, 1); }); if (selectedElement?.type === 'figure') onSelectElement(null); }}>×</button></div>
           <div class="field-grid">
             <Field label="人物"><select value={figure.name} onChange={(event) => update((draft) => { draft.figures![index].name = event.currentTarget.value; })}><option value="">未選択</option>{manga.characters.map((character) => <option value={character.name}>{character.name}</option>)}</select></Field>
             <Field label="サイズ"><select value={figure.size ?? ''} onChange={(event) => update((draft) => { draft.figures![index].size = event.currentTarget.value as typeof figure.size; })}><option value="">自動</option>{FIGURE_SIZES.map((size) => <option value={size}>{size}</option>)}</select></Field>
-            <Field label="アンカー" wide><select value={figure.anchor ?? ''} onChange={(event) => update((draft) => { draft.figures![index].anchor = event.currentTarget.value as typeof figure.anchor; })}><option value="">未指定</option>{ANCHORS.map((anchor) => <option value={anchor}>{anchor}</option>)}</select></Field>
+            <Field label="役割" hint="脇役はセンター原則の対象外"><select value={figure.role ?? ''} onChange={(event) => update((draft) => { const value = event.currentTarget.value as typeof figure.role | ''; value ? draft.figures![index].role = value : delete draft.figures![index].role; })}><option value="">未指定（main扱い）</option>{FIGURE_ROLES.map((role) => <option value={role}>{FIGURE_ROLE_LABELS[role]}</option>)}</select></Field>
+            <Field label="アンカー"><select value={figure.anchor ?? ''} onChange={(event) => update((draft) => { draft.figures![index].anchor = event.currentTarget.value as typeof figure.anchor; })}><option value="">未指定</option>{ANCHORS.map((anchor) => <option value={anchor}>{anchor}</option>)}</select></Field>
           </div>
           <span class="sub-label">BBOX <small>mm</small></span><BBoxEditor value={figure.bbox} onChange={(bbox) => update((draft) => { draft.figures![index].bbox = bbox; })} />
         </div>)}
@@ -114,8 +130,24 @@ export default function PanelInspector({ manga, panel, panelIndex, selectedEleme
             <small>{bubble.shape ?? 'normal'}</small>
           </div>
           <label class="check-row"><input type="checkbox" checked={bubble.monologue ?? false} onChange={(event) => update((draft) => { event.currentTarget.checked ? draft.bubbles[index].monologue = true : delete draft.bubbles[index].monologue; })} /><span>心の声（monologue）</span></label>
+          <label class="check-row"><input type="checkbox" checked={bubble.offscreen ?? false} onChange={(event) => update((draft) => { event.currentTarget.checked ? draft.bubbles[index].offscreen = true : delete draft.bubbles[index].offscreen; })} /><span>コマ外の声（offscreen）· 尻尾を描かない</span></label>
           <span class="sub-label">BBOX <small>mm</small></span><BBoxEditor value={bubble.bbox} onChange={(bbox) => update((draft) => { draft.bubbles[index].bbox = bbox; })} />
         </div>)}
+      </div>
+    </section>
+
+    <section class="editor-section">
+      <SectionTitle index="06" title="画面内文字" description="screen_text / モニター・看板・紙面の文字" action={<button class="inline-add" onClick={() => { const index = panel.screen_text?.length ?? 0; update((draft) => { (draft.screen_text ??= []).push({ text: '', orientation: 'horizontal', bbox: fallbackBox(panel, 'screen_text', index) }); }); onSelectElement({ type: 'screen_text', index }); }}><MonitorSpeaker size={14} />追加</button>} />
+      <div class="nested-list">
+        {(panel.screen_text ?? []).map((screenText, index) => <div class={`nested-card selectable-card ${selectedElement?.type === 'screen_text' && selectedElement.index === index ? 'is-selected' : ''}`} key={index} onClick={() => onSelectElement({ type: 'screen_text', index })}>
+          <div class="nested-card-head"><strong>SCREEN {index + 1}{selectedElement?.type === 'screen_text' && selectedElement.index === index ? ' · 選択中' : ''}</strong><button onClick={(event) => { event.stopPropagation(); update((draft) => { draft.screen_text?.splice(index, 1); if (!draft.screen_text?.length) delete draft.screen_text; }); if (selectedElement?.type === 'screen_text') onSelectElement(null); }}>×</button></div>
+          <Field label="文字" wide><textarea rows={2} value={screenText.text} placeholder="画面・看板に描く文字" onInput={(event) => update((draft) => { draft.screen_text![index].text = event.currentTarget.value; })} /></Field>
+          <div class="field-grid">
+            <Field label="組み方向"><select value={screenText.orientation ?? 'horizontal'} onChange={(event) => update((draft) => { draft.screen_text![index].orientation = event.currentTarget.value as typeof screenText.orientation; })}><option value="horizontal">horizontal / 横組み</option><option value="vertical">vertical / 縦書き</option></select></Field>
+          </div>
+          <span class="sub-label">BBOX <small>mm</small></span><BBoxEditor value={screenText.bbox} onChange={(bbox) => update((draft) => { draft.screen_text![index].bbox = bbox; })} />
+        </div>)}
+        {!(panel.screen_text?.length) && <p class="muted-message">フキダシではない「画面・看板・紙面の文字」をコマに置けます。</p>}
       </div>
     </section>
     <button class="add-panel-bottom" onClick={onAdd}><Plus size={16} />新しいコマを追加</button>

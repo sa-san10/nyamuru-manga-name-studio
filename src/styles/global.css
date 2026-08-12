@@ -210,8 +210,8 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .manga-panel.panel-bg-0, .manga-panel.panel-bg-1, .manga-panel.panel-bg-2 { background-size: cover; background-position: center; }
 .panel-number { display: none; position: absolute; z-index: 20; left: 5px; top: 5px; width: 20px; height: 20px; place-items: center; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.92); background: var(--accent); color: white; font: 800 9.5px/1 monospace; box-shadow: 0 1px 3px rgba(31,29,35,.28); }
 .show-guides .panel-number { display: grid; }
-.figure-guide, .bubble-guide { display: none; position: absolute; z-index: 5; align-items: center; justify-content: center; overflow: hidden; }
-.show-guides .figure-guide, .show-guides .bubble-guide, .manga-panel.is-selected .canvas-element { display: flex; }
+.figure-guide, .bubble-guide, .screen-text-guide { display: none; position: absolute; z-index: 5; align-items: center; justify-content: center; overflow: hidden; }
+.show-guides .figure-guide, .show-guides .bubble-guide, .show-guides .screen-text-guide, .manga-panel.is-selected .canvas-element { display: flex; }
 .canvas-element { margin: 0; appearance: none; font: inherit; touch-action: none; user-select: none; cursor: grab; transition: box-shadow .12s, outline-color .12s, background-color .12s; }
 .canvas-element:active { cursor: grabbing; }
 .manga-panel:not(.is-selected) .canvas-element { pointer-events: none; }
@@ -238,6 +238,10 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bubble-guide.bubble-handwritten .bubble-text { --bubble-text-top: 20%; --bubble-text-bottom: 20%; --bubble-text-horizontal: 40%; font-weight: 800; text-shadow: 0 0 2px rgba(255,255,255,.95); }
 .bubble-guide .bubble-text.is-long { font-size: calc(clamp(10.5px, 2.16cqh, 21px) * var(--bubble-fit, 1)); line-height: 1; }
 .bubble-guide .bubble-text.is-very-long { font-size: calc(clamp(9px, 1.8cqh, 18px) * var(--bubble-fit, 1)); line-height: .95; }
+/* 画面内文字（screen_text）: モニター・看板・紙面の文字を表す角枠ガイド */
+.screen-text-guide { color: #2e5a3c; border: max(1.5px, .5cqh) dashed rgba(70,150,96,.85); border-radius: 3px; background: rgba(203,235,210,.28); padding: 3% 5%; }
+.screen-text-guide .screen-text-body { position: relative; z-index: 2; max-width: 100%; max-height: 100%; overflow: hidden; font: 700 clamp(6px, 1.7cqh, 15px)/1.15 "Consolas", "Yu Gothic", monospace; text-align: center; color: #204a2e; }
+.screen-text-guide .screen-text-body.vertical-text { writing-mode: vertical-rl; text-orientation: upright; font-family: "Yu Mincho", serif; }
 .resize-handle { position: absolute; z-index: 30; width: 22px; height: 22px; display: grid; place-items: center; background: transparent; touch-action: none; }
 .resize-handle::before { content: ""; width: max(9px, 1.7cqh); height: max(9px, 1.7cqh); border: max(1px, .28cqh) solid white; border-radius: 3px; background: var(--accent); box-shadow: 0 1px 3px rgba(75,36,39,.5); }
 .handle-nw { left: 0; top: 0; transform: translate(-50%, -50%); cursor: nwse-resize; }
@@ -278,6 +282,9 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bbox-editor label { position: relative; }
 .bbox-editor label span { position: absolute; z-index: 2; left: 7px; top: 50%; transform: translateY(-50%); color: #aaa7af; font: 700 8px/1 monospace; pointer-events: none; }
 .bbox-editor input { padding-left: 18px; font-family: monospace; }
+.bleed-selector { margin-top: 13px; }
+.bleed-selector .bleed-options { display: flex; gap: 14px; margin-top: 2px; }
+.bleed-selector .check-row { margin: 4px 0 2px; }
 .bg-selector { margin-top: 13px; }
 .bg-selector > div { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
 .bg-option { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 6px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: white; cursor: pointer; text-align: left; }

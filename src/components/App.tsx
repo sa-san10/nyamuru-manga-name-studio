@@ -343,6 +343,9 @@ export default function App() {
       if (selection.type === 'figure') {
         const figure = targetPanel.figures?.[selection.index];
         if (figure) figure.bbox = bbox;
+      } else if (selection.type === 'screen_text') {
+        const screenText = targetPanel.screen_text?.[selection.index];
+        if (screenText) screenText.bbox = bbox;
       } else {
         const bubble = targetPanel.bubbles[selection.index];
         if (bubble) bubble.bbox = bbox;
@@ -357,6 +360,7 @@ export default function App() {
   // ドラッグ確定時の自動アンカー。このハンドラはドラッグ開始時のdocumentを閉じ込めたまま
   // 呼ばれるため、anchorだけ書くとドラッグ中のbbox更新を巻き戻してしまう。確定bboxも同時に書く
   const changeElementAnchor = (selection: CanvasElementSelection, anchor: Anchor, bbox: BBox) => {
+    if (selection.type === 'screen_text') return; // 画面内文字は anchor を持たない
     const targetPanel = document.manga.pages[activePage]?.panels[activePanel];
     const item = selection.type === 'figure' ? targetPanel?.figures?.[selection.index] : targetPanel?.bubbles[selection.index];
     if (!item || item.anchor === anchor) return;

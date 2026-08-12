@@ -1,4 +1,6 @@
-# Agent Manga Generation Workflow (Concise Edition)
+# Agent Manga Generation Workflow (Concise Edition) v10.3
+
+> This document's version matches the corresponding NDM schema version (the OMNY's `schema_version` and the OMAY's `spec_version`).
 
 > SPDX-License-Identifier: MIT
 >
@@ -107,7 +109,7 @@ Post to the chat every time the step changes.
 Before starting, output a summary like:
 
 ```text
-OMAY check complete: spec_version 10.2 (matches the OMNY's schema_version).
+OMAY check complete: spec_version 10.3 (matches the OMNY's schema_version).
 OMNY check complete: 5 pages, right-bound, vertical text, 4 characters.
 Page definitions match page_count. Starting artwork.
 ```
@@ -188,10 +190,11 @@ Check each page against the OMNY:
 - Monologue treatment
 - Important props, backgrounds, and staging
 - Typos, garbled text, missing characters, or missing lines inside balloons
-- Text errors outside balloons: hand lettering, titles, page numbers, sound effects, signs, on-screen displays
+- Text errors outside balloons: hand lettering, titles, page numbers, sound effects, signs, on-screen displays (for `screen_text` entries, also check the content and writing direction)
 - No internal numbers (such as panel numbers) drawn on the page
 - Cut-off text, overflow, overlap
-- Presence of balloon tails (their presence is not a failure; if present, check that each tail connects to the correct speaker)
+- Panels with `bleed`: no white margin or frame line remains on the declared bleed edges
+- Presence of balloon tails (their presence is not a failure; if present, check that each tail connects to the correct speaker; balloons with `offscreen: true` are correct with no tail)
 
 ### Judgment rules
 

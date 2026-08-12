@@ -1,4 +1,4 @@
-import type { MangaPage, Panel, PanelShape } from '../types';
+import type { BleedEdge, MangaPage, Panel, PanelShape } from '../types';
 import { fallbackBox, panelBounds, resizePanelToBounds } from './canvasGeometry.ts';
 
 export interface PanelTemplate {
@@ -6,6 +6,8 @@ export interface PanelTemplate {
   name: string;
   usage: string;
   shapes: PanelShape[];
+  /** タチキリ（断ち切り）辺の宣言。shapes と同じ添字のコマに bleed を付与する */
+  bleeds?: Partial<Record<number, BleedEdge[]>>;
 }
 
 const rect = (x: number, y: number, w: number, h: number): PanelShape => ({ type: 'rect', x, y, w, h });
@@ -75,22 +77,27 @@ export const PANEL_TEMPLATES: PanelTemplate[] = [
   {
     id: 'M', name: 'タチキリ・スプラッシュ', usage: '紙端まで使う最大の見せ場',
     shapes: [rect(0, 10, 210, 287)],
+    bleeds: { 0: ['left', 'right', 'bottom'] },
   },
   {
     id: 'N', name: 'タチキリ見得切り', usage: '登場・変身を右下断ち切りで抜く',
     shapes: [rect(90, 10, 120, 287), rect(10, 10, 75, 88), rect(10, 103, 75, 88), rect(10, 196, 75, 91)],
+    bleeds: { 0: ['right', 'bottom'] },
   },
   {
     id: 'O', name: 'タチキリ受けドン', usage: 'メクリ受けを左右断ち切りで最大化',
     shapes: [rect(0, 10, 210, 182), rect(104, 198, 96, 89), rect(10, 198, 89, 89)],
+    bleeds: { 0: ['left', 'right'] },
   },
   {
     id: 'P', name: 'タチキリ・ヒキ3段', usage: 'ページ末のヒキを断ち切りで強調',
     shapes: [rect(10, 10, 190, 80), rect(104, 96, 96, 88), rect(10, 96, 89, 88), rect(0, 190, 210, 107)],
+    bleeds: { 3: ['left', 'right', 'bottom'] },
   },
   {
     id: 'Q', name: 'タチキリ登場ワイド', usage: '冒頭の登場を横断ち切りで見せる',
     shapes: [rect(0, 10, 210, 120), rect(10, 135, 190, 70), rect(108, 210, 92, 77), rect(10, 210, 93, 77)],
+    bleeds: { 0: ['left', 'right'] },
   },
   {
     id: 'R', name: '斜め4段タタミカケ', usage: '追走・焦り・加速する展開',
@@ -145,6 +152,9 @@ function materializeElementBoxes(panel: Panel): void {
   panel.bubbles.forEach((bubble, index) => {
     bubble.bbox ??= fallbackBox(panel, 'bubble', index);
   });
+  panel.screen_text?.forEach((screenText, index) => {
+    screenText.bbox ??= fallbackBox(panel, 'screen_text', index);
+  });
 }
 
 function movePanelContent(panel: Panel, shape: PanelShape): Panel {
@@ -186,18 +196,28 @@ export function applyPanelTemplate(page: MangaPage, template: PanelTemplate): vo
   page.canvas = { w: 210, h: 297, unit: 'mm' };
   page.panels = template.shapes.map((shape, targetIndex) => {
     const group = groups[targetIndex];
-    if (!group.length) return emptyPanel(targetIndex + 1, shape);
+    const bleed = template.bleeds?.[targetIndex];
+    if (!group.length) {
+      const empty = emptyPanel(targetIndex + 1, shape);
+      if (bleed) empty.bleed = [...bleed];
+      return empty;
+    }
 
     const merged = movePanelContent(group[0], shape);
     for (const source of group.slice(1)) {
       const moved = movePanelContent(source, shape);
       merged.figures = [...(merged.figures ?? []), ...(moved.figures ?? [])];
       merged.bubbles = [...merged.bubbles, ...moved.bubbles];
+      const mergedScreenText = [...(merged.screen_text ?? []), ...(moved.screen_text ?? [])];
+      mergedScreenText.length ? merged.screen_text = mergedScreenText : delete merged.screen_text;
       merged.assets = mergeUnique(merged.assets, moved.assets);
       merged.action = mergeAction(merged.action, moved.action);
     }
+    if (merged.figures?.length) delete merged.no_figures;
     merged.id = targetIndex + 1;
     merged.shape = structuredClone(shape);
+    // タチキリはテンプレート側の宣言で上書きする（移動元の bleed は座標が変わるため引き継がない）
+    bleed ? merged.bleed = [...bleed] : delete merged.bleed;
     return merged;
   });
 }
