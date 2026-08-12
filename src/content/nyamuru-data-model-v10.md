@@ -83,7 +83,7 @@ figures:
 
 - `name` は `characters[].name` と一致させる。
 - `size` は `full` / `waist-up` / `bust-up` / `face` / `hand` / `foot` / `part`。hand/foot/part は体の一部だけを描く指定（顔ゾーンを持たない）。
-- `role` は `main`（既定）/ `sub`。`sub` は脇役＝コマの隅に小さく添える人物で、人物センター原則の対象外。
+- `role` は `main`（既定）/ `sub`。`sub` は脇役＝コマの隅に小さく添える人物。人物センター原則は厳守の規則ではなく `main` の既定配置で、演出意図のあるコマは `anchor` / `bbox` の宣言で自由に配置してよい。
 - コマ外の声だけなら `figures` へ入れず、そのフキダシに `offscreen: true` を付ける。
 
 ## 5. フキダシ
