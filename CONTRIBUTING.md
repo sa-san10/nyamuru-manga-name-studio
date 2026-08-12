@@ -31,7 +31,7 @@ OMAY（`src/content/standard.omay.yaml`）の `style_notes` / `layout_spec` は�
   - 生成プロンプト §A「フィールドの決まりごと」の bleed の行
   - 生成プロンプト §B パターンM〜Qの座標例
   - OMAY `layout_spec`「コマ間の間隙とライン」の例外（タチキリ）の項
-- **人物センター原則（厳守ではなく `role: main` の既定配置）の位置づけと適用範囲（`role: sub`・part系 `size`・`no_figures` の除外）**
+- **配置意図の優先順位（1. 演出意図の宣言 ＞ 2. 役割・描写範囲の宣言 ＞ 3. 既定＝人物センター原則）**
   - 生成プロンプト 手順3 の人物センター原則
   - 生成プロンプト §A「フィールドの決まりごと」の size / role の行
   - OMAY `layout_spec` figures 節の size / role
