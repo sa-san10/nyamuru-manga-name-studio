@@ -3,7 +3,7 @@ import { Box, UserRound, ZoomIn, ZoomOut } from 'lucide-preact';
 import BubbleShapeSvg from './BubbleShapeSvg';
 import FigureSizeSvg from './FigureSizeSvg';
 import type { Anchor, BBox, CanvasElementSelection, MangaPage, Panel } from '../types';
-import { anchorPoint, clamp, clampedPanelDelta, fallbackBox, nearestAnchor, panelBounds, resizedBox, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
+import { anchorPoint, clamp, clampedPanelDelta, fallbackBox, nearestAnchor, panelBounds, resizedBox, resolveOverlapClick, roundMm, type InteractionGeometry, type ResizeHandle } from '../lib/canvasGeometry';
 
 interface Props {
   title: string;
@@ -91,6 +91,26 @@ function bboxStyle(box: BBox, panel: Panel): Record<string, string> {
     width: `${(box.w / bounds.w) * 100}%`,
     height: `${(box.h / bounds.h) * 100}%`,
   };
+}
+
+// 紙面（210×297mm）基準の配置。選択中パネルのエレメントレイヤーで使う
+function paperBoxStyle(box: BBox): Record<string, string> {
+  return {
+    left: `${box.x / 2.1}%`,
+    top: `${box.y / 2.97}%`,
+    width: `${box.w / 2.1}%`,
+    height: `${box.h / 2.97}%`,
+  };
+}
+
+// エレメントレイヤーをパネル形状でクロップし、パネル内描画と同じ見た目（はみ出しなし）を保つ
+function layerClipStyle(panel: Panel): Record<string, string> {
+  if (panel.shape.type === 'rect') {
+    const { x, y, w, h } = panel.shape;
+    return { clipPath: `inset(${y / 2.97}% ${(210 - x - w) / 2.1}% ${(297 - y - h) / 2.97}% ${x / 2.1}%)` };
+  }
+  const points = panel.shape.points.map(([x, y]) => `${x / 2.1}% ${y / 2.97}%`).join(',');
+  return { clipPath: `polygon(${points})` };
 }
 
 export default function MangaCanvas({ title, author, page, pageCount, activePanel, selectedElement, showGuides, autoAnchor, onToggleAutoAnchor, onSelectPanel, onSelectElement, onChangeElementBBox, onChangeElementAnchor, onMovePanel, onResizePanel, onMoveVertex }: Props) {
@@ -408,6 +428,81 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
     </>
   );
 
+  // パネル本体のクリック。重なった空白部分は下のパネルへ貫通させる
+  const selectPanelAt = (event: MouseEvent, panelIndex: number) => {
+    event.stopPropagation();
+    const rect = paperRef.current?.getBoundingClientRect();
+    if (!rect) {
+      onSelectPanel(panelIndex);
+      return;
+    }
+    const x = (event.clientX - rect.left) * (210 / rect.width);
+    const y = (event.clientY - rect.top) * (297 / rect.height);
+    onSelectPanel(resolveOverlapClick(page.panels, panelIndex, activePanel, x, y));
+  };
+
+  // 非選択パネルはパネル内（パネル基準%・クリップあり）、選択中パネルは最前面のエレメント
+  // レイヤー（紙面基準%）に描くため、配置スタイルを引数で差し替える
+  const renderElements = (panel: Panel, panelIndex: number, boxStyle: (box: BBox) => Record<string, string>) => <>
+    {(panel.figures ?? []).map((figure, figureIndex) => {
+      const selection: CanvasElementSelection = { type: 'figure', index: figureIndex };
+      const box = figure.bbox ?? fallbackBox(panel, 'figure', figureIndex);
+      const isSelected = activePanel === panelIndex && selectedElement?.type === 'figure' && selectedElement.index === figureIndex;
+      return <button
+        class={`canvas-element figure-guide ${isSelected ? 'is-element-selected' : ''}`}
+        style={boxStyle(box)}
+        onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
+        onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
+        onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
+        key={`figure-${figureIndex}`}
+        title={`${figure.name}（ドラッグで移動）`}
+        tabIndex={activePanel === panelIndex ? 0 : -1}
+      >
+        {figure.size ? <FigureSizeSvg size={figure.size} /> : figure.object ? <Box size={12} /> : <UserRound size={12} />}
+        <FigureName name={figure.name} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
+        {isSelected && renderHandles(panelIndex, selection, box)}
+      </button>;
+    })}
+    {(panel.screen_text ?? []).map((screenText, screenTextIndex) => {
+      const selection: CanvasElementSelection = { type: 'screen_text', index: screenTextIndex };
+      const box = screenText.bbox ?? fallbackBox(panel, 'screen_text', screenTextIndex);
+      const isSelected = activePanel === panelIndex && selectedElement?.type === 'screen_text' && selectedElement.index === screenTextIndex;
+      return <button
+        class={`canvas-element screen-text-guide ${screenText.orientation === 'vertical' ? 'is-vertical' : ''} ${isSelected ? 'is-element-selected' : ''}`}
+        style={boxStyle(box)}
+        onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
+        onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
+        onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
+        key={`screen-text-${screenTextIndex}`}
+        title={`画面内文字 ${screenTextIndex + 1}（ドラッグで移動）`}
+        tabIndex={activePanel === panelIndex ? 0 : -1}
+      >
+        <span class={`screen-text-body ${screenText.orientation === 'vertical' ? 'vertical-text' : ''}`}>{screenText.text || '画面内文字'}</span>
+        {isSelected && renderHandles(panelIndex, selection, box)}
+      </button>;
+    })}
+    {panel.bubbles.map((bubble, bubbleIndex) => {
+      const selection: CanvasElementSelection = { type: 'bubble', index: bubbleIndex };
+      const box = bubble.bbox ?? fallbackBox(panel, 'bubble', bubbleIndex);
+      const isSelected = activePanel === panelIndex && selectedElement?.type === 'bubble' && selectedElement.index === bubbleIndex;
+      const textLengthClass = bubble.text.length > 24 ? 'is-very-long' : bubble.text.length > 14 ? 'is-long' : '';
+      return <button
+        class={`canvas-element bubble-guide bubble-${bubble.shape ?? 'normal'} ${isSelected ? 'is-element-selected' : ''}`}
+        style={boxStyle(box)}
+        onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
+        onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
+        onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
+        key={`bubble-${bubbleIndex}`}
+        title={`フキダシ ${bubbleIndex + 1}（ドラッグで移動）`}
+        tabIndex={activePanel === panelIndex ? 0 : -1}
+      >
+        <BubbleShapeSvg shape={bubble.shape} />
+        <BubbleText text={bubble.text} lengthClass={textLengthClass} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
+        {isSelected && renderHandles(panelIndex, selection, box)}
+      </button>;
+    })}
+  </>;
+
   const selectedPanel = page.panels[activePanel];
   const selectedBounds = selectedPanel ? panelBounds(selectedPanel) : null;
   const selectedItem = selectedPanel && selectedElement
@@ -446,7 +541,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
         <div
           class={`manga-panel panel-bg-${panel.bg} ${activePanel === panelIndex ? 'is-selected' : ''}`}
           style={panelStyle(panel)}
-          onClick={(event) => { event.stopPropagation(); onSelectPanel(panelIndex); }}
+          onClick={(event) => selectPanelAt(event, panelIndex)}
           onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelectPanel(panelIndex); } }}
           key={`${panel.id}-${panelIndex}`}
           role="button"
@@ -455,65 +550,12 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
           title={panel.action ? `コマ ${panel.id}: ${panel.action}` : `コマ ${panel.id}`}
         >
           <span class="panel-number">{panel.id}</span>
-          {(panel.figures ?? []).map((figure, figureIndex) => {
-            const selection: CanvasElementSelection = { type: 'figure', index: figureIndex };
-            const box = figure.bbox ?? fallbackBox(panel, 'figure', figureIndex);
-            const isSelected = activePanel === panelIndex && selectedElement?.type === 'figure' && selectedElement.index === figureIndex;
-            return <button
-              class={`canvas-element figure-guide ${isSelected ? 'is-element-selected' : ''}`}
-              style={bboxStyle(box, panel)}
-              onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
-              onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
-              onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
-              key={`figure-${figureIndex}`}
-              title={`${figure.name}（ドラッグで移動）`}
-              tabIndex={activePanel === panelIndex ? 0 : -1}
-            >
-              {figure.size ? <FigureSizeSvg size={figure.size} /> : figure.object ? <Box size={12} /> : <UserRound size={12} />}
-              <FigureName name={figure.name} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
-              {isSelected && renderHandles(panelIndex, selection, box)}
-            </button>;
-          })}
-          {(panel.screen_text ?? []).map((screenText, screenTextIndex) => {
-            const selection: CanvasElementSelection = { type: 'screen_text', index: screenTextIndex };
-            const box = screenText.bbox ?? fallbackBox(panel, 'screen_text', screenTextIndex);
-            const isSelected = activePanel === panelIndex && selectedElement?.type === 'screen_text' && selectedElement.index === screenTextIndex;
-            return <button
-              class={`canvas-element screen-text-guide ${screenText.orientation === 'vertical' ? 'is-vertical' : ''} ${isSelected ? 'is-element-selected' : ''}`}
-              style={bboxStyle(box, panel)}
-              onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
-              onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
-              onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
-              key={`screen-text-${screenTextIndex}`}
-              title={`画面内文字 ${screenTextIndex + 1}（ドラッグで移動）`}
-              tabIndex={activePanel === panelIndex ? 0 : -1}
-            >
-              <span class={`screen-text-body ${screenText.orientation === 'vertical' ? 'vertical-text' : ''}`}>{screenText.text || '画面内文字'}</span>
-              {isSelected && renderHandles(panelIndex, selection, box)}
-            </button>;
-          })}
-          {panel.bubbles.map((bubble, bubbleIndex) => {
-            const selection: CanvasElementSelection = { type: 'bubble', index: bubbleIndex };
-            const box = bubble.bbox ?? fallbackBox(panel, 'bubble', bubbleIndex);
-            const isSelected = activePanel === panelIndex && selectedElement?.type === 'bubble' && selectedElement.index === bubbleIndex;
-            const textLengthClass = bubble.text.length > 24 ? 'is-very-long' : bubble.text.length > 14 ? 'is-long' : '';
-            return <button
-              class={`canvas-element bubble-guide bubble-${bubble.shape ?? 'normal'} ${isSelected ? 'is-element-selected' : ''}`}
-              style={bboxStyle(box, panel)}
-              onPointerDown={(event) => startInteraction(event, panelIndex, selection, box, 'move')}
-              onClick={(event) => { event.stopPropagation(); onSelectElement(selection); }}
-              onKeyDown={(event) => nudgeElement(event, panel, selection, box)}
-              key={`bubble-${bubbleIndex}`}
-              title={`フキダシ ${bubbleIndex + 1}（ドラッグで移動）`}
-              tabIndex={activePanel === panelIndex ? 0 : -1}
-            >
-              <BubbleShapeSvg shape={bubble.shape} />
-              <BubbleText text={bubble.text} lengthClass={textLengthClass} boxW={box.w} boxH={box.h} fitEpoch={fitEpoch} />
-              {isSelected && renderHandles(panelIndex, selection, box)}
-            </button>;
-          })}
+          {panelIndex !== activePanel && renderElements(panel, panelIndex, (box) => bboxStyle(box, panel))}
         </div>
       ))}
+      {selectedPanel && <div class="panel-element-layer" style={layerClipStyle(selectedPanel)}>
+        {renderElements(selectedPanel, activePanel, paperBoxStyle)}
+      </div>}
       <svg class="panel-frame-overlay" viewBox="0 0 210 297" aria-hidden="true">
         {page.panels.map((panel, panelIndex) => {
           const key = `frame-${panel.id}-${panelIndex}`;
