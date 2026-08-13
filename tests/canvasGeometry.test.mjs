@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { anchorPoint, clampedPanelDelta, convertPanelShape, fallbackBox, nearestAnchor, panelBounds, resizedBox, resizePanelToBounds, translatePanel } from '../src/lib/canvasGeometry.ts';
+import { anchorPoint, clampedPanelDelta, convertPanelShape, fallbackBox, nearestAnchor, panelBounds, pointInPanel, resizedBox, resizePanelToBounds, resolveOverlapClick, translatePanel } from '../src/lib/canvasGeometry.ts';
 
 const rectPanel = {
   id: 1,
@@ -121,4 +121,29 @@ test('bbox中心に最も近いコマ内アンカーを求める', () => {
   assert.equal(nearestAnchor(bounds, { x: 180, y: 40, w: 18, h: 40 }), 'right');
   assert.equal(nearestAnchor(bounds, { x: 20, y: 80, w: 30, h: 28 }), 'bottom-left');
   assert.equal(nearestAnchor(bounds, { x: 150, y: 12, w: 40, h: 20 }), 'top-right');
+});
+
+test('矩形と多角形のパネル内外を判定する', () => {
+  assert.equal(pointInPanel(rectPanel, 15, 15), true);
+  assert.equal(pointInPanel(rectPanel, 5, 15), false);
+  const triangle = { ...rectPanel, shape: { type: 'polygon', points: [[0, 0], [30, 0], [0, 30]] } };
+  assert.equal(pointInPanel(triangle, 5, 5), true);
+  assert.equal(pointInPanel(triangle, 25, 25), false);
+});
+
+test('重なったパネルの空白クリックは貫通する', () => {
+  const back = { id: 1, shape: { type: 'rect', x: 10, y: 10, w: 100, h: 100 }, bg: 1, bubbles: [{ text: 'あ', bbox: { x: 90, y: 90, w: 15, h: 15 } }], action: null };
+  const front = { id: 2, shape: { type: 'rect', x: 50, y: 50, w: 100, h: 100 }, bg: 1, bubbles: [{ text: 'い', bbox: { x: 60, y: 60, w: 20, h: 20 } }], action: null };
+  const panels = [back, front];
+  // 重なりのない位置は貫通しない
+  assert.equal(resolveOverlapClick(panels, 1, -1, 140, 100), 1);
+  // 最前面パネルのエレメント上はそのパネルのまま
+  assert.equal(resolveOverlapClick(panels, 1, -1, 70, 70), 1);
+  // 空白の下にエレメントを持つパネルがあればそこへ貫通
+  assert.equal(resolveOverlapClick(panels, 1, -1, 95, 95), 0);
+  // どのパネルにもエレメントがなければ最奥へ
+  assert.equal(resolveOverlapClick(panels, 1, -1, 55, 80), 0);
+  // 選択中パネルからは一段ずつ奥へ送り、最奥からは最前面へ戻る
+  assert.equal(resolveOverlapClick(panels, 1, 1, 55, 80), 0);
+  assert.equal(resolveOverlapClick(panels, 1, 0, 55, 80), 1);
 });

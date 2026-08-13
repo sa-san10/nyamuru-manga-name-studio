@@ -78,6 +78,45 @@ export function fallbackBox(panel: Panel, type: CanvasElementType, index: number
   };
 }
 
+export function pointInPanel(panel: Panel, x: number, y: number): boolean {
+  if (panel.shape.type === 'rect') {
+    const { shape } = panel;
+    return x >= shape.x && x <= shape.x + shape.w && y >= shape.y && y <= shape.y + shape.h;
+  }
+  // レイキャスティング法による多角形の内外判定
+  const { points } = panel.shape;
+  let inside = false;
+  for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+    const [xi, yi] = points[i];
+    const [xj, yj] = points[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+export function panelHasElementAt(panel: Panel, x: number, y: number): boolean {
+  const boxes: BBox[] = [
+    ...(panel.figures ?? []).map((figure, index) => figure.bbox ?? fallbackBox(panel, 'figure', index)),
+    ...panel.bubbles.map((bubble, index) => bubble.bbox ?? fallbackBox(panel, 'bubble', index)),
+    ...(panel.screen_text ?? []).map((screenText, index) => screenText.bbox ?? fallbackBox(panel, 'screen_text', index)),
+  ];
+  return boxes.some((box) => x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h);
+}
+
+// パネルが重なった位置のクリック先を決める。重ね順は配列順で固定（先頭のパネル1が最奥）。
+// 最前面のパネルのクリック位置にエレメント（人物・フキダシ・画面内文字）があればそのパネルを選び、
+// なければクリックは空白部分を貫通する:
+// - 選択中のパネルが重なりに含まれるときは一段ずつ奥へ送る（最奥まで行ったら最前面へ戻る）
+// - 含まれないときはエレメントがある最前面のパネル、どこにもなければ最奥のパネルを選ぶ
+export function resolveOverlapClick(panels: Panel[], clickedIndex: number, activeIndex: number, x: number, y: number): number {
+  const stack = panels.map((_, index) => index).filter((index) => pointInPanel(panels[index], x, y)).reverse();
+  if (stack.length < 2 || !stack.includes(clickedIndex)) return clickedIndex;
+  if (panelHasElementAt(panels[stack[0]], x, y)) return stack[0];
+  const activePosition = stack.indexOf(activeIndex);
+  if (activePosition !== -1) return stack[(activePosition + 1) % stack.length];
+  return stack.find((index) => panelHasElementAt(panels[index], x, y)) ?? stack[stack.length - 1];
+}
+
 export function resizedBox(interaction: InteractionGeometry, clientX: number, clientY: number, minSize = MIN_SIZE_MM): BBox {
   const { startBox, bounds, paperRect, mode } = interaction;
   const dx = (clientX - interaction.startClientX) * (210 / paperRect.width);

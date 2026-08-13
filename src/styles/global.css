@@ -183,7 +183,9 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .show-guides .safe-area { display: block; }
 .manga-panel { position: absolute; z-index: 2; padding: 0; overflow: hidden; border: 0; background: #faf9fb; text-align: left; cursor: pointer; transition: filter .12s; }
 .manga-panel:hover { filter: brightness(.98); }
-.manga-panel.is-selected { z-index: 3; }
+/* パネル本体の重ね順は配列順で固定（パネル1が最奥）。選択中パネルのエレメント・ハンドル類は
+   専用レイヤーで常にパネル本体より前面に描く */
+.panel-element-layer { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
 .panel-frame-overlay { position: absolute; z-index: 4; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .panel-frame-overlay rect, .panel-frame-overlay polygon { fill: none; stroke: #26232b; stroke-width: 1.6; stroke-linejoin: miter; }
 .panel-selection-overlay { position: absolute; z-index: 40; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -211,18 +213,21 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .panel-number { display: none; position: absolute; z-index: 20; left: 5px; top: 5px; width: 20px; height: 20px; place-items: center; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.92); background: var(--accent); color: white; font: 800 9.5px/1 monospace; box-shadow: 0 1px 3px rgba(31,29,35,.28); }
 .show-guides .panel-number { display: grid; }
 .figure-guide, .bubble-guide, .screen-text-guide { display: none; position: absolute; z-index: 5; align-items: center; justify-content: center; overflow: hidden; }
-.show-guides .figure-guide, .show-guides .bubble-guide, .show-guides .screen-text-guide, .manga-panel.is-selected .canvas-element { display: flex; }
+.show-guides .figure-guide, .show-guides .bubble-guide, .show-guides .screen-text-guide, .panel-element-layer .canvas-element { display: flex; }
 .canvas-element { margin: 0; appearance: none; font: inherit; touch-action: none; user-select: none; cursor: grab; transition: box-shadow .12s, outline-color .12s, background-color .12s; }
 .canvas-element:active { cursor: grabbing; }
-.manga-panel:not(.is-selected) .canvas-element { pointer-events: none; }
+.manga-panel .canvas-element { pointer-events: none; }
+.panel-element-layer .canvas-element { pointer-events: auto; }
 .canvas-element:hover { box-shadow: inset 0 0 0 1px rgba(255,107,129,.78); }
 .canvas-element.is-element-selected { z-index: 15; overflow: visible; outline: max(1px, .35cqh) solid var(--accent); outline-offset: max(1px, .2cqh); box-shadow: 0 0 0 .7cqh rgba(255,107,129,.2); }
 .figure-guide { flex-direction: column; gap: 1px; color: var(--blue); border: max(1.5px, .5cqh) solid rgba(91,155,213,.8); border-radius: 6px; background: rgba(186,225,255,.22); }
 .figure-guide small { position: relative; z-index: 2; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-weight: 700; font-size: calc(clamp(9px, 2.4cqh, 21px) * var(--name-fit, 1)); }
 .figure-size-svg { position: absolute; z-index: 0; left: 2%; top: 2%; width: 96%; height: 96%; pointer-events: none; }
 .figure-size-svg circle, .figure-size-svg rect { fill: rgba(91,155,213,.32); }
-.bubble-guide { border: 0; border-radius: 0; background: transparent; color: #2a272d; padding: 7% 9%; }
-.bubble-guide.bubble-handwritten { padding: 4%; font-weight: 900; }
+/* 中身（SVG・テキスト）は全て絶対配置なのでpaddingは不要。%paddingはborder-boxの最小幅として
+   効いてしまい、基準（パネル/紙面）が変わるとフキダシ幅が膨らむため置かない */
+.bubble-guide { border: 0; border-radius: 0; background: transparent; color: #2a272d; padding: 0; }
+.bubble-guide.bubble-handwritten { font-weight: 900; }
 .bubble-shape-svg { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .bubble-svg-surface { fill: rgba(255,254,249,.97); stroke: #2b292e; stroke-width: 2.2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .bubble-svg-source-surface { fill: rgba(255,254,249,.97); stroke: #2b292e; stroke-width: 2.2; vector-effect: non-scaling-stroke; }
@@ -239,7 +244,8 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .bubble-guide .bubble-text.is-long { font-size: calc(clamp(10.5px, 2.16cqh, 21px) * var(--bubble-fit, 1)); line-height: 1; }
 .bubble-guide .bubble-text.is-very-long { font-size: calc(clamp(9px, 1.8cqh, 18px) * var(--bubble-fit, 1)); line-height: .95; }
 /* 画面内文字（screen_text）: モニター・看板・紙面の文字を表す角枠ガイド */
-.screen-text-guide { color: #2e5a3c; border: max(1.5px, .5cqh) dashed rgba(70,150,96,.85); border-radius: 3px; background: rgba(203,235,210,.28); padding: 3% 5%; }
+/* padding は%だと基準（パネル/紙面）で大きさが変わり文字が潰れるため、小さな固定値にする */
+.screen-text-guide { color: #2e5a3c; border: max(1.5px, .5cqh) dashed rgba(70,150,96,.85); border-radius: 3px; background: rgba(203,235,210,.28); padding: max(1px, .3cqh) max(2px, .5cqh); }
 .screen-text-guide .screen-text-body { position: relative; z-index: 2; max-width: 100%; max-height: 100%; overflow: hidden; font: 700 clamp(6px, 1.7cqh, 15px)/1.15 "Consolas", "Yu Gothic", monospace; text-align: center; color: #204a2e; }
 .screen-text-guide .screen-text-body.vertical-text { writing-mode: vertical-rl; text-orientation: upright; font-family: "Yu Mincho", serif; }
 .resize-handle { position: absolute; z-index: 30; width: 22px; height: 22px; display: grid; place-items: center; background: transparent; touch-action: none; }
