@@ -5,6 +5,17 @@ const migrationGuideUrl = 'https://github.com/sa-san10/nyamuru-manga-name-studio
 
 const releases = [
   {
+    version: '1.13.0',
+    code: 19,
+    date: '2026-08-15',
+    title: '標準OMAY v10.5：タグ体系と優先順位カスケード・版管理の分離',
+    changes: [
+      '標準OMAY v10.5：全ルールに [const]／[must]／[panel]／[style]／[default] のタグを付け、OMNY側指定との優先順位カスケードをファイル冒頭に明文化。style_notes／layout_spec をトピック別に再構成し、「生成ワークフロー（文字を含めて一発生成）」「員数（コマ・フキダシを勝手に増減しない）」「出力前の自己検品（作画側が自分で見て直す）」「ページ間の一貫性（画風のドリフト防止）」「画風を変えてもキャラを保つ」の節を新設',
+      '版管理の分離：生成ワークフロー v10.4——本書・OMNYの schema_version・OMAYの spec_version をそれぞれ独立した版数として管理し、入力確認では両版数をそのまま報告する形に。studio のOMAY書き出しも spec_version の刻印（OMNYの schema_version の転記）をやめ、読み込みは "10.5" のような文字列の spec_version も受け付ける',
+      '初回表示していた「v1.3.x からの移行案内」ダイアログを削除',
+    ],
+  },
+  {
     version: '1.12.0',
     code: 18,
     date: '2026-08-13',
