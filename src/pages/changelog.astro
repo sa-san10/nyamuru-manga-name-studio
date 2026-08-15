@@ -31,9 +31,10 @@ const html = renderMarkdownWithCodeCopyButtons(changelogMarkdown);
   p { margin: 0; color: #606572; line-height: 1.85; }
 
   /* 本文は src/content/changelog.md をビルド時にレンダリング */
+  .changelog-md { margin-top: 20px; padding: 24px; border: 1px solid #f0e5e8; border-radius: 14px; background: rgba(255,255,255,.96); }
   .changelog-md :global(h1) { display: none; } /* md先頭の見出しは上のページヘッダーと重複するため非表示 */
   .changelog-md :global(h2) { margin: 28px 0 4px; padding: 24px 0 0; border-top: 1px solid #f0e5e8; font-size: 20px; color: #d94661; }
-  .changelog-md :global(h2:first-of-type) { margin-top: 20px; padding-top: 0; border-top: none; }
+  .changelog-md :global(h2:first-of-type) { margin-top: 0; padding-top: 0; border-top: none; }
   .changelog-md :global(h2 + p) { margin: 0 0 10px; color: #a08a92; font: 700 11px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
   .changelog-md :global(ul) { margin: 0; padding-left: 22px; }
   .changelog-md :global(li) { margin: 6px 0; color: #5e5a64; line-height: 1.75; }
@@ -43,6 +44,6 @@ const html = renderMarkdownWithCodeCopyButtons(changelogMarkdown);
 
   @media (max-width: 560px) {
     .changelog-page { width: min(100% - 20px, 860px); padding-top: 20px; }
-    header { padding: 18px; }
+    header, .changelog-md { padding: 18px; }
   }
 </style>
