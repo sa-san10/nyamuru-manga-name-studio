@@ -64,7 +64,7 @@ test('サンプルは作者名を持ち、フッター規則がstyle_notesとlay
   const document = parseMangaYaml(sampleSource);
   assert.match(document.manga.meta.author, /sa-san10/);
   assert.ok(document.manga.meta.style_notes.some((note) => note.includes('meta.author')));
-  assert.ok(document.manga.layout_spec.includes('ページフッターの座標'));
+  assert.ok(document.manga.layout_spec.includes('ページヘッダー・フッター'));
 });
 
 test('author の無い旧データには空文字を自動補完する', () => {
