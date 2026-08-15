@@ -1,0 +1,155 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 sa-san10
+manga:
+  schema_name: "Nyamuru Data Model"
+  schema_version: 10.3
+  meta:
+    title: "1億スターほしいのにゃ！"
+    author: "sa-san10"
+    format: "カラー漫画"
+    page_count: 1
+    reading_direction: "right-to-left"
+    text_orientation: "vertical"
+    font: "アンチック体"
+    style_notes:
+      # ── この作品は画風を指定しない。OMAY の初期値（カラー漫画・線画＋ベタ塗り）で描かれる ──
+      - "🚫 商標の回避: この作品は公開リポジトリに掲載される。実在の製品名・型番・企業名・ロゴを絵の中に一切描かない。古い電子機器は名前ではなく形と素材で描く——ベージュに黄ばんだ樹脂の箱型本体（前面に薄い四角い差し込み口が2つ縦に並ぶ）／黒い縦長の筐体／奥行きの深いガラス画面の表示装置（後ろが大きく出っぱっている）／分厚い樹脂のキーボード／剥き出しの緑色の基板／束ねた灰色のケーブル。筐体・キーボード・基板・段ボール箱・値札・看板に実在のメーカー名やロゴを描かない。文字を入れるなら、この作品オリジナルの店名『ヌルポ』か、意味のない型番風の記号（JV-0026 / TYPE-B など）だけにする。⚠️ 画面に映すのは screen_text に書かれた文字だけで、実在のサービスの画面デザインやロゴは描かない"
+
+
+  setting:
+    location: "秋葉原のジャンクショップ「ヌルポ」店内"
+    time: "昼下がり"
+    weather: "屋内"
+    background:
+      - "積み上がったレトロPCとCRTモニターの山"
+      - "床を這うケーブル"
+    props:
+      - "スマートフォン（電卓アプリ）"
+    situation: "にゃむるたんが全身の見得切りでGitHubリポジトリのスターをおねだりし、らきもたんが現実（あと9999万9977スター）を突きつけるが、にゃむるたんは超ポジティブに着地する"
+
+  characters:
+    - name: "にゃむるたん"
+      role: "データモデルの妖精。押しかけ系ヒロイン。リポジトリの主"
+    - name: "らきもたん"
+      role: "電子の妖精。ツッコミ役。最新機器に触るとバグらせる"
+
+  materials:
+    - key: "にゃむるたんの立ち絵"
+      type: "character"
+      keywords: ["にゃむるたん", "立ち絵", "メイド", "猫耳"]
+      note: "黄オレンジ髪・猫耳・ピンクのミニメイド服・肉球手袋・[ ]型ヘアクリップ・首に鈴・猫尻尾に白リボン"
+    - key: "らきもたんの立ち絵"
+      type: "character"
+      keywords: ["らきもたん", "立ち絵", "メイド", "水色"]
+      note: "水色ショートボブ・アホ毛・黒リボン（赤いコマンド文字列）・青いレトロメイド服・Rのエプロン・再生ボタンのベルト"
+    - key: "ヌルポ店内の背景"
+      type: "background"
+      keywords: ["ヌルポ", "ジャンクショップ", "店内", "背景", "レトロPC"]
+      note: "天井まで積まれた古いパソコンの筐体（ベージュに黄ばんだ樹脂の箱型本体。前面に薄い四角い差し込み口が2つ縦に並ぶ）と、奥行きの深いガラス画面の表示装置の山。床を這うケーブル、薄暗いが温かみのある電子の魔窟"
+    - key: "スマホ"
+      type: "prop"
+      keywords: ["スマホ", "スマートフォン", "電卓"]
+      note: "2025年の最新スマートフォン。らきもたんが触るとブルースクリーンになる"
+
+  pages:
+    - page: 1
+      canvas: {w: 210, h: 297, unit: mm}
+      panels:
+        # パターンN（タチキリ見得切り）を採用。右の縦長ドン＝にゃむるたんの全身見得切り（右端・下端タチキリ）
+        # 【右・縦長ドン】押しかけ登場の見得切り
+        - id: 1
+          shape: {type: rect, x: 90, y: 10, w: 120, h: 287}
+          bg: 2
+          bleed: [right, bottom]
+          figures:
+            - name: "にゃむるたん"
+              bbox: {x: 115, y: 45, w: 68, h: 235}
+              anchor: "center"
+              size: "full"
+          assets: ["にゃむるたんの立ち絵", "ヌルポ店内の背景"]
+          bubbles:
+            - text: "スターくれなのにゃ～！！"
+              speaker: "にゃむるたん"
+              shape: "flash"
+              bbox: {x: 186, y: 15, w: 22, h: 55}
+              anchor: "top-right"
+            - text: "1億スターくらい欲しいのにゃ～！"
+              emphasis: "1億"
+              bbox: {x: 92, y: 20, w: 20, h: 56}
+              anchor: "top-left"
+          action: "全身の見得切りポーズ。片足を踏み出し、肉球手袋の両手を突き上げ、猫尻尾はビシッと立てる。目が星型にキラキラ。背景はジャンクショップ店内を見下ろす構図"
+
+        # 【左上・状況】現在のスター数
+        - id: 2
+          shape: {type: rect, x: 10, y: 10, w: 75, h: 88}
+          bg: 1
+          figures:
+            - name: "らきもたん"
+              bbox: {x: 26, y: 16, w: 38, h: 75}
+              anchor: "center"
+              size: "waist-up"
+          assets: ["らきもたんの立ち絵"]
+          bubbles:
+            - text: "で、今は何スターなの？"
+              speaker: "らきもたん"
+              bbox: {x: 66, y: 13, w: 17, h: 42}
+              anchor: "top-right"
+            - text: "23スターだにゃ！"
+              speaker: "にゃむるたん"
+              emphasis: "23"
+              offscreen: true
+              bbox: {x: 12, y: 52, w: 16, h: 40}
+              anchor: "bottom-left"
+          action: "らきもたんが小首をかしげる。アホ毛がはてなマークの形。背景は日常の淡い水色にジャンク棚のラインを1本"
+
+        # 【左中・反応】現実の残数＋接触バグ
+        - id: 3
+          shape: {type: rect, x: 10, y: 103, w: 75, h: 88}
+          bg: 0
+          figures:
+            - name: "らきもたん"
+              bbox: {x: 24, y: 109, w: 40, h: 74}
+              anchor: "center"
+              size: "waist-up"
+            - name: "スマホ"
+              object: true
+              bbox: {x: 50, y: 164, w: 22, h: 22}
+              anchor: "bottom-right"
+          assets: ["らきもたんの立ち絵", "スマホ"]
+          bubbles:
+            - text: "1億まであと9999万9977スターだよ！？"
+              speaker: "らきもたん"
+              shape: "flash"
+              emphasis: "9999万9977"
+              bbox: {x: 66, y: 107, w: 17, h: 56}
+              anchor: "top-right"
+          screen_text:
+            - text: "SYSTEM ERROR"
+              bbox: {x: 51, y: 172, w: 20, h: 8}
+              orientation: "horizontal"
+          action: "電卓アプリで計算した瞬間、触れたスマホがブルースクリーンに（接触バグ）。目がぐるぐる渦巻きに。背景は驚きの黄系ベタにピクセルノイズが散る"
+
+        # 【左下・オチ】超ポジティブ着地
+        - id: 4
+          shape: {type: rect, x: 10, y: 196, w: 75, h: 91}
+          bg: 0
+          figures:
+            - name: "にゃむるたん"
+              bbox: {x: 24, y: 202, w: 40, h: 78}
+              anchor: "center"
+              size: "bust-up"
+          assets: ["にゃむるたんの立ち絵"]
+          bubbles:
+            - text: "残りは全部伸びしろ！実質もう1億スターなのにゃ！！"
+              speaker: "にゃむるたん"
+              shape: "flash"
+              emphasis: "実質"
+              bbox: {x: 66, y: 200, w: 17, h: 64}
+              anchor: "top-right"
+            - text: "仕様です！"
+              speaker: "らきもたん"
+              shape: "flash"
+              offscreen: true
+              bbox: {x: 12, y: 240, w: 15, h: 34}
+              anchor: "bottom-left"
+          action: "にゃむるたんが拳を突き上げて全力のドヤ顔。背景は歓喜の金〜桃のグラデにキラキラと星の漫符が舞う"

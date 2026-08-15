@@ -2,6 +2,21 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+## 🆕 最新アプデ！OMAY v10.5：画風変換がここまで効く
+
+**🎨 コマ割りもセリフもそのまま、世界だけ丸ごと入れ替え！**
+
+左はふつうのカラー漫画。右は「白い水冷PCの中に積み上げたアクリル展示ケース」——実はどちらも**同じネームデータ（OMNY）**から生成した同じ作品です。差し替えたのは画風の指定（`meta.style_notes`）だけ。肉球も鈴も1/12フィギュアの造形に"翻訳"されて、ちゃんと同じキャラのまま。**OMAY v10.5 の得意技です。**
+
+🔍 仕組みの解説は [v10.5：構造化で画風変換が効きやすく](#v105構造化で画風変換が効きやすく) へ ／ 🧪 ネームデータ付きの技術デモは [docs/demos/style-transfer/](./docs/demos/style-transfer/) へ！
+
+| 漫画版 | PC内アクリル展示版 |
+|---|---|
+| <img src="./docs/demos/style-transfer/images/A_漫画版_パターンN.webp" alt="同一OMNYから生成した漫画版" width="360"> | <img src="./docs/demos/style-transfer/images/E_PC内アクリル展示版_パターンN.webp" alt="同一OMNYから生成したPC内アクリル展示版" width="360"> |
+
+にゃむるたん © sa-san10 / CC BY 4.0
+
+
 > **v1.3.x からお使いの方へ**：v1.4.0〜v1.6.0 で画像生成指示ファイル（OMAY）の分離と NDM v10.2 への更新が入りました。変更内容と対応作業は **[v1.3.x からの移行ガイド](./docs/migration-from-v1.3.md)** を参照してください。
 
 > **画像生成ワークフローのセットアップ（必須）**：AIエージェントのプロジェクト内へ、ワークフロー本体 [agent-manga-generation-workflow.md](./src/content/agent-manga-generation-workflow.md) と標準OMAY [standard.omay.yaml](./src/content/standard.omay.yaml) の2ファイルを配置してください。OMNYは作画指示を含まない純粋なネームデータのため、OMAYが無いと作画・演出ルールとレイアウト仕様が不足します。
@@ -35,10 +50,6 @@
 **Nyamuru Data Model（NDM）**は、漫画ネームのためのデータモデルです。愛称は **Nyamuru🐱** です。
 
 このPWAでは、NDMをYAMLで表現する **Open Manga Name YAML（OMNY）** 形式の漫画ネームを、紙面プレビューと構造化フォームで閲覧・編集できます。内蔵サンプルを初期データとして読み込み、NDM v10の主要ルールを検査します。NDMの仕様書は [nyamuru-data-model-v10.md](./src/content/nyamuru-data-model-v10.md)（[EN](./src/content/nyamuru-data-model-v10.en.md)）、内蔵サンプルのネームは [sample.omny.yaml](./src/content/sample.omny.yaml) として同梱しています。
-
-## ネームサンプル
-
-![内蔵サンプル「押しかけ妖精にゃむるたん」の紙面プレビュー](./docs/images/sample-name-preview.webp)
 
 OSS公開用リポジトリは [sa-san10/nyamuru-manga-name-studio](https://github.com/sa-san10/nyamuru-manga-name-studio) です。
 
@@ -91,6 +102,12 @@ npm run build:standalone
 - 「作品情報」タブ：標準テンプレートの読み込み（上書き確認あり）／標準テンプレートの保存／手元のOMAYファイルの読み込み／現在のルールのOMAY書き出し
 - 「生成プロンプト」「生成ワークフロー」タブ：解説内の `standard.omay.yaml` リンクから標準テンプレートをダウンロード
 - ヘッダーの「OMNY保存」：**画像生成指示分離版**（`.omny.yaml`・ルールを含まない純粋なネームデータ）と**全部入り版**（`.yaml`・ルール込みの一枚もの）の2種類から選択。どちらもネームデータ部分は同一で、全部入り版は分離版＋ルールの合成として生成されます
+
+### v10.5：構造化で画風変換が効きやすく
+
+OMAY v10.5 は全ルールにタグを付け、優先順位のカスケードを明文化しました。ページの構造（`[const]`：読み順・員数・コマ形状・タチキリ・フキダシの種類）と見た目の既定（`[style]` / `[default]`：全体トーン・背景色・フォント・コマ枠線）が分離されているため、作品側はOMNYの `meta.style_notes` に画風を書くだけで見た目を総入れ替えでき、ページ構造は壊れません。識別記号を新しい画風の材料へ翻訳して残す「画風を変えてもキャラを保つ」規定が、キャラの同一性を守ります。
+
+ページ冒頭に並べた2枚（漫画版／PC内アクリル展示版）は、**同一のネームデータ（OMNY）** から `meta.style_notes` だけを差し替えて生成したものです。詳しい解説とネームデータは **[docs/demos/style-transfer/](./docs/demos/style-transfer/)** にあります。技術デモの一覧は [docs/demos/](./docs/demos/) を参照してください。
 
 ## 紙面上の要素操作
 
