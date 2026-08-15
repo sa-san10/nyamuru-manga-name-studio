@@ -444,9 +444,6 @@ input:disabled { background: #faf6f7; color: #9b9398; }
 .howto-intro-zoom-hint { margin-bottom: 14px; color: var(--muted); font-size: 9.5px; letter-spacing: .04em; }
 .howto-intro-actions { display: flex; gap: 8px; width: 100%; }
 .howto-intro-actions button { flex: 1; justify-content: center; }
-.migration-notice-dialog { width: min(440px, calc(100vw - 32px)); }
-.migration-notice-dialog p { text-align: left; }
-.migration-notice-dialog .howto-intro-actions a { flex: 1; text-decoration: none; }
 .howto-intro-ask-ai { display: flex; flex-direction: column; gap: 7px; width: 100%; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
 .howto-intro-ask-ai > span { color: var(--muted); font-size: 10.5px; font-weight: 700; }
 .ask-ai-block { display: flex; align-items: center; gap: 6px; }

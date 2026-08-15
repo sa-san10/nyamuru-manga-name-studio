@@ -41,8 +41,6 @@ const TABS: {
 type MobileStoryboardPane = 'pages' | 'editor' | 'panel';
 
 const HOWTO_INTRO_KEY = 'manga-name-studio.howto-intro.v1';
-const MIGRATION_NOTICE_KEY = 'manga-name-studio.migration-notice.v1';
-const MIGRATION_GUIDE_URL = `${REPO_URL}/blob/main/docs/migration-from-v1.3.md`;
 const DOCS_LANG_KEY = 'manga-name-studio.docs-lang.v1';
 const AUTO_ANCHOR_KEY = 'manga-name-studio.auto-anchor.v1';
 
@@ -102,7 +100,6 @@ export default function App() {
   const [showValidation, setShowValidation] = useState(false);
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [showHowtoIntro, setShowHowtoIntro] = useState(false);
-  const [showMigrationNotice, setShowMigrationNotice] = useState(false);
   const [mangaViewerPage, setMangaViewerPage] = useState<number | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState('B');
   const [rawSource, setRawSource] = useState(() => toMangaYaml(document));
@@ -180,12 +177,6 @@ export default function App() {
         localStorage.setItem(HOWTO_INTRO_KEY, '1');
         if (initialTab() !== 'howto') setShowHowtoIntro(true);
       }
-      // 旧バージョン利用者への移行案内（このバージョンを初めて開いたとき1回だけ）。
-      // 初回訪問は最初のウェルカム案内を優先し、移行案内は出さない
-      if (!localStorage.getItem(MIGRATION_NOTICE_KEY)) {
-        localStorage.setItem(MIGRATION_NOTICE_KEY, '1');
-        if (!firstVisit) setShowMigrationNotice(true);
-      }
     } catch { /* private mode */ }
   }, []);
 
@@ -212,7 +203,6 @@ export default function App() {
       if (key === 'escape' && mangaViewerPage !== null) { setMangaViewerPage(null); return; }
       if (key === 'escape' && showNewDialog) { setShowNewDialog(false); return; }
       if (key === 'escape' && showHowtoIntro) { setShowHowtoIntro(false); return; }
-      if (key === 'escape' && showMigrationNotice) { setShowMigrationNotice(false); return; }
       const target = event.target as HTMLElement | null;
       if (target && (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target.isContentEditable)) return;
       if ((event.metaKey || event.ctrlKey) && key === 'z') { event.preventDefault(); if (event.shiftKey) redo(); else undo(); return; }
@@ -220,7 +210,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [document, past, future, showNewDialog, showHowtoIntro, showMigrationNotice, mangaViewerPage]);
+  }, [document, past, future, showNewDialog, showHowtoIntro, mangaViewerPage]);
 
   const changeTab = (next: WorkspaceTab) => { setTab(next); if (next !== 'storyboard' && window.innerWidth < 800) setSidebarCollapsed(true); };
   const changeDocsLang = (next: DocsLanguage) => {
@@ -517,18 +507,6 @@ export default function App() {
         <div class="howto-intro-ask-ai">
           <span>または、あなたの創作パートナーのAIに聞いてみる</span>
           <AskAiBlock />
-        </div>
-      </section>
-    </>}
-    {showMigrationNotice && <>
-      <button class="drawer-backdrop" onClick={() => setShowMigrationNotice(false)} aria-label="移行案内を閉じる" />
-      <section class="howto-intro-dialog migration-notice-dialog" role="dialog" aria-modal="true" aria-label="v1.3.x からの移行案内">
-        <div class="howto-intro-icon" aria-hidden="true"><Sparkles size={26} /></div>
-        <h2>画像生成まわりの運用が変わりました</h2>
-        <p>作画・演出ルールとレイアウト仕様が、画像生成指示ファイル <strong>OMAY（Open Manga Artwork YAML）</strong> へ分離され、NDMスキーマは <strong>v10.2</strong> になりました。AI側に設定済みの生成ワークフロー・生成プロンプトの差し替えと、以前のバージョンで保存したネームファイルの更新が必要です。手順は移行ガイドをご覧ください。</p>
-        <div class="howto-intro-actions">
-          <button type="button" class="secondary-button" onClick={() => setShowMigrationNotice(false)}>あとで</button>
-          <a class="primary-button" href={MIGRATION_GUIDE_URL} target="_blank" rel="noreferrer" onClick={() => setShowMigrationNotice(false)}>移行ガイドを見る</a>
         </div>
       </section>
     </>}
