@@ -33,7 +33,7 @@ export function toSeparatedMangaYaml(document: MangaDocument): string {
 // 画像生成指示ファイル OMAY（Open Manga Artwork YAML）
 export interface OmayDocument {
   spec_name: string;
-  spec_version?: number;
+  spec_version?: number | string;
   style_notes: string[];
   layout_spec: string;
 }
@@ -46,7 +46,7 @@ export function parseOmayYaml(source: string): OmayDocument {
   }
   return {
     spec_name: typeof value.spec_name === 'string' ? value.spec_name : OMAY_SPEC_NAME,
-    spec_version: typeof value.spec_version === 'number' ? value.spec_version : undefined,
+    spec_version: typeof value.spec_version === 'number' || typeof value.spec_version === 'string' ? value.spec_version : undefined,
     style_notes: value.style_notes.map(String),
     layout_spec: value.layout_spec,
   };
