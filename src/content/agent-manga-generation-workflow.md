@@ -1,6 +1,6 @@
-# エージェント漫画生成ワークフロー（簡易版）v10.3
+# エージェント漫画生成ワークフロー（簡易版）v10.4
 
-> 本書のバージョンは、対応するNDMスキーマ（OMNYの `schema_version`・OMAYの `spec_version`）と一致させる。
+> 本書・NDMスキーマ（OMNYの `schema_version`）・OMAY（`spec_version`）のバージョンは、それぞれ独立して管理する。
 
 > SPDX-License-Identifier: MIT
 >
@@ -95,7 +95,7 @@
 ## 2. 入力確認とOMAY・OMNY解析
 
 - OMAY（画像生成指示ファイル）を読み、`style_notes` を全コマ共通の作画・演出ルール、`layout_spec` をレイアウト仕様として把握する。どちらもOMNY本体の指定と同じ拘束力を持つ。
-- OMAYの `spec_version` とOMNYの `schema_version` の対応を確認し、一致しない場合は作画を始める前に報告する。
+- OMAYの `spec_version` とOMNYの `schema_version` は、それぞれ独立した版数として読み取り、開始前の要約でそのまま報告する。
 - OMAYが渡されていない場合（プロジェクト指示にも作品添付にも無い）は、推測で作画を進めず、不足として報告する。
 - OMNYの `meta.style_notes` に作品固有の作画指示（画風など）がある場合は、OMAYのルールへ上乗せして適用する。
 - OMNY全文を読み、タイトル、ページ数、読み方向、文字方向、コマ配置、台詞、演出、登場人物、背景、持ち物を把握する。
@@ -109,8 +109,8 @@
 開始前に、次のように要約を出力する。
 
 ```text
-OMAY確認完了：spec_version 10.3（OMNYのschema_versionと一致）。
-OMNY確認完了：全5ページ、右綴じ、縦書き、登場人物4名。
+OMAY確認完了：spec_version 10.5。
+OMNY確認完了：schema_version 10.3、全5ページ、右綴じ、縦書き、登場人物4名。
 ページ定義とpage_countは一致しています。作画を開始します。
 ```
 

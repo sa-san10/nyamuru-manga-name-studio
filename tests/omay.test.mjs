@@ -48,7 +48,8 @@ test('作品情報のルールをOMAYとして書き出すと読み戻せる', (
   const omay = parseOmayYaml(toOmayYaml(document));
   assert.deepEqual(omay.style_notes, document.manga.meta.style_notes);
   assert.equal(omay.layout_spec, document.manga.layout_spec);
-  assert.equal(omay.spec_version, document.manga.schema_version);
+  // OMAYの版数はOMNYのschema_versionと独立管理のため、書き出しには刻印されない
+  assert.equal(omay.spec_version, undefined);
 });
 
 test('保存2種類とOMAYのファイル名に対応する拡張子が付く', () => {

@@ -1,6 +1,6 @@
-# Agent Manga Generation Workflow (Concise Edition) v10.3
+# Agent Manga Generation Workflow (Concise Edition) v10.4
 
-> This document's version matches the corresponding NDM schema version (the OMNY's `schema_version` and the OMAY's `spec_version`).
+> This document, the NDM schema (the OMNY's `schema_version`), and the OMAY (its `spec_version`) are each versioned independently.
 
 > SPDX-License-Identifier: MIT
 >
@@ -95,7 +95,7 @@ Post to the chat every time the step changes.
 ## 2. Input check and OMAY & OMNY parsing
 
 - Read the OMAY (artwork instruction file) and grasp its `style_notes` as the drawing & staging rules shared by every panel, and its `layout_spec` as the layout specification. Both carry the same binding force as what the OMNY itself specifies.
-- Check that the OMAY's `spec_version` corresponds to the OMNY's `schema_version`; if they do not match, report it before starting artwork.
+- Read the OMAY's `spec_version` and the OMNY's `schema_version` as independent version numbers, and report them as-is in the pre-start summary.
 - If no OMAY has been provided (neither in the project instructions nor attached to the work), do not draw from guesswork — report it as missing.
 - If the OMNY's `meta.style_notes` contains work-specific drawing instructions (such as an art style), apply them on top of the OMAY rules.
 - Read the whole OMNY and grasp the title, page count, reading direction, text direction, panel layout, dialogue, staging, cast, backgrounds, and props.
@@ -109,8 +109,8 @@ Post to the chat every time the step changes.
 Before starting, output a summary like:
 
 ```text
-OMAY check complete: spec_version 10.3 (matches the OMNY's schema_version).
-OMNY check complete: 5 pages, right-bound, vertical text, 4 characters.
+OMAY check complete: spec_version 10.5.
+OMNY check complete: schema_version 10.3, 5 pages, right-bound, vertical text, 4 characters.
 Page definitions match page_count. Starting artwork.
 ```
 
