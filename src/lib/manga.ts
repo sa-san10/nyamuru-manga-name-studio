@@ -9,7 +9,7 @@ export const BUBBLE_SHAPES = ['normal', 'thought', 'square', 'caption', 'flash',
 export const ANCHORS = ['right', 'left', 'center', 'top-right', 'top-left', 'bottom-right', 'bottom-left'] as const;
 export const FIGURE_SIZES = ['full', 'waist-up', 'bust-up', 'face', 'hand', 'foot', 'part'] as const;
 export const FIGURE_ROLES = ['main', 'sub'] as const;
-export const BLEED_EDGES = ['left', 'right', 'bottom'] as const;
+export const BLEED_EDGES = ['left', 'right', 'top', 'bottom'] as const;
 export const SCREEN_TEXT_ORIENTATIONS = ['horizontal', 'vertical'] as const;
 
 export function parseMangaYaml(source: string): MangaDocument {
@@ -109,7 +109,7 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
   const manga = document?.manga;
   if (!manga) return [{ level: 'error', path: 'manga', message: 'manga ルートが必要です' }];
   if (manga.schema_name !== NDM_SCHEMA_NAME) issues.push({ level: 'error', path: 'manga.schema_name', message: `固定値「${NDM_SCHEMA_NAME}」にしてください` });
-  if (manga.schema_version !== 10.3) issues.push({ level: 'warning', path: 'manga.schema_version', message: `NDMスキーマは v10.3 です（現在 v${manga.schema_version ?? '不明'}）` });
+  if (manga.schema_version !== 10.31) issues.push({ level: 'warning', path: 'manga.schema_version', message: `NDMスキーマは v10.31 です（現在 v${manga.schema_version ?? '不明'}）` });
   if (!manga.meta?.title?.trim()) issues.push({ level: 'error', path: 'manga.meta.title', message: '作品タイトルは必須です' });
   if (manga.meta?.page_count !== manga.pages?.length) issues.push({ level: 'error', path: 'manga.meta.page_count', message: `pages の実数 ${manga.pages?.length ?? 0} と一致しません` });
   const fixed = [['reading_direction', 'right-to-left'], ['text_orientation', 'vertical'], ['font', 'アンチック体']] as const;
@@ -136,9 +136,10 @@ export function validateManga(document: MangaDocument): ValidationIssue[] {
         } else {
           const { x, y, w, h } = panel.shape;
           panel.bleed.forEach((edge) => {
-            if (!BLEED_EDGES.includes(edge)) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: `断ち切れる辺は left / right / bottom です（「${edge}」は不可。上端はヘッダー帯のため断ち切れません）` });
+            if (!BLEED_EDGES.includes(edge)) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: `断ち切れる辺は left / right / top / bottom です（「${edge}」は不可）` });
             else if (edge === 'left' && x !== 0) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: left のコマは x: 0（紙の左端）にしてください' });
             else if (edge === 'right' && x + w !== 210) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: right のコマは x + w = 210（紙の右端）にしてください' });
+            else if (edge === 'top' && y !== 0) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: top のコマは y: 0（紙の上端）にしてください' });
             else if (edge === 'bottom' && y + h !== 297) issues.push({ level: 'error', path: `${panelPath}.bleed`, message: 'bleed: bottom のコマは y + h = 297（紙の下端）にしてください' });
           });
         }

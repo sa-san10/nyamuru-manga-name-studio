@@ -1,4 +1,4 @@
-# Nyamuru Data Model（NDM）v10.3 / Open Manga Name YAML（OMNY）簡易ガイド
+# Nyamuru Data Model（NDM）v10.31 / Open Manga Name YAML（OMNY）簡易ガイド
 
 **Nyamuru Data Model（NDM）** は、漫画ネームの構造、コマ割り、人物、フキダシ、素材参照を定義するデータモデルです。愛称は **Nyamuru🐱** です。
 
@@ -13,7 +13,7 @@
 ```yaml
 manga:
   schema_name: "Nyamuru Data Model"
-  schema_version: 10.3
+  schema_version: 10.31
   meta: { ... }
   layout_spec: |
     # A4座標系の説明
@@ -29,7 +29,7 @@ manga:
 | フィールド | 決まり |
 |---|---|
 | `schema_name` | NDMの正式な識別名 `"Nyamuru Data Model"` 固定。絵文字は含めない |
-| `schema_version` | 現在のNDMスキーマバージョンは `10.3` |
+| `schema_version` | 現在のNDMスキーマバージョンは `10.31` |
 | `meta.author` | 作者名（任意）。指定があれば各ページ下端中央のフッターに小さく描く。空なら描かない |
 | `meta.page_count` | `pages` 配列の実数と一致させる |
 | `meta.reading_direction` | `"right-to-left"` 固定 |
@@ -46,7 +46,7 @@ manga:
 - `shape.type` は `rect` または `polygon`。
 - `bg` は `-1` / `0` / `1` / `2` の必須値。`2` は1ページ2コマまで（`-1` はこのカウントに関係しない）。
 - `bg: -1` は背景無描画（中間グレー1色のベタ塗りのみ・接地影なし）。依頼で指示されたコマにのみ使い、演出判断で自動選択しない。
-- `bleed` はタチキリ（断ち切り）の辺の宣言（任意。`left` / `right` / `bottom` の配列）。宣言した辺は座標も紙端に一致させる（left=`x: 0`、right=`x + w = 210`、bottom=`y + h = 297`）。rect コマ専用。
+- `bleed` はタチキリ（断ち切り）の辺の宣言（任意。`left` / `right` / `top` / `bottom` の配列）。宣言した辺は座標も紙端に一致させる（left=`x: 0`、right=`x + w = 210`、top=`y: 0`、bottom=`y + h = 297`）。rect コマ専用。top を宣言したコマはヘッダー帯より奥に描かれ、ヘッダーの文字はコマ絵の最前面に重なる。
 - `no_figures: true` は意図的な無人コマの宣言（任意）。人物を一人も描かないコマに付け、`figures` と併用しない。
 - `screen_text` はフキダシにしない画面・看板・紙面の文字の配列（任意）。各要素は `text`（必須）・`bbox`（任意）・`orientation`（`horizontal` 既定 / `vertical`）。
 
@@ -166,7 +166,7 @@ pages:
 ```yaml
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sa-san10
-# Nyamuru Data Model (NDM) v10.3 serialized as Open Manga Name YAML (OMNY)
+# Nyamuru Data Model (NDM) v10.31 serialized as Open Manga Name YAML (OMNY)
 # Nickname: Nyamuru🐱
 
 # OMNY文書のルート。作品全体の情報をこの中にまとめる
@@ -175,7 +175,7 @@ manga:
   schema_name: "Nyamuru Data Model"
 
   # 使用するNDMスキーマのバージョン
-  schema_version: 10.3
+  schema_version: 10.31
 
   # 作品全体の基本情報
   meta:

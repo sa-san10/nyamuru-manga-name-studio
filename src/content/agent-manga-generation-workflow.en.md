@@ -110,7 +110,7 @@ Before starting, output a summary like:
 
 ```text
 OMAY check complete: spec_version 10.5.
-OMNY check complete: schema_version 10.3, 5 pages, right-bound, vertical text, 4 characters.
+OMNY check complete: schema_version 10.31, 5 pages, right-bound, vertical text, 4 characters.
 Page definitions match page_count. Starting artwork.
 ```
 

@@ -15,7 +15,7 @@ export default function SchemaGuide({ lang, onChangeLang, onNotify }: Props) {
   const en = lang === 'en';
   return <div class="document-editor">
     <div class="document-editor-head">
-      <div><span class="eyebrow">Nyamuru🐱 · NDM v10.3</span><h2>Nyamuru Data Model</h2><p>{en ? 'The NDM specification and how it serializes to OMNY, in Markdown.' : 'NDMの仕様とOMNY形式へのシリアライズ方法をMarkdownで確認できます。'}</p></div>
+      <div><span class="eyebrow">Nyamuru🐱 · NDM v10.31</span><h2>Nyamuru Data Model</h2><p>{en ? 'The NDM specification and how it serializes to OMNY, in Markdown.' : 'NDMの仕様とOMNY形式へのシリアライズ方法をMarkdownで確認できます。'}</p></div>
       <div class="document-head-actions">
         <DocsLangToggle lang={lang} onChange={onChangeLang} />
         <span class="schema-source-badge"><Braces size={15} />src/content/{en ? 'nyamuru-data-model-v10.en.md' : 'nyamuru-data-model-v10.md'}</span>

@@ -4,7 +4,7 @@ import { ANCHORS, BLEED_EDGES, BUBBLE_SHAPES, FIGURE_ROLES, FIGURE_SIZES } from 
 import { convertPanelShape, fallbackBox, resizePanelToBounds } from '../lib/canvasGeometry';
 import type { BleedEdge, CanvasElementSelection, Manga, Panel } from '../types';
 
-const BLEED_EDGE_LABELS: Record<BleedEdge, string> = { left: '左辺', right: '右辺', bottom: '下辺' };
+const BLEED_EDGE_LABELS: Record<BleedEdge, string> = { left: '左辺', right: '右辺', top: '上辺', bottom: '下辺' };
 const FIGURE_ROLE_LABELS: Record<(typeof FIGURE_ROLES)[number], string> = { main: 'main / 主役', sub: 'sub / 脇役' };
 import { BBoxEditor, Field, SectionTitle } from './Fields';
 import BubbleShapeSvg from './BubbleShapeSvg';
