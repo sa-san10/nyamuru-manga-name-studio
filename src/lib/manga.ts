@@ -52,10 +52,10 @@ export function parseOmayYaml(source: string): OmayDocument {
   };
 }
 
+// OMAYの版数はOMNYのschema_versionと独立して管理するため、書き出しには刻印しない
 export function toOmayYaml(document: MangaDocument): string {
   return stringify({
     spec_name: OMAY_SPEC_NAME,
-    spec_version: document.manga.schema_version,
     style_notes: document.manga.meta.style_notes,
     layout_spec: document.manga.layout_spec ?? '',
   }, { indent: 2, lineWidth: 0 });
