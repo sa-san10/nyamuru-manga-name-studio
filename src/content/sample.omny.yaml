@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sa-san10
-# Nyamuru Data Model (NDM) v10.3 serialized as Open Manga Name YAML (OMNY)
+# Nyamuru Data Model (NDM) v10.31 serialized as Open Manga Name YAML (OMNY)
 # Nickname: Nyamuru🐱
 # Sample story characters: にゃむるたん © sa-san10 / CC BY 4.0
 
 manga:
   schema_name: "Nyamuru Data Model"
-  schema_version: 10.3
+  schema_version: 10.31
   meta:
     title: "押しかけ妖精にゃむるたん"
     author: "にゃむるたん © sa-san10 / CC BY 4.0"

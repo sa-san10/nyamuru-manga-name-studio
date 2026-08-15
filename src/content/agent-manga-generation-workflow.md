@@ -110,7 +110,7 @@
 
 ```text
 OMAY確認完了：spec_version 10.5。
-OMNY確認完了：schema_version 10.3、全5ページ、右綴じ、縦書き、登場人物4名。
+OMNY確認完了：schema_version 10.31、全5ページ、右綴じ、縦書き、登場人物4名。
 ページ定義とpage_countは一致しています。作画を開始します。
 ```
 

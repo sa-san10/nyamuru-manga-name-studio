@@ -3,7 +3,7 @@ export type FigureSize = 'full' | 'waist-up' | 'bust-up' | 'face' | 'hand' | 'fo
 export type FigureRole = 'main' | 'sub';
 export type BubbleShape = 'normal' | 'thought' | 'square' | 'caption' | 'flash' | 'uniflash' | 'wobbly' | 'whisper' | 'handwritten';
 export type MaterialType = 'character' | 'background' | 'prop';
-export type BleedEdge = 'left' | 'right' | 'bottom';
+export type BleedEdge = 'left' | 'right' | 'top' | 'bottom';
 export type ScreenTextOrientation = 'horizontal' | 'vertical';
 
 export interface BBox { x: number; y: number; w: number; h: number }

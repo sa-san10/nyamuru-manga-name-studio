@@ -565,7 +565,7 @@ export default function MangaCanvas({ title, author, page, pageCount, activePane
           // タチキリ（bleed）辺には枠線を描かない——辺ごとの線に分解する
           const { x, y, w, h } = panel.shape;
           return <g key={key}>
-            <line x1={x} y1={y} x2={x + w} y2={y} />
+            {!bleed.includes('top') && <line x1={x} y1={y} x2={x + w} y2={y} />}
             {!bleed.includes('right') && <line x1={x + w} y1={y} x2={x + w} y2={y + h} />}
             {!bleed.includes('bottom') && <line x1={x} y1={y + h} x2={x + w} y2={y + h} />}
             {!bleed.includes('left') && <line x1={x} y1={y} x2={x} y2={y + h} />}

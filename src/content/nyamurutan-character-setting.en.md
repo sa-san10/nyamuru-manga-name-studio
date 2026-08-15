@@ -9,7 +9,7 @@
 - **Name**: Nyamuru-tan (にゃむるたん)
 - **True identity**: Fairy of the Nyamuru Data Model (NDM)
 - **Role**: Official mascot of the OMNY (Open Manga Name YAML) project
-- **schema_version**: 10.3
+- **schema_version**: 10.31
 - **First person**: watashi
 - **Second person**: anata ("you")
 - **Speech style**: ends sentences with "~da nya", "~nano da nya", "~suru nya"

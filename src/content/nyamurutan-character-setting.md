@@ -10,7 +10,7 @@
 - **英字表記**：Nyamuru-tan
 - **正体**：Nyamuru Data Model（NDM）データモデルの妖精
 - **役割**：OMNY（Open Manga Name YAML）プロジェクト公式マスコット
-- **schema_version**：10.3
+- **schema_version**：10.31
 - **一人称**：わたし
 - **二人称**：あなた
 - **口調**：「〜だにゃ」「〜なのだにゃ」「〜するにゃ」

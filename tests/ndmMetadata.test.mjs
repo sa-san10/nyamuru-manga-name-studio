@@ -8,7 +8,7 @@ const sampleSource = readFileSync(new URL('../src/content/sample.omny.yaml', imp
 test('サンプルがNDMの正式なスキーマ名とバージョンを持つ', () => {
   const document = parseMangaYaml(sampleSource);
   assert.equal(document.manga.schema_name, NDM_SCHEMA_NAME);
-  assert.equal(document.manga.schema_version, 10.3);
+  assert.equal(document.manga.schema_version, 10.31);
 });
 
 test('サンプルはNDM検査でエラーを出さない', () => {
@@ -21,6 +21,15 @@ test('bleed辺が紙端座標と一致しない場合はエラーになる', () 
   document.manga.pages[0].panels[0].bleed = ['left']; // x:10 のコマなので左端に達していない
   const issues = validateManga(document);
   assert.ok(issues.some((issue) => issue.level === 'error' && issue.path.endsWith('.bleed')));
+});
+
+test('上タチキリ（bleed: top）は y: 0 のコマでのみ宣言できる', () => {
+  const document = parseMangaYaml(sampleSource);
+  const panel = document.manga.pages[0].panels[0];
+  panel.bleed = ['top']; // y:10 のコマなので上端に達していない
+  assert.ok(validateManga(document).some((issue) => issue.level === 'error' && issue.path.endsWith('.bleed')));
+  panel.shape = { ...panel.shape, y: 0, h: 90 };
+  assert.ok(!validateManga(document).some((issue) => issue.level === 'error' && issue.path.endsWith('.bleed')));
 });
 
 test('無人コマ宣言（no_figures）と figures の併用はエラーになる', () => {
