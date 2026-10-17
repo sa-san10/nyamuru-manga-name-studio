@@ -10,7 +10,9 @@
 
 🧪 ネームデータと書き方は [docs/demos/panel-breakout/](./docs/demos/panel-breakout/) へ！
 
-<img src="./docs/demos/panel-breakout/images/コマが狭いのです_ぶち抜き.webp" alt="にゃむるたんが全身でコマをぶち抜いているページ" width="240">
+| ネーム | 完成 |
+|---|---|
+| <img src="./docs/demos/panel-breakout/images/コマが狭いのです_ネーム画面.webp" alt="ネーム画面。6コマ目の縦長コマが3〜5コマ目に重なっている" width="240"> | <img src="./docs/demos/panel-breakout/images/コマが狭いのです_ぶち抜き.webp" alt="にゃむるたんが全身でコマをぶち抜いているページ" width="240"> |
 
 にゃむるたん © sa-san10 / CC BY 4.0
 
