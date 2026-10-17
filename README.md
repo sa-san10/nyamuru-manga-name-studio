@@ -2,7 +2,19 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-## 🆕 最新アプデ！OMAY v10.5：画風変換がここまで効く
+## 🆕 最新アプデ！OMAY v10.7：bg: -1 でコマをぶち抜く
+
+**🫧 背景も枠線も描かないコマを重ねて、キャラが全身でコマの外へ！**
+
+ぶち抜きたいコマを `bg: -1` にして、ト書きの一番上に「このコマは背景を書かない。枠線を書かない。人物とフキダシのみを描画して他のコマの上に重ねる。」と書くだけ。v10.7 で bg: -1 の規定が `[default]` になり、背景処理のプレースホルダーとしてト書きで描き方を上書きできるようになりました。
+
+🧪 ネームデータと書き方は [docs/demos/panel-breakout/](./docs/demos/panel-breakout/) へ！
+
+<img src="./docs/demos/panel-breakout/images/コマが狭いのです_ぶち抜き.webp" alt="にゃむるたんが全身でコマをぶち抜いているページ" width="240">
+
+にゃむるたん © sa-san10 / CC BY 4.0
+
+## OMAY v10.5：画風変換がここまで効く
 
 **🎨 コマ割りもセリフもそのまま、世界だけ丸ごと入れ替え！**
 
